@@ -1,0 +1,7 @@
+^.*\.Rproj$
+^\.Rproj\.user$
+
+# Read me
+README.Rmd
+README_files*
+README_cache*

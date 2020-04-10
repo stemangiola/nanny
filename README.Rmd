@@ -1,0 +1,20 @@
+---
+title: "README"
+author: "Stefano Mangiola"
+date: "10/04/2020"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+# Installation
+
+```{r setup, include=FALSE}
+devtools::install_github("stemangiola/aupair")
+```
+
+# Usage
+
+```{r}
+tibble(counts = 1:100) %>% create_histogram(counts)
+```
