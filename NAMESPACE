@@ -3,3 +3,4 @@
 export(create_histogram)
 import(ggplot2)
 importFrom(magrittr,"%>%")
+importFrom(tibble,tibble)

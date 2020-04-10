@@ -6,6 +6,7 @@
 #'
 #' @import ggplot2
 #' @importFrom magrittr "%>%"
+#' @importFrom tibble tibble
 #'
 #' @name create_histogram
 #'
@@ -16,17 +17,14 @@
 #'
 #' @return A `ggplot` object
 #'
-#'
 #' @examples
 #'
-#'
-#'
-#' tibble(counts = 1:100) %>% create_histogram(counts)
-#'
+#' create_histogram(
+#'    tibble::tibble(counts = 1:100),
+#'    counts
+#' )
 #'
 #' @export
-#'
-#'
 create_histogram = function(.data, .abundance) {
 
   .abundance = enquo(.abundance)

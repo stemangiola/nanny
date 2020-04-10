@@ -24,9 +24,9 @@ This function creates a ggpot histogram from a data frame
 }
 \examples{
 
-
-
-tibble(counts = 1:100) \%>\% create_histogram(counts)
-
+create_histogram(
+   tibble::tibble(counts = 1:100),
+   counts
+)
 
 }
