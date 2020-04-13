@@ -20,7 +20,7 @@
 #' @examples
 #'
 #' create_histogram(
-#'    tibble::tibble(counts = 1:100),
+#'    aupair::test_data,
 #'    counts
 #' )
 #'
