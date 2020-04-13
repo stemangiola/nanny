@@ -20,7 +20,7 @@
 #' @examples
 #'
 #' create_histogram(
-#'    aupair::test_data,
+#'    nanny::test_data,
 #'    counts
 #' )
 #'

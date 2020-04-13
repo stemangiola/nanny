@@ -1,4 +1,4 @@
-Package: aupair
+Package: nanny
 Type: Package
 Title: A tidyverse-style library for high-level data analysis and manipulation
 Version: 0.1.0

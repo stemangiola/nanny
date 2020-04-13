@@ -3,7 +3,7 @@ test_that("class plot", {
   expect_equal(
     class(
       create_histogram(
-        aupair::test_data,
+        nanny::test_data,
         counts
       ))[2],
      "ggplot"

@@ -10,7 +10,7 @@ output:
 # Installation
 
 ```{r setup, include=FALSE}
-devtools::install_github("stemangiola/aupair")
+devtools::install_github("stemangiola/nanny")
 ```
 
 # Usage

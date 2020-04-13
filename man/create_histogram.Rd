@@ -25,7 +25,7 @@ This function creates a ggpot histogram from a data frame
 \examples{
 
 create_histogram(
-   aupair::test_data,
+   nanny::test_data,
    counts
 )
 
