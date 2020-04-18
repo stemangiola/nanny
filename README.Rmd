@@ -1,20 +1,302 @@
 ---
-title: "README"
-author: "Stefano Mangiola"
-date: "10/04/2020"
-output:
-  pdf_document: default
-  html_document: default
+title: "nanny - tidyverse style high-level data analysis and manipulations"
+output: github_document
 ---
+
+<!-- badges: start -->
+  [![Lifecycle:maturing](https://img.shields.io/badge/lifecycle-maturing-blue.svg)](https://www.tidyverse.org/lifecycle/#maturing)
+ <!-- badges: end -->
+
+<!---
+
+[![Build Status](https://travis-ci.org/stemangiola/nanny.svg?branch=master)](https://travis-ci.org/stemangiola/nanny) [![Coverage Status](https://coveralls.io/repos/github/stemangiola/nanny/badge.svg?branch=master)](https://coveralls.io/github/stemangiola/nanny?branch=master)
+
+-->
+
+
+#  <img src="inst/logo.png" height="139px" width="120px" />
+
+
+```{r, echo=FALSE, include=FALSE, }
+library(knitr)
+knitr::opts_chunk$set(cache = TRUE, warning = FALSE,
+                      message = FALSE, cache.lazy = FALSE)
+
+library(tidyverse)
+library(magrittr)
+library(nanny)
+
+my_theme = 	
+	theme_bw() +
+	theme(
+		panel.border = element_blank(),
+		axis.line = element_line(),
+		panel.grid.major = element_line(size = 0.2),
+		panel.grid.minor = element_line(size = 0.1),
+		text = element_text(size=12),
+		legend.position="bottom",
+		aspect.ratio=1,
+		strip.background = element_blank(),
+		axis.title.x  = element_text(margin = margin(t = 10, r = 10, b = 10, l = 10)),
+		axis.title.y  = element_text(margin = margin(t = 10, r = 10, b = 10, l = 10))
+	)
+
+```
 
 # Installation
 
-```{r setup, include=FALSE}
+```{r, eval=FALSE}
+
 devtools::install_github("stemangiola/nanny")
+
 ```
 
-# Usage
+# Introduction
+
+nanny is a collection of wrapper functions for high level data analysis and manipulation following the tidy paradigm.
+
+# Tidy data
 
 ```{r}
-tibble(counts = 1:100) %>% create_histogram(counts)
+mtcars_tidy = 
+	mtcars %>% 
+	as_tibble(rownames="car_model") %>% 
+	gather(feature, value, -car_model, -hp, -vs)
+
+mtcars_tidy
+```
+
+
+# Reduce `dimensions`
+
+We may want to reduce the dimensions of our data, for example using PCA,  MDS of tSNE algorithms. `reduce_dimensions` takes a tibble, column names (as symbols; for `element`, `feature` and `value`) and a method (e.g., MDS,  PCA or tSNE) as arguments and returns a tibble with additional columns for the reduced dimensions.
+
+**MDS** (Robinson et al., 10.1093/bioinformatics/btp616)
+
+```{r mds, cache=TRUE}
+mtcars_tidy_MDS =
+  mtcars_tidy %>%
+  reduce_dimensions(car_model, feature, value, method="MDS", .dims = 3)
+
+```
+
+On the x and y axes axis we have the reduced dimensions 1 to 3, data is coloured by cell type.
+
+```{r plot_mds, cache=TRUE}
+mtcars_tidy_MDS %>% subset(car_model)  %>% select(contains("Dim"), everything())
+
+mtcars_tidy_MDS %>%
+	subset(car_model) %>%
+  GGally::ggpairs(columns = 4:6, ggplot2::aes(colour=factor(vs)))
+
+
+```
+
+**PCA**
+
+```{r pca, cache=TRUE, message=FALSE, warning=FALSE, results='hide'}
+mtcars_tidy_PCA =
+  mtcars_tidy %>%
+  reduce_dimensions(car_model, feature, value, method="PCA", .dims = 3)
+```
+
+On the x and y axes axis we have the reduced dimensions 1 to 3, data is coloured by cell type.
+
+```{r plot_pca, cache=TRUE}
+
+mtcars_tidy_PCA %>% subset(car_model) %>% select(contains("PC"), everything())
+
+mtcars_tidy_PCA %>%
+	 subset(car_model) %>%
+  GGally::ggpairs(columns = 4:6, ggplot2::aes(colour=factor(vs)))
+```
+
+**tSNE**
+
+```{r tsne, cache=TRUE, message=FALSE, warning=FALSE, results='hide'}
+mtcars_tidy_tSNE =
+	mtcars_tidy %>% 
+	reduce_dimensions(car_model, feature, value, method = "tSNE")
+```
+
+Plot
+
+```{r}
+mtcars_tidy_tSNE %>%
+	subset(car_model) %>%
+	select(contains("tSNE"), everything()) 
+
+mtcars_tidy_tSNE %>%
+	subset(car_model) %>%
+	ggplot(aes(x = `tSNE1`, y = `tSNE2`, color=factor(vs))) + geom_point() + my_theme
+```
+
+# Rotate `dimensions`
+
+We may want to rotate the reduced dimensions (or any two numeric columns really) of our data, of a set angle. `rotate_dimensions` takes a tibble, column names (as symbols; for `element`, `feature` and `value`) and an angle as arguments and returns a tibble with additional columns for the rotated dimensions. The rotated dimensions will be added to the original data set as `<NAME OF DIMENSION> rotated <ANGLE>` by default, or as specified in the input arguments.
+
+```{r rotate, cache=TRUE}
+mtcars_tidy_MDS.rotated =
+  mtcars_tidy_MDS %>%
+	rotate_dimensions(`Dim1`, `Dim2`, .element = car_model, rotation_degrees = 45, action="get")
+```
+
+**Original**
+On the x and y axes axis we have the first two reduced dimensions, data is coloured by cell type.
+
+```{r plot_rotate_1, cache=TRUE}
+mtcars_tidy_MDS.rotated %>%
+	ggplot(aes(x=`Dim1`, y=`Dim2`, color=factor(vs) )) +
+  geom_point() +
+  my_theme
+```
+
+**Rotated**
+On the x and y axes axis we have the first two reduced dimensions rotated of 45 degrees, data is coloured by cell type.
+
+```{r plot_rotate_2, cache=TRUE}
+mtcars_tidy_MDS.rotated %>%
+	ggplot(aes(x=`Dim1 rotated 45`, y=`Dim2 rotated 45`, color=factor(vs) )) +
+  geom_point() +
+  my_theme
+```
+
+
+# Cluster `elements`
+
+We may want to cluster our data (e.g., using k-means element-wise). `cluster_elements` takes as arguments a tibble, column names (as symbols; for `element`, `feature` and `value`) and returns a tibble with additional columns for the cluster annotation. At the moment only k-means clustering is supported, the plan is to introduce more clustering methods.
+
+**k-means**
+
+
+```{r cluster, cache=TRUE}
+mtcars_tidy_cluster = mtcars_tidy_MDS %>%
+  cluster_elements(car_model, feature, value, method="kmeans",	centers = 2, action="get" )
+```
+
+
+We can add cluster annotation to the MDS dimesion reduced data set and plot.
+
+```{r plot_cluster, cache=TRUE}
+ mtcars_tidy_cluster %>%
+	ggplot(aes(x=`Dim1`, y=`Dim2`, color=cluster_kmeans)) +
+  geom_point() +
+  my_theme
+```
+
+**SNN**
+
+
+```{r SNN, cache=TRUE, message=FALSE, warning=FALSE, results='hide'}
+mtcars_tidy_SNN =
+	mtcars_tidy_tSNE %>%
+	cluster_elements(car_model, feature, value, method = "SNN")
+```
+
+```{r SNN_plot, cache=TRUE}
+mtcars_tidy_SNN %>%
+	subset(car_model) %>%
+	select(contains("tSNE"), everything()) 
+
+mtcars_tidy_SNN %>%
+	subset(car_model) %>%
+	ggplot(aes(x = `tSNE1`, y = `tSNE2`, color=cluster_SNN)) + geom_point() + my_theme
+
+```
+
+# Drop `redundant` features
+
+We may want to remove redundant elements from the original data set (e.g., elements or features), for example if we want to define cell-type specific signatures with low element redundancy. `remove_redundancy` takes as arguments a tibble, column names (as symbols; for `element`, `feature` and `value`) and returns a tibble dropped recundant elements (e.g., elements). Two redundancy estimation approaches are supported:
+
++ removal of highly correlated clusters of elements (keeping a representative) with method="correlation"
++ removal of most proximal element pairs in a reduced dimensional space.
+
+**Approach 1**
+
+```{r drop, cache=TRUE}
+mtcars_tidy_non_redundant =
+	mtcars_tidy_MDS %>%
+  remove_redundancy(car_model, feature, value, 	method = "correlation" )
+```
+
+We can visualise how the reduced redundancy with the reduced dimentions look like
+
+```{r plot_drop, cache=TRUE}
+mtcars_tidy_non_redundant %>%
+	subset(car_model) %>%
+	ggplot(aes(x=`Dim1`, y=`Dim2`, color=factor(vs))) +
+  geom_point() +
+  my_theme
+
+```
+
+**Approach 2**
+
+```{r drop2, cache=TRUE}
+mtcars_tidy_non_redundant =
+	mtcars_tidy_MDS %>%
+  remove_redundancy(
+  	car_model, feature, value, 
+  	method = "reduced_dimensions",
+  	Dim_a_column = `Dim1`,
+  	Dim_b_column = `Dim2`
+  )
+```
+
+We can visualise MDS reduced dimensions of the elements with the closest pair removed.
+
+```{r plot_drop2, cache=TRUE}
+mtcars_tidy_non_redundant %>%
+	subset(car_model) %>%
+	ggplot(aes(x=`Dim1`, y=`Dim2`, color=factor(vs))) +
+  geom_point() +
+  my_theme
+
+```
+
+# ADD versus GET versus ONLY modes
+
+Every function takes a tidyfeatureomics structured data as input, and (i) with action="add" outputs the new information joint to the original input data frame (default), (ii) with action="get" the new information with the element or feature relative informatin depending on what the analysis is about, or (iii) with action="only" just the new information. For example, from this data set
+
+```{r, cache=TRUE}
+  mtcars_tidy
+```
+
+**action="add"** (Default)
+We can add the MDS dimensions to the original data set
+
+```{r, cache=TRUE}
+  mtcars_tidy %>%
+    reduce_dimensions(
+    	car_model, feature, value, 
+    	method="MDS" ,
+    	.dims = 3,
+    	action="add"
+    )
+```
+
+**action="get"** 
+We can add the MDS dimensions to the original data set selecting just the element-wise column
+
+```{r, cache=TRUE}
+  mtcars_tidy %>%
+    reduce_dimensions(
+    	car_model, feature, value, 
+    	method="MDS" ,
+    	.dims = 3,
+    	action="get"
+    )
+```
+
+**action="only"**
+We can get just the MDS dimensions relative to each element
+
+```{r, cache=TRUE}
+  mtcars_tidy %>%
+    reduce_dimensions(
+    	car_model, feature, value, 
+    	method="MDS" ,
+    	.dims = 3,
+    	action="only"
+    )
 ```

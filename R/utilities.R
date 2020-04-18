@@ -1,7 +1,7 @@
 my_stop = function() {
 	stop("
         You should call nanny library *after* tidyverse libraries.
-        nanny says: The function does not know what your sample, feature and counts columns are.
+        nanny says: The function does not know what your element, feature and counts columns are.
         You have to either enter those as arguments, or use the funtion nanny() to pass your column names that will be remembered.
       ")
 }
@@ -82,8 +82,8 @@ select_closest_pairs = function(df) {
 		couples <- couples %>% bind_rows(pair)
 		df <- df %>%
 			filter(
-				!`sample 1` %in% (pair %>% select(1:2) %>% as.character()) &
-					!`sample 2` %in% (pair %>% select(1:2) %>% as.character())
+				!`element 1` %in% (pair %>% select(1:2) %>% as.character()) &
+					!`element 2` %in% (pair %>% select(1:2) %>% as.character())
 			)
 	}
 	
@@ -115,13 +115,12 @@ fill_NA_with_row_median = function(.matrix){
 #' @param .horizontal The name of the column horizontally presented in the heatmap
 #' @param .vertical The name of the column vertically presented in the heatmap
 #' @param .value The name of the feature/gene value column
-#' @param .value_scaled The name of the feature/gene scaled value column
 #'
-#' @description This function recognise what are the sample-wise columns and transcrip-wise columns
+#' @description This function recognise what are the element-wise columns and transcrip-wise columns
 #'
 #' @return A list
 #'
-get_x_y_annotation_columns = function(.data, .horizontal, .vertical, .value, .value_scaled){
+get_x_y_annotation_columns = function(.data, .horizontal, .vertical, .value){
 	
 	
 	# Comply with CRAN NOTES
@@ -131,13 +130,12 @@ get_x_y_annotation_columns = function(.data, .horizontal, .vertical, .value, .va
 	.horizontal = enquo(.horizontal)
 	.vertical = enquo(.vertical)
 	.value = enquo(.value)
-	.value_scaled = enquo(.value_scaled)
-	
+
 	# x-annotation df
 	n_x = .data %>% distinct(!!.horizontal) %>% nrow
 	n_y = .data %>% distinct(!!.vertical) %>% nrow
 	
-	# Sample wise columns
+	# element wise columns
 	horizontal_cols=
 		.data %>%
 		select(-!!.horizontal, -!!.vertical, -!!.value) %>%
@@ -192,9 +190,6 @@ get_x_y_annotation_columns = function(.data, .horizontal, .vertical, .value, .va
 		# Exclude vertical
 		ifelse_pipe(!is.null(vertical_cols),  ~ .x %>% select(-vertical_cols)) %>%
 		
-		# Exclude scaled counts if exist
-		ifelse_pipe(.value_scaled %>% quo_is_symbol,  ~ .x %>% select(-!!.value_scaled) ) %>%
-		
 		# Select colnames
 		colnames %>%
 		
@@ -231,7 +226,7 @@ get_specific_annotation_columns = function(.data, .col){
 	# x-annotation df
 	n_x = .data %>% distinct(!!.col) %>% nrow
 	
-	# Sample wise columns
+	# element wise columns
 	.data %>%
 		select(-!!.col) %>%
 		colnames %>%
@@ -254,24 +249,62 @@ get_specific_annotation_columns = function(.data, .col){
 	
 }
 
-lower_triangular = function(.data){
-	
-	levs = .data$`Cell type category_1` %>% levels
-	
+
+
+initialise_tt_internals = function(.data){
 	.data %>%
-		select(`Cell type category_1`, `Cell type category_2`,    prob) %>%
-		spread(`Cell type category_2` ,   prob) %>% 
-		as_matrix(rownames = "Cell type category_1") %>%
-		
-		# Drop upper triangular
-		{ ma = (.); ma[lower.tri(ma)] <- NA; ma} %>% 
-		
-		as_tibble(rownames = "Cell type category_1") %>% 
-		gather(`Cell type category_2`, prob, -`Cell type category_1`) %>% 
-		mutate(
-			`Cell type category_1` = factor(`Cell type category_1`, levels = levs), 
-			`Cell type category_2` = factor(`Cell type category_2`, levels = levs), 
-		) %>%
-		drop_na
+		ifelse_pipe(
+			"internals" %in% ((.) %>% attributes %>% names) %>% `!`,
+			~ .x %>% add_attr(list(), "internals")
+		)
 }
 
+reattach_internals = function(.data, .data_internals_from = NULL){
+	if(.data_internals_from %>% is.null)
+		.data_internals_from = .data
+	
+	.data %>% add_attr(.data_internals_from %>% attr("internals"), "internals")
+}
+
+attach_to_internals = function(.data, .object, .name){
+	
+	internals =
+		.data %>%
+		initialise_tt_internals() %>%
+		attr("internals")
+	
+	# Add tt_bolumns
+	internals[[.name]] = .object
+	
+	.data %>% add_attr(internals, "internals")
+}
+
+drop_internals = function(.data){
+	
+	.data %>% drop_attr("internals")
+}
+
+#' Add attribute to abject
+#'
+#'
+#' @param var A tibble
+#' @param attribute An object
+#' @param name A character name of the attribute
+#'
+#' @return A tibble with an additional attribute
+add_attr = function(var, attribute, name) {
+	attr(var, name) <- attribute
+	var
+}
+
+#' Drop attribute to abject
+#'
+#'
+#' @param var A tibble
+#' @param name A character name of the attribute
+#'
+#' @return A tibble with an additional attribute
+drop_attr = function(var, name) {
+	attr(var, name) <- NULL
+	var
+}

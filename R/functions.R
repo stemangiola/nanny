@@ -11,7 +11,7 @@
 #' @param .feature A column symbol. The column that is represents entities to cluster (i.e., normally elements)
 #' @param .element A column symbol. The column that is used to calculate distance (i.e., normally genes)
 #' @param of_elements A boolean
-#' @param log_transform A boolean, whether the value should be log-transformed (e.g., TRUE for RNA sequencing data)
+#' @param transform A function to use to tranforma the data internalli (e.g., log1p)
 #' @param ... Further parameters passed to the function kmeans
 #'
 #' @return A tibble with additional columns
@@ -23,7 +23,7 @@ get_clusters_kmeans_bulk <-
 					 .feature = NULL,
 					 .value = NULL,
 					 of_elements = TRUE,
-					 log_transform = TRUE,
+					 transform = NULL,
 					 ...) {
 		# Check if centers is in dots
 		dots_args = rlang::dots_list(...)
@@ -43,9 +43,18 @@ get_clusters_kmeans_bulk <-
 			# Prepare data frame
 			distinct(!!.feature,!!.element,!!.value) %>%
 			
-			# Check if log tranfrom is needed
-			ifelse_pipe(log_transform,
-									~ .x %>% dplyr::mutate(!!.value := !!.value %>%  `+`(1) %>%  log())) %>%
+			# Check if tranfrom is needed
+			ifelse_pipe(
+				is_function(transform),
+				~ .x %>% 
+					mutate(!!.value := !!.value %>%  transform()) %>%
+					
+					# Check is log introduced -Inf
+					ifelse_pipe(
+						pull(., !!.value) %>% min %>% equals(-Inf), 
+						~ stop("nanny says: you applied a transformation that introduced negative infinite .value, was it log? If so please use log1p.")
+					)
+			) %>%
 			
 			# Prepare data frame for return
 			spread(!!.feature,!!.value) %>%
@@ -58,8 +67,8 @@ get_clusters_kmeans_bulk <-
 			cluster %>%
 			as.list() %>%
 			as_tibble() %>%
-			gather(!!.element, `cluster kmeans`) %>%
-			mutate(`cluster kmeans` = `cluster kmeans` %>% as.factor()) %>%
+			gather(!!.element, cluster_kmeans) %>%
+			mutate(cluster_kmeans = cluster_kmeans %>% as.factor()) %>%
 			
 			# Attach attributes
 			reattach_internals(.data)
@@ -79,7 +88,7 @@ get_clusters_kmeans_bulk <-
 #' @param .feature A column symbol. The column that is represents entities to cluster (i.e., normally elements)
 #' @param .element A column symbol. The column that is used to calculate distance (i.e., normally genes)
 #' @param of_elements A boolean
-#' @param log_transform A boolean, whether the value should be log-transformed (e.g., TRUE for RNA sequencing data)
+#' @param transform A function to use to tranforma the data internalli (e.g., log1p)
 #' @param ... Further parameters passed to the function kmeans
 #'
 #' @return A tibble with additional columns
@@ -90,7 +99,7 @@ get_clusters_SNN_bulk <-
 					 .feature = NULL,
 					 .value,
 					 of_elements = TRUE,
-					 log_transform = TRUE,
+					 transform = NULL,
 					 ...) {
 		# Get column names
 		.element = enquo(.element)
@@ -116,11 +125,23 @@ get_clusters_SNN_bulk <-
 			# Prepare data frame
 			distinct(!!.element,!!.feature,!!.value) %>%
 			
-			# Check if log tranfrom is needed
-			#ifelse_pipe(log_transform, ~ .x %>% dplyr::mutate(!!.value := !!.value %>%  `+`(1) %>%  log())) %>%
+			# Check if tranfrom is needed
+			ifelse_pipe(
+				is_function(transform),
+				~ .x %>% 
+					mutate(!!.value := !!.value %>%  transform()) %>%
+					
+					# Check is log introduced -Inf
+					ifelse_pipe(
+						pull(., !!.value) %>% min %>% equals(-Inf), 
+						~ stop("nanny says: you applied a transformation that introduced negative infinite .value, was it log? If so please use log1p.")
+					)
+			) %>%
 			
 			# Prepare data frame for return
 			spread(!!.element,!!.value)
+		
+		max_PC = .data %>% distinct(!!.feature) %>% nrow %>% sum(-1)
 		
 		my_df %>%
 			data.frame(row.names = quo_name(.feature)) %>%
@@ -129,12 +150,12 @@ get_clusters_SNN_bulk <-
 												num.cores = 4,
 												do.par = TRUE) %>%
 			Seurat::FindVariableFeatures(selection.method = "vst") %>%
-			Seurat::RunPCA(npcs = 30) %>%
-			Seurat::FindNeighbors() %>%
+			Seurat::RunPCA(npcs = min(30, max_PC)) %>%
+			Seurat::FindNeighbors( dims = 1:(min(10, max_PC))) %>%
 			Seurat::FindClusters(method = "igraph", ...) %>%
 			`[[` ("seurat_clusters") %>%
 			as_tibble(rownames = quo_name(.element)) %>%
-			rename(`cluster SNN` = seurat_clusters) %>%
+			rename(cluster_SNN = seurat_clusters) %>%
 			dplyr::mutate(!!.element := gsub("\\.", "-",!!.element)) %>%
 			
 			# Attach attributes
@@ -157,7 +178,7 @@ get_clusters_SNN_bulk <-
 #' @param .element A column symbol. The column that is used to calculate distance (i.e., normally elements)
 #' @param top An integer. How many top genes to select
 #' @param of_elements A boolean
-#' @param log_transform A boolean, whether the value should be log-transformed (e.g., TRUE for RNA sequencing data)
+#' @param transform A function to use to tranforma the data internalli (e.g., log1p)
 #'
 #' @return A tibble with additional columns
 #'
@@ -168,9 +189,9 @@ get_reduced_dimensions_MDS_bulk <-
 					 .feature = NULL,
 					 .value = NULL,
 					 .dims = 2,
-					 top = 500,
+					 top = Inf,
 					 of_elements = TRUE,
-					 log_transform = TRUE) {
+					 transform = NULL) {
 		# Comply with CRAN NOTES
 		. = NULL
 		
@@ -189,12 +210,21 @@ get_reduced_dimensions_MDS_bulk <-
 			error_if_counts_is_na(!!.value) %>%
 			
 			# Filter lowly transcribed (I have to avoid the use of scaling function)
-			keep_abundant(!!.element, !!.feature,!!.value) %>%
+			# keep_abundant(!!.element, !!.feature,!!.value) %>%
 			distinct(!!.feature,!!.element,!!.value) %>%
 			
-			# Check if logtansform is needed
-			ifelse_pipe(log_transform,
-									~ .x %>% dplyr::mutate(!!.value := !!.value %>% `+`(1) %>%  log())) %>%
+			# Check if tranfrom is needed
+			ifelse_pipe(
+				is_function(transform),
+				~ .x %>% 
+					mutate(!!.value := !!.value %>%  transform()) %>%
+					
+					# Check is log introduced -Inf
+					ifelse_pipe(
+						pull(., !!.value) %>% min %>% equals(-Inf), 
+						~ stop("nanny says: you applied a transformation that introduced negative infinite .value, was it log? If so please use log1p.")
+					)
+			) %>%
 			
 			# Stop any column is not if not numeric or integer
 			ifelse_pipe(
@@ -240,7 +270,7 @@ get_reduced_dimensions_MDS_bulk <-
 #' @param .element A column symbol. The column that is used to calculate distance (i.e., normally elements)
 #' @param top An integer. How many top genes to select
 #' @param of_elements A boolean
-#' @param log_transform A boolean, whether the value should be log-transformed (e.g., TRUE for RNA sequencing data)
+#' @param transform A function to use to tranforma the data internalli (e.g., log1p)
 #' @param scale A boolean
 #' @param ... Further parameters passed to the function prcomp
 #'
@@ -253,9 +283,9 @@ get_reduced_dimensions_PCA_bulk <-
 					 .feature = NULL,
 					 .value  = NULL,
 					 .dims = 2,
-					 top = 500,
+					 top = Inf,
 					 of_elements = TRUE,
-					 log_transform = TRUE,
+					 transform = NULL,
 					 scale = FALSE,
 					 ...) {
 		# Comply with CRAN NOTES
@@ -278,9 +308,18 @@ get_reduced_dimensions_PCA_bulk <-
 			# Prepare data frame
 			distinct(!!.feature,!!.element,!!.value) %>%
 			
-			# Check if logtansform is needed
-			ifelse_pipe(log_transform,
-									~ .x %>% dplyr::mutate(!!.value := !!.value %>% `+`(1) %>%  log())) %>%
+			# Check if tranfrom is needed
+			ifelse_pipe(
+				is_function(transform),
+				~ .x %>% 
+					mutate(!!.value := !!.value %>%  transform()) %>%
+					
+					# Check is log introduced -Inf
+					ifelse_pipe(
+						pull(., !!.value) %>% min %>% equals(-Inf), 
+						~ stop("nanny says: you applied a transformation that introduced negative infinite .value, was it log? If so please use log1p.")
+					)
+			) %>%
 			
 			# Stop any column is not if not numeric or integer
 			ifelse_pipe(
@@ -340,7 +379,8 @@ get_reduced_dimensions_PCA_bulk <-
 					select(-name) %>%
 					rename(`Fraction of variance` = value) %>%
 					mutate(PC = components) %>%
-					print(n = 9999999)
+					as.data.frame() %>%
+					print()
 				
 				(.)
 				
@@ -381,7 +421,7 @@ get_reduced_dimensions_PCA_bulk <-
 #' @param .element A column symbol. The column that is used to calculate distance (i.e., normally elements)
 #' @param top An integer. How many top genes to select
 #' @param of_elements A boolean
-#' @param log_transform A boolean, whether the value should be log-transformed (e.g., TRUE for RNA sequencing data)
+#' @param transform A function to use to tranforma the data internalli (e.g., log1p)
 #' @param ... Further parameters passed to the function Rtsne
 #'
 #' @return A tibble with additional columns
@@ -392,9 +432,9 @@ get_reduced_dimensions_TSNE_bulk <-
 					 .feature = NULL,
 					 .value = NULL,
 					 .dims = 2,
-					 top = 500,
+					 top = Inf,
 					 of_elements = TRUE,
-					 log_transform = TRUE,
+					 transform = NULL,
 					 ...) {
 		# Comply with CRAN NOTES
 		. = NULL
@@ -445,15 +485,24 @@ get_reduced_dimensions_TSNE_bulk <-
 			# Prepare data frame
 			distinct(!!.feature,!!.element,!!.value) %>%
 			
-			# Check if data rectangular
-			ifelse_pipe(
-				(.) %>% check_if_data_rectangular(!!.element,!!.feature,!!.value, type = "soft"),
-				~ .x %>% eliminate_sparse_features(!!.feature)
-			) %>%
+			# # Check if data rectangular
+			# ifelse_pipe(
+			# 	(.) %>% check_if_data_rectangular(!!.element,!!.feature,!!.value, type = "soft"),
+			# 	~ .x %>% eliminate_sparse_features(!!.feature)
+			# ) %>%
 			
-			# Check if logtansform is needed
-			ifelse_pipe(log_transform,
-									~ .x %>% dplyr::mutate(!!.value := !!.value %>% `+`(1) %>%  log())) %>%
+			# Check if tranfrom is needed
+			ifelse_pipe(
+				is_function(transform),
+				~ .x %>% 
+					mutate(!!.value := !!.value %>%  transform()) %>%
+					
+					# Check is log introduced -Inf
+					ifelse_pipe(
+						pull(., !!.value) %>% min %>% equals(-Inf), 
+						~ stop("nanny says: you applied a transformation that introduced negative infinite .value, was it log? If so please use log1p.")
+					)
+			) %>%
 			
 			# Filter most variable genes
 			keep_variable_features(!!.element,!!.feature,!!.value, top) %>%
@@ -570,7 +619,7 @@ get_rotated_dimensions =
 #' @param .feature A column symbol. The column that is represents entities to cluster (i.e., normally genes)
 #' @param .element A column symbol. The column that is used to calculate distance (i.e., normally elements)
 #' @param of_elements A boolean
-#' @param log_transform A boolean, whether the value should be log-transformed (e.g., TRUE for RNA sequencing data)
+#' @param transform A function to use to tranforma the data internalli (e.g., log1p)
 #'
 #' @return A tibble with redundant elemens removed
 #'
@@ -582,7 +631,7 @@ remove_redundancy_elements_through_correlation <- function(.data,
 																													 correlation_threshold = 0.9,
 																													 top = Inf,
 																													 of_elements = TRUE,
-																													 log_transform = FALSE) {
+																													 transform = NULL) {
 	# Comply with CRAN NOTES
 	. = NULL
 	
@@ -590,10 +639,6 @@ remove_redundancy_elements_through_correlation <- function(.data,
 	.element = enquo(.element)
 	.feature = enquo(.feature)
 	.value = enquo(.value)
-	col_names = get_elements_features_value(.data, .element, .feature, .value, of_elements)
-	.element = col_names$.element
-	.feature = col_names$.feature
-	.value = col_names$.value
 	
 	# Check if package is installed, otherwise install
 	if ("widyr" %in% rownames(installed.packages()) == FALSE) {
@@ -617,9 +662,19 @@ remove_redundancy_elements_through_correlation <- function(.data,
 		# Filter variable genes
 		keep_variable_features(!!.element,!!.feature,!!.value, top = top) %>%
 		
-		# Check if logtansform is needed
-		ifelse_pipe(log_transform,
-								~ .x %>% dplyr::mutate(!!.value := !!.value %>% `+`(1) %>%  log())) %>%
+		# Check if tranfrom is needed
+		ifelse_pipe(
+			is_function(transform),
+			~ .x %>% 
+				mutate(!!.value := !!.value %>%  transform()) %>%
+				
+				# Check is log introduced -Inf
+				ifelse_pipe(
+					pull(., !!.value) %>% min %>% equals(-Inf), 
+					~ stop("nanny says: you applied a transformation that introduced negative infinite .value, was it log? If so please use log1p.")
+				)
+		) %>%
+		
 		distinct() %>%
 		spread(!!.element,!!.value) %>%
 		drop_na() %>%
@@ -699,8 +754,6 @@ remove_redundancy_elements_though_reduced_dimensions <-
 		
 		# Get column names
 		.element = enquo(.element)
-		col_names = get_elements(.data, .element)
-		.element = col_names$.element
 		
 		Dim_a_column = enquo(Dim_a_column)
 		Dim_b_column = enquo(Dim_b_column)
@@ -943,4 +996,78 @@ combine_nest = function(.data, .names_from, .values_from){
 		# Introduce levels
 		mutate_at(vars(1:2),function(x) factor(x, levels = factor_levels))
 	
+}
+
+#' Identify variable genes for dimensionality reduction
+#'
+#' @param .data A tibble
+#' @param .element A character name of the element column
+#' @param .feature A character name of the transcript/gene column
+#' @param .value A character name of the read count column
+#' @param top An integer. How many top genes to select
+#' @param transform A function to use to tranforma the data internalli (e.g., log1p)
+#'
+#' @return A tibble filtered genes
+#'
+keep_variable_features = function(.data,
+																		 .element = NULL,
+																		 .feature = NULL,
+																		 .value = NULL,
+																		 top = Inf,
+																		 transform = NULL) {
+	# Get column names
+	.element = enquo(.element)
+	.feature = enquo(.feature)
+	.value = enquo(.value)
+
+	# Manage Inf
+	top = min(top, .data %>% distinct(!!.feature) %>% nrow)
+	
+	x =
+		.data %>%
+		distinct(!!.element,!!.feature,!!.value) %>%
+		
+		# Check if tranfrom is needed
+		ifelse_pipe(
+			is_function(transform),
+			~ .x %>% 
+				mutate(!!.value := !!.value %>%  transform()) %>%
+				
+				# Check is log introduced -Inf
+				ifelse_pipe(
+					pull(., !!.value) %>% min %>% equals(-Inf), 
+					~ stop("nanny says: you applied a transformation that introduced negative infinite .value, was it log? If so please use log1p.")
+				)
+		) %>%
+		
+		spread(!!.element,!!.value) %>%
+		as_matrix(rownames = quo_name(.feature))
+	
+	s <- rowMeans((x - rowMeans(x)) ^ 2)
+	o <- order(s, decreasing = TRUE)
+	x <- x[o[1L:top], , drop = FALSE]
+	variable_trancripts = rownames(x)
+	
+	.data %>% filter(!!.feature %in% variable_trancripts)
+}
+
+lower_triangular = function(.data){
+	
+	levs = .data$`Cell type category_1` %>% levels
+	
+	.data %>%
+		select(`Cell type category_1`, `Cell type category_2`,    prob) %>%
+		spread(`Cell type category_2` ,   prob) %>% 
+		as_matrix(rownames = "Cell type category_1") %>%
+		
+		# Drop upper triangular
+		{ ma = (.); ma[lower.tri(ma)] <- NA; ma} %>% 
+		
+		as_tibble(rownames = "Cell type category_1") %>% 
+		gather(`Cell type category_2`, prob, -`Cell type category_1`) %>% 
+		mutate(
+			`Cell type category_1` = factor(`Cell type category_1`, levels = levs), 
+			`Cell type category_2` = factor(`Cell type category_2`, levels = levs), 
+		) %>%
+		drop_na
 }
