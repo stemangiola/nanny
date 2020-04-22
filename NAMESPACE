@@ -2,6 +2,7 @@
 
 export(as_matrix)
 export(cluster_elements)
+export(fill_missing)
 export(impute_missing)
 export(reduce_dimensions)
 export(remove_redundancy)

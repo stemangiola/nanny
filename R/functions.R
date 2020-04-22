@@ -943,11 +943,73 @@ fill_NA_using_formula = function(.data,
 		# In next command avoid error if no data to impute
 		ifelse_pipe(
 			nrow(.) > 0,
-			~ .x %>% left_join(.data %>% pivot_element(!!.element), by=quo_name(.element))
+			~ .x %>% left_join(.data %>% subset(!!.element), by=quo_name(.element))
 		) %>%
 		
 		# Add oiginal dataset
 		bind_rows(.data %>% anti_join(combo_to_impute, by=c(quo_name(.feature), col_formula))) %>%
+		select(.data %>% colnames)
+	
+}
+
+#' This function is needed for DE in case the matrix is not rectangular, but includes NA
+#'
+#' @import dplyr
+#' @import tidyr
+#' @import tibble
+#' @importFrom magrittr set_colnames
+#' @importFrom stats model.matrix
+#' @importFrom stats as.formula
+#' @importFrom utils installed.packages
+#' @importFrom utils install.packages
+#'
+#' @param .data A `tbl` formatted as | <element> | <feature> | <value> | <...> |
+#' @param .element The name of the element column
+#' @param .feature The name of the feature/gene column
+#' @param .value The name of the feature/gene value column
+#' @param fill_with A numerical value with which fill the mssing data points
+#'
+#'
+#' @return A tibble with adjusted counts
+#'
+#'
+fill_NA_using_value = function(.data,
+																 .element = NULL,
+																 .feature = NULL,
+																 .value = NULL,
+																 fill_with){
+	
+	# Get column names
+	.element = enquo(.element)
+	.feature = enquo(.feature)
+	.value = enquo(.value)
+	
+	# Create NAs for missing element/feature pair
+	df_to_impute =
+		.data %>%
+		select(!!.element, !!.feature, !!.value) %>%
+		distinct %>%
+		spread(!!.feature, !!.value) %>%
+		gather(!!.feature, !!.value, -!!.element)
+	
+	# Select just features/covariates that have missing
+	combo_to_impute = df_to_impute %>% anti_join(.data, by=c(quo_name(.element), quo_name(.feature))) %>% select(!!.feature) %>% distinct()
+	
+	# Impute using median
+	df_to_impute %>%
+		inner_join(combo_to_impute, by=c(quo_name(.feature))) %>%
+		
+		# Fill
+		mutate(!!.value := ifelse(!!.value %>% is.na, fill_with, !!.value)) %>%
+	
+		# In next command avoid error if no data to impute
+		ifelse_pipe(
+			nrow(.) > 0,
+			~ .x %>% left_join(.data %>% subset(!!.element), by=quo_name(.element))
+		) %>%
+		
+		# Add oiginal dataset
+		bind_rows(.data %>% anti_join(combo_to_impute, by=c(quo_name(.feature)))) %>%
 		select(.data %>% colnames)
 	
 }

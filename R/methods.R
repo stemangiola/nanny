@@ -826,13 +826,12 @@ setGeneric("impute_missing", function(.data,
 	# Validate data frame
 	validation(.data, !!.element, !!.feature, !!.value)
 	
-	.data_processed =
-		fill_NA_using_formula(
-			.data,
-			.formula,
-			.element = !!.element,
-			.feature = !!.feature,
-			.value = !!.value)
+	fill_NA_using_formula(
+		.data,
+		.formula,
+		.element = !!.element,
+		.feature = !!.feature,
+		.value = !!.value)
 }
 
 #' impute_missing
@@ -844,3 +843,87 @@ setMethod("impute_missing", "spec_tbl_df", .impute_missing)
 #' @inheritParams impute_missing
 #' @return A `tbl` with imputed abundnce
 setMethod("impute_missing", "tbl_df", .impute_missing)
+
+
+#' Fill feature value if missing from element-feature pairs
+#'
+#' \lifecycle{maturing}
+#'
+#' @description fill_missing() takes as imput a `tbl` formatted as | <element> | <feature> | <value> | <...> | and returns a `tbl` with an edditional adjusted value column. This method uses scaled counts if present.
+#'
+#' @importFrom rlang enquo
+#' @importFrom magrittr "%>%"
+#'
+#' @name fill_missing
+#'
+#' @param .data A `tbl` formatted as | <element> | <feature> | <value> | <...> |
+#' @param .element The name of the element column
+#' @param .feature The name of the feature/gene column
+#' @param .value The name of the feature/gene value column
+#' @param fill_with A numerical value with which fill the mssing data points
+#'
+#' @details This function fills the value of missing element-feature pair using the median of the element group defined by the formula
+#'
+#' @return A `tbl` non-sparse value
+#'
+#'
+#'
+#'
+#' @examples
+#'
+#'
+#' res =
+#' 	fill_missing(
+#' 		nanny::counts_mini,
+#' 	~ condition,
+#' 	.element = element,
+#' 	.feature = feature,
+#' 	.value = count
+#' )
+#'
+#'
+#' @docType methods
+#' @rdname fill_missing-methods
+#'
+#' @export
+#'
+#'
+setGeneric("fill_missing", function(.data,
+																			.element = NULL,
+																			.feature = NULL,
+																			.value = NULL,
+																			fill_with)
+	standardGeneric("fill_missing"))
+
+# Set internal
+.fill_missing = 	function(.data,
+														.element = NULL,
+														.feature = NULL,
+														.value = NULL,
+													fill_with)
+{
+	# Get column names
+	.element = enquo(.element)
+	.feature = enquo(.feature)
+	.value = enquo(.value)
+	
+	# Validate data frame
+	validation(.data, !!.element, !!.feature, !!.value)
+	
+	fill_NA_using_value(
+		.data,
+		.element = !!.element,
+		.feature = !!.feature,
+		.value = !!.value,
+		fill_with)
+}
+
+#' fill_missing
+#' @inheritParams fill_missing
+#' @return A `tbl` with filld abundnce
+setMethod("fill_missing", "spec_tbl_df", .fill_missing)
+
+#' fill_missing
+#' @inheritParams fill_missing
+#' @return A `tbl` with filld abundnce
+setMethod("fill_missing", "tbl_df", .fill_missing)

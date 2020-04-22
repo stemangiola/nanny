@@ -14,7 +14,7 @@ error_if_counts_is_na = function(.data, .abundance) {
 	
 	# Do the check
 	if (.data %>% filter(!!.abundance %>% is.na) %>% nrow %>% `>` (0))
-		stop("tidybulk says: You have NA values in your counts")
+		stop("nanny says: You have NA values in your counts")
 	
 	# If all good return original data frame
 	.data
@@ -34,7 +34,7 @@ error_if_log_transformed <- function(x, .abundance) {
 	if (x %>% nrow %>% `>` (0))
 		if (x %>% summarise(m = !!.abundance %>% max) %>% pull(m) < 50)
 			stop(
-				"tidybulk says: The input was log transformed, this algorithm requires raw (un-scaled) read counts"
+				"nanny says: The input was log transformed, this algorithm requires raw (un-scaled) read counts"
 			)
 }
 
@@ -69,7 +69,7 @@ error_if_duplicated_genes <- function(.data,
 		writeLines("Those are the duplicated genes")
 		duplicates %>% print()
 		stop(
-			"tidybulk says: Your dataset include duplicated sample/gene pairs. Please, remove redundancies before proceeding."
+			"nanny says: Your dataset include duplicated sample/gene pairs. Please, remove redundancies before proceeding."
 		)
 	}
 	
@@ -106,7 +106,7 @@ error_if_wrong_input = function(.data, list_input, expected_type) {
 		equals(expected_type) %>%
 		`!`
 	)
-		stop("tidybulk says: You have passed the wrong argument to the function. Please check again.")
+		stop("nanny says: You have passed the wrong argument to the function. Please check again.")
 	
 	# If all good return original data frame
 	.data
@@ -133,7 +133,7 @@ check_if_wrong_input = function(.data, list_input, expected_type) {
 			unlist %>%
 			equals(expected_type) %>%
 			`!`)
-		stop("tidybulk says: You have passed the wrong argument to the function. Please check again.")
+		stop("nanny says: You have passed the wrong argument to the function. Please check again.")
 	
 	# If all good return original data frame
 	.data
@@ -169,7 +169,7 @@ check_if_duplicated_genes <- function(.data,
 	is_unique = duplicates %>% nrow() %>% equals(0)
 	
 	if (!is_unique) {
-		writeLines("tidybulk says: Those are the duplicated genes")
+		writeLines("nanny says: Those are the duplicated genes")
 		duplicates %>% print()
 	}
 	
@@ -232,7 +232,7 @@ eliminate_sparse_transcripts = function(.data, .transcript){
 	# Parse column names
 	.transcript = enquo(.transcript)
 	
-	warning("tidybulk says: Some transcripts have been omitted from the analysis because not present in every sample.")
+	warning("nanny says: Some transcripts have been omitted from the analysis because not present in every sample.")
 	
 	.data %>%
 		add_count(!!.transcript, name = "my_n") %>%
@@ -257,9 +257,9 @@ check_if_data_rectangular = function(.data, .sample, .transcript, .abundance, ty
 	
 	is_rectangular
 	
-	# if(!is_rectangular & type == "hard") stop("tidybulk says: the data must have the same number of transcript per sample.")
+	# if(!is_rectangular & type == "hard") stop("nanny says: the data must have the same number of transcript per sample.")
 	#
-	# if(!is_rectangular & type == "soft") warning("tidybulk says: the data should have the same number of transcript per sample.")
+	# if(!is_rectangular & type == "soft") warning("nanny says: the data should have the same number of transcript per sample.")
 	
 	
 	# # Eliminate sparse transcripts
@@ -268,8 +268,8 @@ check_if_data_rectangular = function(.data, .sample, .transcript, .abundance, ty
 	
 }
 
-tidybulk_to_tbl = function(.data) {
-	.data %>%	drop_class(c("tidybulk", "tt"))
+nanny_to_tbl = function(.data) {
+	.data %>%	drop_class(c("nanny", "tt"))
 }
 
 validation_default = function(.data,
@@ -288,13 +288,13 @@ validation_default = function(.data,
 	if (type == "hard" &
 			!is_missing)
 		stop(
-			"tidybulk says: One or more columns .sample .transcript or .abundance are missing from your data frame."
+			"nanny says: One or more columns .sample .transcript or .abundance are missing from your data frame."
 		)
 	if (type == "soft" & !is_missing) {
 		warning(
-			"tidybulk says: One or more columns .sample .transcript or .abundance are missing from your data frame. The tidybulk object has been converted to a `tbl`"
+			"nanny says: One or more columns .sample .transcript or .abundance are missing from your data frame. The nanny object has been converted to a `tbl`"
 		)
-		return(.data %>% tidybulk_to_tbl)
+		return(.data %>% nanny_to_tbl)
 	}
 	
 	# Type check
@@ -302,13 +302,13 @@ validation_default = function(.data,
 	if (type == "hard" &
 			!is_type)
 		stop(
-			"tidybulk says: The column provided as .sample .transcript or .abundance do not comply with the required types (<FACTOR/CHARACTER>, <FACTOR/CHARACTER>, <NUMERIC>)."
+			"nanny says: The column provided as .sample .transcript or .abundance do not comply with the required types (<FACTOR/CHARACTER>, <FACTOR/CHARACTER>, <NUMERIC>)."
 		)
 	if (type == "soft" & !is_type) {
 		warning(
-			"tidybulk says: The column provided as .sample .transcript or .abundance do not comply with the required types. The tidybulk object has been converted to a `tbl`"
+			"nanny says: The column provided as .sample .transcript or .abundance do not comply with the required types. The nanny object has been converted to a `tbl`"
 		)
-		return(.data %>% tidybulk_to_tbl)
+		return(.data %>% nanny_to_tbl)
 	}
 	
 	# Check if duplicated genes
@@ -317,13 +317,13 @@ validation_default = function(.data,
 		if (type == "hard" &
 				!is_unique)
 			stop(
-				"tidybulk says: Your dataset include duplicated sample/gene pairs. Please, remove redundancies before proceeding (e.g., aggregate_duplicates())."
+				"nanny says: Your dataset include duplicated sample/gene pairs. Please, remove redundancies before proceeding (e.g., aggregate_duplicates())."
 			)
 		if (type == "soft" & !is_unique) {
 			warning(
-				"tidybulk says: Your dataset include duplicated sample/gene pairs. Please, remove redundancies before proceeding (e.g., aggregate_duplicates()). The tidybulk object has been converted to a `tbl`"
+				"nanny says: Your dataset include duplicated sample/gene pairs. Please, remove redundancies before proceeding (e.g., aggregate_duplicates()). The nanny object has been converted to a `tbl`"
 			)
-			return(.data %>% tidybulk_to_tbl)
+			return(.data %>% nanny_to_tbl)
 		}
 	}
 	
@@ -331,12 +331,12 @@ validation_default = function(.data,
 	is_count_good = check_if_counts_is_na(.data,!!.abundance)
 	if (type == "hard" &
 			!is_count_good)
-		stop("tidybulk says: You have NA values in your counts. Please check your data frame.")
+		stop("nanny says: You have NA values in your counts. Please check your data frame.")
 	if (type == "soft" & !is_count_good) {
 		warning(
-			"tidybulk says: You have NA values in your counts. The tidybulk object has been converted to a `tbl`"
+			"nanny says: You have NA values in your counts. The nanny object has been converted to a `tbl`"
 		)
-		return(.data %>% tidybulk_to_tbl)
+		return(.data %>% nanny_to_tbl)
 	}
 	
 }
@@ -369,7 +369,7 @@ validation.default = validation_default
 # 		warning(
 # 			"nanny says: The object provided has nanny class but no attribute containing the column names. The nanny object has been converted to a `tbl`"
 # 		)
-# 		return(.data %>% tidybulk_to_tbl)
+# 		return(.data %>% nanny_to_tbl)
 # 	}
 # 
 # 	# Get column names
