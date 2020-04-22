@@ -216,7 +216,7 @@ get_x_y_annotation_columns = function(.data, .horizontal, .vertical, .value){
 
 get_specific_annotation_columns = function(.data, .col){
 	
-	
+	 
 	# Comply with CRAN NOTES
 	. = NULL
 	
@@ -224,7 +224,7 @@ get_specific_annotation_columns = function(.data, .col){
 	.col = enquo(.col)
 	
 	# x-annotation df
-	n_x = .data %>% distinct(!!.col) %>% nrow
+	n_x = .data %>% distinct_at(vars(!!.col)) %>% nrow
 	
 	# element wise columns
 	.data %>%
@@ -235,7 +235,7 @@ get_specific_annotation_columns = function(.data, .col){
 				.x %>%
 				ifelse_pipe(
 					.data %>%
-						distinct(!!.col, !!as.symbol(.x)) %>%
+						distinct_at(vars(!!.col, .x)) %>%
 						nrow %>%
 						equals(n_x),
 					~ .x,
@@ -307,4 +307,12 @@ add_attr = function(var, attribute, name) {
 drop_attr = function(var, name) {
 	attr(var, name) <- NULL
 	var
+}
+
+quo_names <- function(v) {
+	#v <- rlang::quo_name(enquo(v))
+	v = rlang::quo_name(quo_squash(v))
+	gsub('^c\\(|\\s|\\)$', '', v) %>% 
+		strsplit(',') %>% 
+		unlist 
 }

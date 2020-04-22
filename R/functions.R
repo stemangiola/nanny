@@ -978,7 +978,7 @@ fill_NA_using_value = function(.data,
 																 .feature = NULL,
 																 .value = NULL,
 																 fill_with){
-	
+	 
 	# Get column names
 	.element = enquo(.element)
 	.feature = enquo(.feature)
@@ -989,15 +989,15 @@ fill_NA_using_value = function(.data,
 		.data %>%
 		select(!!.element, !!.feature, !!.value) %>%
 		distinct %>%
-		spread(!!.feature, !!.value) %>%
-		gather(!!.feature, !!.value, -!!.element)
-	
+		pivot_wider(names_from = !!.feature, values_from = !!.value, names_sep = "___", names_prefix = "fill_miss_") %>%
+		pivot_longer(names_to = .data %>% select(!!.feature) %>% names, values_to = quo_name(.value), names_sep = "___", names_prefix = "fill_miss_", cols = contains("fill_miss_"))
+		
 	# Select just features/covariates that have missing
-	combo_to_impute = df_to_impute %>% anti_join(.data, by=c(quo_name(.element), quo_name(.feature))) %>% select(!!.feature) %>% distinct()
+	combo_to_impute = df_to_impute %>% anti_join(.data) %>% select(!!.feature) %>% distinct()
 	
 	# Impute using median
 	df_to_impute %>%
-		inner_join(combo_to_impute, by=c(quo_name(.feature))) %>%
+		inner_join(combo_to_impute) %>%
 		
 		# Fill
 		mutate(!!.value := ifelse(!!.value %>% is.na, fill_with, !!.value)) %>%
@@ -1005,11 +1005,11 @@ fill_NA_using_value = function(.data,
 		# In next command avoid error if no data to impute
 		ifelse_pipe(
 			nrow(.) > 0,
-			~ .x %>% left_join(.data %>% subset(!!.element), by=quo_name(.element))
+			~ .x %>% left_join(.data %>% subset(!!.element))
 		) %>%
 		
 		# Add oiginal dataset
-		bind_rows(.data %>% anti_join(combo_to_impute, by=c(quo_name(.feature)))) %>%
+		bind_rows(.data %>% anti_join(combo_to_impute)) %>%
 		select(.data %>% colnames)
 	
 }

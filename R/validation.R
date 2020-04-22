@@ -161,8 +161,10 @@ check_if_duplicated_genes <- function(.data,
 	.abundance = enquo(.abundance)
 	
 	duplicates <-
-		distinct(.data,!!.sample, !!.transcript, !!.abundance) %>%
-		count(!!.sample, !!.transcript) %>%
+		select(.data,!!.sample, !!.transcript, !!.abundance) %>%
+		distinct() %>%
+		group_by_at(vars(!!.sample, !!.transcript)) %>%
+		tally() %>%
 		filter(n > 1) %>%
 		arrange(n %>% desc())
 	
@@ -200,15 +202,17 @@ check_if_column_missing = function(.data, .sample, .transcript, .abundance) {
 	.transcript = enquo(.transcript)
 	.abundance = enquo(.abundance)
 	
-	# Check that the intersection is length 3
+	# Check that the intersection is length good
+	my_cols = c(
+		quo_names(.sample),
+		quo_names(.transcript),
+		quo_names(.abundance)
+	)
+	
 	.data %>% colnames %>%
-		intersect(c(
-			quo_name(.sample),
-			quo_name(.transcript),
-			quo_name(.abundance)
-		)) %>%
+		intersect(my_cols) %>%
 		length %>%
-		equals(3)
+		equals(length(my_cols))
 }
 
 column_type_checking = function(.data, .sample, .transcript, .abundance) {
@@ -217,9 +221,9 @@ column_type_checking = function(.data, .sample, .transcript, .abundance) {
 	.transcript = enquo(.transcript)
 	.abundance = enquo(.abundance)
 	
-	.data %>% pull(!!.sample) %>% class %in% c("character", "factor") &
-		.data %>% pull(!!.transcript) %>% class %in% c("character", "factor") &
-		.data %>% pull(!!.abundance) %>% class %in% c("integer", "numeric", "double")
+	.data %>% select(!!.sample) %>% map_chr(~ class(.x)) %in% c("character", "factor") %>% all &
+	.data %>% select(!!.transcript) %>% map_chr(~ class(.x)) %in% c("character", "factor") %>% all &
+		.data %>% select(!!.abundance) %>% map_chr(~ class(.x)) %in% c("integer", "numeric", "double") %>% all
 	
 }
 
@@ -284,13 +288,13 @@ validation_default = function(.data,
 	.abundance = enquo(.abundance)
 	
 	# Type check
-	is_missing = check_if_column_missing(.data,!!.sample,!!.transcript,!!.abundance)
+	is_present = check_if_column_missing(.data,!!.sample,!!.transcript,!!.abundance)
 	if (type == "hard" &
-			!is_missing)
+			!is_present)
 		stop(
 			"nanny says: One or more columns .sample .transcript or .abundance are missing from your data frame."
 		)
-	if (type == "soft" & !is_missing) {
+	if (type == "soft" & !is_present) {
 		warning(
 			"nanny says: One or more columns .sample .transcript or .abundance are missing from your data frame. The nanny object has been converted to a `tbl`"
 		)
