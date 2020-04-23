@@ -309,9 +309,17 @@ drop_attr = function(var, name) {
 	var
 }
 
+#' Convert array of quosure (e.g. c(col_a, col_b)) into character vector
+#'
+#' @importFrom rlang quo_name
+#' @importFrom rlang quo_squash
+#'
+#' @param v A array of quosures (e.g. c(col_a, col_b))
+#'
+#' @return A character vector
 quo_names <- function(v) {
-	#v <- rlang::quo_name(enquo(v))
-	v = rlang::quo_name(quo_squash(v))
+
+	v = quo_name(quo_squash(v))
 	gsub('^c\\(|\\s|\\)$', '', v) %>% 
 		strsplit(',') %>% 
 		unlist 

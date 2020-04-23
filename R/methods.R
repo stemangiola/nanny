@@ -300,7 +300,8 @@ setGeneric("reduce_dimensions", function(.data,
 		
 		if (action == "add"){
 			
-			.data %>%	dplyr::left_join(.data_processed,	by = quo_name(.element)) 
+			.data %>%	dplyr::left_join(.data_processed,	by = quo_name(.element)) %>%
+				reattach_internals(.data_processed)
 			
 		}
 		else if (action == "get"){
@@ -314,7 +315,8 @@ setGeneric("reduce_dimensions", function(.data,
 				) %>%
 				distinct() %>%
 				
-				dplyr::left_join(.data_processed,	by = quo_name(.element)) 
+				dplyr::left_join(.data_processed,	by = quo_name(.element)) %>%
+				reattach_internals(.data_processed)
 			
 		}
 		
@@ -343,7 +345,8 @@ setGeneric("reduce_dimensions", function(.data,
 		if (action == "add"){
 			
 			.data %>%
-				dplyr::left_join(.data_processed,	by = quo_name(.element)) 
+				dplyr::left_join(.data_processed,	by = quo_name(.element)) %>%
+				reattach_internals(.data_processed)
 			
 		}
 		
@@ -358,7 +361,8 @@ setGeneric("reduce_dimensions", function(.data,
 				) %>%
 				distinct() %>%
 				
-				dplyr::left_join(.data_processed,	by = quo_name(.element)) 
+				dplyr::left_join(.data_processed,	by = quo_name(.element)) %>%
+				reattach_internals(.data_processed)
 			
 		}
 		
@@ -387,7 +391,8 @@ setGeneric("reduce_dimensions", function(.data,
 		if (action == "add"){
 			
 			.data %>%
-				dplyr::left_join(.data_processed,	by = quo_name(.element)	)
+				dplyr::left_join(.data_processed,	by = quo_name(.element)	) %>%
+				reattach_internals(.data_processed)
 			
 		}
 		else if (action == "get"){
@@ -401,7 +406,8 @@ setGeneric("reduce_dimensions", function(.data,
 				) %>%
 				distinct() %>%
 				
-				dplyr::left_join(.data_processed,	by = quo_name(.element)	) 
+				dplyr::left_join(.data_processed,	by = quo_name(.element)	) %>%
+				reattach_internals(.data_processed)
 			
 		}
 		else if (action == "only") .data_processed
