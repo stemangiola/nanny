@@ -328,7 +328,7 @@ get_reduced_dimensions_PCA_bulk <-
 			) %>%
 			
 			# Filter most variable genes
-			keep_variable_features(!!.element,!!.feature,!!.value, top) %>%
+			keep_variable(!!.element,!!.feature,!!.value, top) %>%
 			
 			spread(!!.element,!!.value) %>%
 			
@@ -505,7 +505,7 @@ get_reduced_dimensions_TSNE_bulk <-
 			) %>%
 			
 			# Filter most variable genes
-			keep_variable_features(!!.element,!!.feature,!!.value, top) %>%
+			keep_variable(!!.element,!!.feature,!!.value, top) %>%
 			
 			spread(!!.feature,!!.value) %>%
 			# select(-element) %>%
@@ -660,7 +660,7 @@ remove_redundancy_elements_through_correlation <- function(.data,
 		select(!!.feature,!!.element,!!.value) %>%
 		
 		# Filter variable genes
-		keep_variable_features(!!.element,!!.feature,!!.value, top = top) %>%
+		keep_variable(!!.element,!!.feature,!!.value, top = top) %>%
 		
 		# Check if tranfrom is needed
 		ifelse_pipe(

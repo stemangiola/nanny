@@ -1143,30 +1143,56 @@ setMethod("combine_nest", "tbl_df", .combine_nest)
 #' @export
 #'
 #'
-setGeneric("keep_variable", function(.data, .names_from, .values_from)
+setGeneric("keep_variable", function(.data,
+																		 .element = NULL,
+																		 .feature = NULL,
+																		 .value = NULL,
+																		 top = Inf,
+																		 transform = NULL)
 	standardGeneric("keep_variable"))
 
 # Set internal
-.keep_variable = function(.data, .names_from, .values_from){
-	.names_from = enquo(.names_from)
-	.values_from = enquo(.values_from)
+.keep_variable = function(.data,
+													.element = NULL,
+													.feature = NULL,
+													.value = NULL,
+													top = Inf,
+													transform = NULL) {
+	# Get column names
+	.element = enquo(.element)
+	.feature = enquo(.feature)
+	.value = enquo(.value)
 	
-	factor_levels = .data %>% pull(!!.names_from) %>% unique
 	
-	.data %>% 
-		pull(!!.names_from) %>%
-		unique() %>%
-		gtools::combinations(n = length(.), r = 2, v = .) %>%
-		as_tibble() %>%
-		unite(run, c(V1, V2), remove = F, sep="___") %>%
-		gather(which, !!.names_from, -run) %>%
-		select(-which) %>%
-		left_join(.data %>% select(!!.names_from, !!.values_from), by = quo_name(.names_from)) %>%
-		nest(data = -run) %>%
-		separate(run, sprintf("%s_%s", quo_name(.names_from), 1:2), sep="___") %>%
+	# Manage Inf
+	top = min(top, .data %>% distinct(!!.feature) %>% nrow)
+	
+	x =
+		.data %>%
+		distinct(!!.element, !!.feature, !!.value) %>%
 		
-		# Introduce levels
-		mutate_at(vars(1:2),function(x) factor(x, levels = factor_levels))
+		# Check if tranfrom is needed
+		ifelse_pipe(
+			is_function(transform),
+			~ .x %>%
+				mutate(!!.value := !!.value %>%  transform()) %>%
+				
+				# Check is log introduced -Inf
+				ifelse_pipe(pull(.,!!.value) %>% min %>% equals(-Inf),
+										~ stop(
+											"nanny says: you applied a transformation that introduced negative infinite .value, was it log? If so please use log1p."
+										))
+		) %>%
+		
+		spread(!!.element, !!.value) %>%
+		as_matrix(rownames = quo_name(.feature))
+	
+	s <- rowMeans((x - rowMeans(x)) ^ 2)
+	o <- order(s, decreasing = TRUE)
+	x <- x[o[1L:top], , drop = FALSE]
+	variable_features = rownames(x)
+	
+	.data %>% filter(!!.feature %in% variable_features)
 	
 }
 

@@ -4,10 +4,27 @@
 \alias{keep_variable,spec_tbl_df-method}
 \title{keep_variable}
 \usage{
-\S4method{keep_variable}{spec_tbl_df}(.data, .names_from, .values_from)
+\S4method{keep_variable}{spec_tbl_df}(
+  .data,
+  .element = NULL,
+  .feature = NULL,
+  .value = NULL,
+  top = Inf,
+  transform = NULL
+)
 }
 \arguments{
 \item{.data}{A `tbl`}
+
+\item{.element}{A character name of the element column}
+
+\item{.feature}{A character name of the transcript/gene column}
+
+\item{.value}{A character name of the read count column}
+
+\item{top}{An integer. How many top genes to select}
+
+\item{transform}{A function to use to tranforma the data internalli (e.g., log1p)}
 }
 \value{
 A `tbl` with filld abundnce
