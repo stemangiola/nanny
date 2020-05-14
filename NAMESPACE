@@ -2,8 +2,12 @@
 
 export(as_matrix)
 export(cluster_elements)
+export(combine_nest)
 export(fill_missing)
 export(impute_missing)
+export(keep_variable)
+export(lower_triangular)
+export(permute_nest)
 export(reduce_dimensions)
 export(remove_redundancy)
 export(rotate_dimensions)

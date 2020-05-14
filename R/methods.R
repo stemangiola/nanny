@@ -755,16 +755,17 @@ setGeneric("subset", function(.data,
 #' subset
 #' @inheritParams subset
 #' @return A `tbl` object
-setMethod("subset",
-					"spec_tbl_df",
-					.subset)
+setMethod("subset",		"spec_tbl_df",		.subset)
 
 #' subset
 #' @inheritParams subset
 #' @return A `tbl` object
-setMethod("subset",
-					"tbl_df",
-					.subset)
+setMethod("subset",		"tbl_df",				.subset)
+
+#' subset
+#' @inheritParams subset
+#' @return A `tbl` object
+setMethod("subset",		"tbl",			.subset)
 
 
 #' Impute feature value if missing from element-feature pairs
@@ -933,3 +934,410 @@ setMethod("fill_missing", "spec_tbl_df", .fill_missing)
 #' @inheritParams fill_missing
 #' @return A `tbl` with filld abundnce
 setMethod("fill_missing", "tbl_df", .fill_missing)
+
+
+
+
+#' Permute columns and nest data for each permutation
+#'
+#' \lifecycle{maturing}
+#'
+#' @description permute_nest() takes as imput a `tbl` formatted as | <element> | <feature> | <value> | <...> | and returns a `tbl` with data nested for each permutation. 
+#'
+#' @importFrom rlang enquo
+#' @importFrom magrittr "%>%"
+#'
+#' @name permute_nest
+#'
+#' @param .data A `tbl` formatted as | <element> | <feature> | <value> | <...> |
+#' @param .names_from The columns to build the permutations on (e.g., c(col1, col2))
+#' @param .values_from The columns to be nested for each permutation (e.g., c(col3, col4, col5))
+#'
+#' @details ...
+#'
+#' @return A nested `tbl` 
+#'
+#'
+#'
+#'
+#' @examples
+#'
+#'
+#' res =
+#' 	permute_nest(
+#' 		nanny::counts_mini,
+#' 	~ condition,
+#' 	.element = element,
+#' 	.feature = feature,
+#' 	.value = count
+#' )
+#'
+#'
+#' @docType methods
+#' @rdname permute_nest-methods
+#'
+#' @export
+#'
+#'
+setGeneric("permute_nest", function(.data, .names_from, .values_from)
+	standardGeneric("permute_nest"))
+
+# Set internal
+.permute_nest = 	function(.data, .names_from, .values_from){
+	.names_from = enquo(.names_from)
+	.values_from = enquo(.values_from)
+	
+	factor_levels = .data %>% pull(!!.names_from) %>% unique
+	
+	.data %>% 
+		pull(!!.names_from) %>%
+		unique() %>%
+		gtools::permutations(n = length(.), r = 2, v = .) %>%
+		as_tibble() %>%
+		unite(run, c(V1, V2), remove = F, sep="___") %>%
+		gather(which, !!.names_from, -run) %>%
+		select(-which) %>%
+		left_join(.data %>% select(!!.names_from, !!.values_from), by = quo_name(.names_from)) %>%
+		nest(data = -run) %>%
+		separate(run, sprintf("%s_%s", quo_name(.names_from), 1:2 ), sep="___") %>%
+		
+		# Introduce levels
+		mutate_at(vars(1:2),function(x) factor(x, levels = factor_levels))
+	
+}
+
+#' permute_nest
+#' @inheritParams permute_nest
+#' @return A `tbl` with filld abundnce
+setMethod("permute_nest", "spec_tbl_df", .permute_nest)
+
+#' permute_nest
+#' @inheritParams permute_nest
+#' @return A `tbl` with filld abundnce
+setMethod("permute_nest", "tbl_df", .permute_nest)
+
+
+
+
+#' Combine columns and nest data for each permutation
+#'
+#' \lifecycle{maturing}
+#'
+#' @description combine_nest() takes as imput a `tbl` formatted as | <element> | <feature> | <value> | <...> | and returns a `tbl` with data nested for each permutation. 
+#'
+#' @importFrom rlang enquo
+#' @importFrom magrittr "%>%"
+#'
+#' @name combine_nest
+#'
+#' @param .data A `tbl` formatted as | <element> | <feature> | <value> | <...> |
+#' @param .names_from The columns to build the permutations on (e.g., c(col1, col2))
+#' @param .values_from The columns to be nested for each permutation (e.g., c(col3, col4, col5))
+#'
+#' @details ...
+#'
+#' @return A nested `tbl` 
+#'
+#'
+#'
+#'
+#' @examples
+#'
+#'
+#' res =
+#' 	combine_nest(
+#' 		nanny::counts_mini,
+#' 	~ condition,
+#' 	.element = element,
+#' 	.feature = feature,
+#' 	.value = count
+#' )
+#'
+#'
+#' @docType methods
+#' @rdname combine_nest-methods
+#'
+#' @export
+#'
+#'
+setGeneric("combine_nest", function(.data, .names_from, .values_from)
+	standardGeneric("combine_nest"))
+
+# Set internal
+.combine_nest = function(.data, .names_from, .values_from){
+	.names_from = enquo(.names_from)
+	.values_from = enquo(.values_from)
+	
+	factor_levels = .data %>% pull(!!.names_from) %>% unique
+	
+	.data %>% 
+		pull(!!.names_from) %>%
+		unique() %>%
+		gtools::combinations(n = length(.), r = 2, v = .) %>%
+		as_tibble() %>%
+		unite(run, c(V1, V2), remove = F, sep="___") %>%
+		gather(which, !!.names_from, -run) %>%
+		select(-which) %>%
+		left_join(.data %>% select(!!.names_from, !!.values_from), by = quo_name(.names_from)) %>%
+		nest(data = -run) %>%
+		separate(run, sprintf("%s_%s", quo_name(.names_from), 1:2), sep="___") %>%
+		
+		# Introduce levels
+		mutate_at(vars(1:2),function(x) factor(x, levels = factor_levels))
+	
+}
+
+#' combine_nest
+#' @inheritParams combine_nest
+#' @return A `tbl` with filld abundnce
+setMethod("combine_nest", "spec_tbl_df", .combine_nest)
+
+#' combine_nest
+#' @inheritParams combine_nest
+#' @return A `tbl` with filld abundnce
+setMethod("combine_nest", "tbl_df", .combine_nest)
+
+
+
+#' Keep top variable features across elements
+#'
+#' \lifecycle{maturing}
+#'
+#' @description keep_variable() takes as imput a `tbl` formatted as | <element> | <feature> | <value> | <...> | and returns a `tbl` with data nested for each permutation. 
+#'
+#' @importFrom rlang enquo
+#' @importFrom magrittr "%>%"
+#'
+#' @name keep_variable
+#'
+#' @param .data A `tbl`
+#' @param .element A character name of the element column
+#' @param .feature A character name of the transcript/gene column
+#' @param .value A character name of the read count column
+#' @param top An integer. How many top genes to select
+#' @param transform A function to use to tranforma the data internalli (e.g., log1p)
+#'
+#' @details ...
+#'
+#' @return A `tbl` with filtered features
+#'
+#'
+#'
+#'
+#' @examples
+#'
+#'
+#' res =
+#' 	keep_variable(
+#' 		nanny::counts_mini,
+#' 	~ condition,
+#' 	.element = element,
+#' 	.feature = feature,
+#' 	.value = count
+#' )
+#'
+#'
+#' @docType methods
+#' @rdname keep_variable-methods
+#'
+#' @export
+#'
+#'
+setGeneric("keep_variable", function(.data, .names_from, .values_from)
+	standardGeneric("keep_variable"))
+
+# Set internal
+.keep_variable = function(.data, .names_from, .values_from){
+	.names_from = enquo(.names_from)
+	.values_from = enquo(.values_from)
+	
+	factor_levels = .data %>% pull(!!.names_from) %>% unique
+	
+	.data %>% 
+		pull(!!.names_from) %>%
+		unique() %>%
+		gtools::combinations(n = length(.), r = 2, v = .) %>%
+		as_tibble() %>%
+		unite(run, c(V1, V2), remove = F, sep="___") %>%
+		gather(which, !!.names_from, -run) %>%
+		select(-which) %>%
+		left_join(.data %>% select(!!.names_from, !!.values_from), by = quo_name(.names_from)) %>%
+		nest(data = -run) %>%
+		separate(run, sprintf("%s_%s", quo_name(.names_from), 1:2), sep="___") %>%
+		
+		# Introduce levels
+		mutate_at(vars(1:2),function(x) factor(x, levels = factor_levels))
+	
+}
+
+#' keep_variable
+#' @inheritParams keep_variable
+#' @return A `tbl` with filld abundnce
+setMethod("keep_variable", "spec_tbl_df", .keep_variable)
+
+#' keep_variable
+#' @inheritParams keep_variable
+#' @return A `tbl` with filld abundnce
+setMethod("keep_variable", "tbl_df", .keep_variable)
+
+
+
+#' Keep rows corresponding of a lower triangular matrix built from two columns
+#'
+#' \lifecycle{maturing}
+#'
+#' @description lower_triangular() takes as imput a `tbl` formatted as | <element> | <feature> | <value> | <...> | and returns a filtered `tbl` 
+#'
+#' @importFrom rlang enquo
+#' @importFrom magrittr "%>%"
+#'
+#' @name lower_triangular
+#'
+#' @param .data A `tbl`
+#' @param .col1 A column name
+#' @param .col2 A column name
+#'
+#' @details ...
+#'
+#' @return A `tbl` with filtered rows
+#'
+#'
+#'
+#'
+#' @examples
+#'
+#'
+#' res =
+#' 	lower_triangular(
+#' 		nanny::counts_mini,
+#' 	~ condition,
+#' 	.element = element,
+#' 	.feature = feature,
+#' 	.value = count
+#' )
+#'
+#'
+#' @docType methods
+#' @rdname lower_triangular-methods
+#'
+#' @export
+#'
+#'
+setGeneric("lower_triangular", function(.data, .col1, .col2, .value)
+	standardGeneric("lower_triangular"))
+
+# Set internal
+.lower_triangular = function(.data, .col1, .col2, .value){	
+	
+	# Column names
+	.col1 = enquo(.col1)
+	.col2 = enquo(.col2)
+	.value = enquo(.value)
+
+
+	#levs = .data %>% pull(!!.col1) %>% levels
+
+	.data %>%
+		select(!!.col1, !!.col2,    !!.value) %>%
+		spread(!!.col2 ,   !!.value) %>%
+		as_matrix(rownames = "Cell type category_1") %>%
+
+		# Drop upper triangular
+		{ ma = (.); ma[lower.tri(ma)] <- NA; ma} %>%
+
+		as_tibble(rownames = "Cell type category_1") %>%
+		gather(!!.col2, !!.value, -!!.col1) %>%
+		mutate(
+			# !!.col1 := factor(!!.col1, levels = levs),
+			# !!.col2 := factor(!!.col2, levels = levs),
+			
+			!!.col1 := factor(!!.col1),
+			!!.col2 := factor(!!.col2),
+		) %>%
+		drop_na
+	
+}
+
+#' lower_triangular
+#' @inheritParams lower_triangular
+#' @return A `tbl` with filld abundnce
+setMethod("lower_triangular", "spec_tbl_df", .lower_triangular)
+
+#' lower_triangular
+#' @inheritParams lower_triangular
+#' @return A `tbl` with filld abundnce
+setMethod("lower_triangular", "tbl_df", .lower_triangular)
+
+
+#' Get matrix from tibble
+#'
+#' @import dplyr
+#' @import tidyr
+#' @importFrom magrittr set_rownames
+#' @importFrom rlang quo_is_null
+#'
+#' @param tbl A tibble
+#' @param rownames A character string of the rownames
+#' @param do_check A boolean
+#'
+#' @return A matrix
+#'
+#' @examples
+#'
+#' as_matrix(head(dplyr::select(nanny::counts_mini, feature, count)), rownames=feature)
+#'
+#' @docType methods
+#' @rdname as_matrix-methods
+#'
+#' @export
+setGeneric("as_matrix", function(.data,
+																 rownames = NULL,
+																 do_check = TRUE)
+	standardGeneric("as_matrix"))
+
+# Set internal
+.as_matrix = function(.data,
+											rownames = NULL,
+											do_check = TRUE) {
+	rownames = enquo(rownames)
+	.data %>%
+		
+		# Through warning if data frame is not numerical beside the rownames column (if present)
+		ifelse_pipe(
+			do_check &&
+				.data %>%
+				# If rownames defined eliminate it from the data frame
+				ifelse_pipe(!quo_is_null(rownames), ~ .x[,-1], ~ .x) %>%
+				dplyr::summarise_all(class) %>%
+				tidyr::gather(variable, class) %>%
+				pull(class) %>%
+				unique() %>%
+				`%in%`(c("numeric", "integer")) %>% `!`() %>% any(),
+			~ {
+				warning("nanny says: there are NON-numerical columns, the matrix will NOT be numerical")
+				.x
+			}
+		) %>%
+		as.data.frame() %>%
+		
+		# Deal with rownames column if present
+		ifelse_pipe(
+			!quo_is_null(rownames),
+			~ .x %>%
+				magrittr::set_rownames(.data %>% pull(!!rownames)) %>%
+				select(-1)
+		) %>%
+		
+		# Convert to matrix
+		as.matrix()
+}
+
+#' as_matrix
+#' @inheritParams as_matrix
+#' @return A `tbl` with filld abundnce
+setMethod("as_matrix", "spec_tbl_df", .as_matrix)
+
+#' as_matrix
+#' @inheritParams as_matrix
+#' @return A `tbl` with filld abundnce
+setMethod("as_matrix", "tbl_df", .as_matrix)
