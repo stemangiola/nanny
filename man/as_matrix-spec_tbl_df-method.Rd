@@ -4,7 +4,7 @@
 \alias{as_matrix,spec_tbl_df-method}
 \title{as_matrix}
 \usage{
-\S4method{as_matrix}{spec_tbl_df}(.data, rownames = NULL, do_check = TRUE)
+\S4method{as_matrix}{spec_tbl_df}(.data, rownames = NULL, do_check = TRUE, sep_rownames = "___")
 }
 \arguments{
 \item{rownames}{A character string of the rownames}

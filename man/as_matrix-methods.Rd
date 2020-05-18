@@ -5,7 +5,7 @@
 \alias{as_matrix}
 \title{Get matrix from tibble}
 \usage{
-as_matrix(.data, rownames = NULL, do_check = TRUE)
+as_matrix(.data, rownames = NULL, do_check = TRUE, sep_rownames = "___")
 }
 \arguments{
 \item{rownames}{A character string of the rownames}

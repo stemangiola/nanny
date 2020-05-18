@@ -132,8 +132,8 @@ get_x_y_annotation_columns = function(.data, .horizontal, .vertical, .value){
 	.value = enquo(.value)
 
 	# x-annotation df
-	n_x = .data %>% distinct(!!.horizontal) %>% nrow
-	n_y = .data %>% distinct(!!.vertical) %>% nrow
+	n_x = .data %>% select(!!.horizontal) %>% distinct() %>% nrow
+	n_y = .data %>% select(!!.vertical) %>% distinct() %>% nrow
 	
 	# element wise columns
 	horizontal_cols=
@@ -249,8 +249,6 @@ get_specific_annotation_columns = function(.data, .col){
 	
 }
 
-
-
 initialise_tt_internals = function(.data){
 	.data %>%
 		ifelse_pipe(
@@ -320,7 +318,7 @@ drop_attr = function(var, name) {
 quo_names <- function(v) {
 
 	v = quo_name(quo_squash(v))
-	gsub('^c\\(|\\s|\\)$', '', v) %>% 
-		strsplit(',') %>% 
+	gsub('^c\\(|`|\\)$', '', v) %>% 
+		strsplit(', ') %>% 
 		unlist 
 }

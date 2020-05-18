@@ -25,6 +25,11 @@ get_clusters_kmeans_bulk <-
 					 of_elements = TRUE,
 					 transform = NULL,
 					 ...) {
+		
+		# Check that column names do not have the reserved pattern "___"
+		if(.data %>% colnames %>% grep("___", .) %>% length %>% `>` (0))
+			stop("nanny says: your column names cannot include the pattern \"___\" that is reserved for internal manipulation")
+		
 		# Check if centers is in dots
 		dots_args = rlang::dots_list(...)
 		if ("centers" %in% names(dots_args) %>% `!`)
@@ -37,11 +42,9 @@ get_clusters_kmeans_bulk <-
 		
 		.data %>%
 			
-			# Through error if some counts are NA
-			error_if_counts_is_na(!!.value) %>%
-			
 			# Prepare data frame
-			distinct(!!.feature,!!.element,!!.value) %>%
+			select(!!.feature,!!.element,!!.value) %>%
+			distinct() %>%
 			
 			# Check if tranfrom is needed
 			ifelse_pipe(
@@ -57,7 +60,7 @@ get_clusters_kmeans_bulk <-
 			) %>%
 			
 			# Prepare data frame for return
-			spread(!!.feature,!!.value) %>%
+			pivot_wider(names_from = !!.feature, values_from = !!.value, names_sep = "___") %>%
 			as_matrix(rownames = !!.element) %>%
 			
 			# Wrap the do.call because of the centers check
@@ -67,7 +70,7 @@ get_clusters_kmeans_bulk <-
 			cluster %>%
 			as.list() %>%
 			as_tibble() %>%
-			gather(!!.element, cluster_kmeans) %>%
+			pivot_longer(names_to = quo_names(.element), cols=everything(), names_sep = "___", values_to = "cluster_kmeans") %>%
 			mutate(cluster_kmeans = cluster_kmeans %>% as.factor()) %>%
 			
 			# Attach attributes
@@ -119,11 +122,9 @@ get_clusters_SNN_bulk <-
 		my_df =
 			.data %>%
 			
-			# Through error if some counts are NA
-			error_if_counts_is_na(!!.value) %>%
-			
 			# Prepare data frame
-			distinct(!!.element,!!.feature,!!.value) %>%
+			select(!!.element,!!.feature,!!.value) %>%
+			distinct() %>%
 			
 			# Check if tranfrom is needed
 			ifelse_pipe(
@@ -139,12 +140,14 @@ get_clusters_SNN_bulk <-
 			) %>%
 			
 			# Prepare data frame for return
-			spread(!!.element,!!.value)
+			pivot_wider(names_from = !!.element, values_from = !!.value, names_sep = "___") 
+	
 		
-		max_PC = .data %>% distinct(!!.feature) %>% nrow %>% sum(-1)
+		max_PC = .data %>% select(!!.feature) %>% distinct() %>% nrow %>% sum(-1)
 		
 		my_df %>%
-			data.frame(row.names = quo_name(.feature)) %>%
+			as_matrix(rownames = !!.feature) %>%
+			#data.frame(row.names = quo_names(.feature)) %>%
 			Seurat::CreateSeuratObject() %>%
 			Seurat::ScaleData(display.progress = TRUE,
 												num.cores = 4,
@@ -154,7 +157,8 @@ get_clusters_SNN_bulk <-
 			Seurat::FindNeighbors( dims = 1:(min(10, max_PC))) %>%
 			Seurat::FindClusters(method = "igraph", ...) %>%
 			`[[` ("seurat_clusters") %>%
-			as_tibble(rownames = quo_name(.element)) %>%
+			as_tibble(rownames = "rn") %>%
+			separate(col = rn, into = quo_names(.element), sep = "___") %>%
 			rename(cluster_SNN = seurat_clusters) %>%
 			dplyr::mutate(!!.element := gsub("\\.", "-",!!.element)) %>%
 			
@@ -206,12 +210,10 @@ get_reduced_dimensions_MDS_bulk <-
 		mds_object =
 			.data %>%
 			
-			# Through error if some counts are NA
-			error_if_counts_is_na(!!.value) %>%
-			
 			# Filter lowly transcribed (I have to avoid the use of scaling function)
 			# keep_abundant(!!.element, !!.feature,!!.value) %>%
-			distinct(!!.feature,!!.element,!!.value) %>%
+			select(!!.feature,!!.element,!!.value) %>%
+			distinct %>%
 			
 			# Check if tranfrom is needed
 			ifelse_pipe(
@@ -231,15 +233,17 @@ get_reduced_dimensions_MDS_bulk <-
 				(.) %>% select(!!.value) %>% summarise_all(class) %>% `%in%`(c("numeric", "integer")) %>% `!`() %>% any(),
 				~ stop("nanny says: .value must be numerical or integer")
 			) %>%
-			spread(!!.element,!!.value) %>%
+			pivot_wider(names_from = !!.element, values_from = !!.value, names_sep = "___") %>%
 			as_matrix(rownames = !!.feature, do_check = FALSE) %>%
 			limma::plotMDS(ndim = .dims, plot = FALSE, top = top)
 		
 		# Pase results
 		mds_object %$%	cmdscale.out %>%
 			as.data.frame %>%
-			as_tibble(rownames = quo_name(.element)) %>%
-			setNames(c(quo_name(.element), sprintf("Dim%s", 1:.dims))) %>%
+			as_tibble(rownames = "rn") %>%
+			separate(col = rn, into = quo_names(.element), sep = "___") %>%
+
+			setNames(c(quo_names(.element), sprintf("Dim%s", 1:.dims))) %>%
 			
 			
 			# Attach attributes
@@ -302,11 +306,9 @@ get_reduced_dimensions_PCA_bulk <-
 		prcomp_obj =
 			.data %>%
 			
-			# Through error if some counts are NA
-			error_if_counts_is_na(!!.value) %>%
-			
 			# Prepare data frame
-			distinct(!!.feature,!!.element,!!.value) %>%
+			select(!!.feature,!!.element,!!.value) %>%
+			distinct %>%
 			
 			# Check if tranfrom is needed
 			ifelse_pipe(
@@ -330,7 +332,7 @@ get_reduced_dimensions_PCA_bulk <-
 			# Filter most variable genes
 			keep_variable(!!.element,!!.feature,!!.value, top) %>%
 			
-			spread(!!.element,!!.value) %>%
+			pivot_wider(names_from = !!.element, values_from = !!.value, names_sep = "___") %>%
 			
 			drop_na %>% # Is this necessary?
 			
@@ -388,7 +390,8 @@ get_reduced_dimensions_PCA_bulk <-
 			
 			# Parse the PCA results to a tibble
 			rotation %>%
-			as_tibble(rownames = quo_name(.element)) %>%
+			as_tibble(rownames = "rn") %>%
+			separate(col = rn, into = quo_names(.element), sep = "___") %>%
 			select(!!.element, sprintf("PC%s", components)) %>%
 			
 			# Attach attributes
@@ -463,7 +466,7 @@ get_reduced_dimensions_TSNE_bulk <-
 		# Set perprexity to not be too high
 		if (!"perplexity" %in% names(arguments))
 			arguments = arguments %>% c(perplexity = ((
-				.data %>% distinct(!!.element) %>% nrow %>% sum(-1)
+				.data %>% select(!!.element) %>% distinct %>% nrow %>% sum(-1)
 			) / 3 / 2) %>% floor() %>% min(30))
 		
 		# If not enough elements stop
@@ -483,7 +486,8 @@ get_reduced_dimensions_TSNE_bulk <-
 			filter(!!.feature %>% is.na %>% `!`) %>%
 			
 			# Prepare data frame
-			distinct(!!.feature,!!.element,!!.value) %>%
+			select(!!.feature,!!.element,!!.value) %>%
+			distinct %>%
 			
 			# # Check if data rectangular
 			# ifelse_pipe(
@@ -507,10 +511,11 @@ get_reduced_dimensions_TSNE_bulk <-
 			# Filter most variable genes
 			keep_variable(!!.element,!!.feature,!!.value, top) %>%
 			
-			spread(!!.feature,!!.value) %>%
+			pivot_wider(names_from = !!.feature, values_from = !!.value, names_sep = "___") %>%
+
 			# select(-element) %>%
 			# distinct %>%
-			as_matrix(rownames = quo_name(.element))
+			as_matrix(rownames = quo_names(.element))
 		
 		do.call(Rtsne::Rtsne, c(list(df_tsne), arguments)) %$%
 			Y %>%
@@ -563,14 +568,15 @@ get_rotated_dimensions =
 		dimension_2_column_rotated = enquo(dimension_2_column_rotated)
 		
 		if (.data %>%
-				distinct(!!.element, !!dimension_1_column, !!dimension_2_column) %>%
+				select(!!.element, !!dimension_1_column, !!dimension_2_column) %>%
+				distinct %>%
 				count(!!.element, !!dimension_1_column, !!dimension_2_column) %>%
 				pull(n) %>%
 				max %>%
 				`>` (1))
 			stop(sprintf(
 				"nanny says: %s must be unique for each row for the calculation of rotation",
-				quo_name(.element)
+				quo_names(.element)
 			))
 		
 		# Function that rotates a 2D space of a arbitrary angle
@@ -588,17 +594,20 @@ get_rotated_dimensions =
 		
 		# Return
 		.data %>%
-			distinct(!!.element, !!dimension_1_column, !!dimension_2_column) %>%
+			select(!!.element, !!dimension_1_column, !!dimension_2_column) %>%
+			distinct %>%
 			as_matrix(rownames = !!.element) %>% t %>%
 			rotation(rotation_degrees) %>%
 			as_tibble() %>%
 			mutate(`rotated dimensions` =
 						 	c(
-						 		quo_name(dimension_1_column_rotated),
-						 		quo_name(dimension_2_column_rotated)
+						 		quo_names(dimension_1_column_rotated),
+						 		quo_names(dimension_2_column_rotated)
 						 	)) %>%
-			gather(!!.element, value,-`rotated dimensions`) %>%
-			spread(`rotated dimensions`, value) %>%
+			pivot_longer(names_to = !!.element,values_to = value, cols = -`rotated dimensions`) %>%
+			pivot_wider(names_from = `rotated dimensions`, values_from = value, names_sep = "___") %>%
+			
+
 			
 			# Attach attributes
 			reattach_internals(.data)
@@ -650,9 +659,6 @@ remove_redundancy_elements_through_correlation <- function(.data,
 	.data.correlated =
 		.data %>%
 		
-		# Stop if any counts is NA
-		error_if_counts_is_na(!!.value) %>%
-		
 		# Stop if there are duplicated features
 		error_if_duplicated_genes(!!.element,!!.feature,!!.value) %>%
 		
@@ -676,7 +682,8 @@ remove_redundancy_elements_through_correlation <- function(.data,
 		) %>%
 		
 		distinct() %>%
-		spread(!!.element,!!.value) %>%
+		pivot_wider(names_from = !!.element, values_from = !!.value, names_sep = "___") %>%
+		
 		drop_na() %>%
 		
 		# check that there are non-NA genes for enough elements
@@ -704,7 +711,7 @@ remove_redundancy_elements_through_correlation <- function(.data,
 			}) %>%
 		
 		# Prepare the data frame
-		gather(!!.element,!!.value,-!!.feature) %>%
+		pivot_longer(names_to = !!.element,values_to = !!.value, cols = -!!.feature) %>%
 		dplyr::rename(rc := !!.value,
 									element := !!.element,
 									feature := !!.feature) %>% # Is rename necessary?
@@ -720,7 +727,8 @@ remove_redundancy_elements_through_correlation <- function(.data,
 			upper = FALSE
 		) %>%
 		filter(correlation > correlation_threshold) %>%
-		distinct(item1) %>%
+		select(item1) %>%
+		distinct %>%
 		dplyr::rename(!!.element := item1)
 	
 	# Return non redudant data frame
@@ -790,7 +798,7 @@ remove_redundancy_elements_though_reduced_dimensions <-
 			select(1) %>%
 			
 			# Set the column names
-			setNames(quo_name(.element))
+			setNames(quo_names(.element))
 		
 		# Drop elements that are correlated with others and return
 		.data %>% anti_join(.data.redundant) %>%
@@ -847,15 +855,15 @@ fill_NA_using_formula = function(.data,
 		.data %>%
 		select(!!.element, !!.feature, !!.value, col_formula) %>%
 		distinct %>%
-		spread(!!.feature, !!.value) %>%
-		gather(!!.feature, !!.value, -!!.element, -col_formula)
+		pivot_wider(names_from = !!.feature, values_from = !!.value, names_sep = "___") %>%
+		pivot_longer(names_to = !!.feature,values_to = !!.value, cols = -c( !!.element, col_formula)) 
 	
 	# Select just features/covariates that have missing
-	combo_to_impute = df_to_impute %>% anti_join(.data, by=c(quo_name(.element), quo_name(.feature))) %>% select(!!.feature, col_formula) %>% distinct()
+	combo_to_impute = df_to_impute %>% anti_join(.data, by=c(quo_names(.element), quo_names(.feature))) %>% select(!!.feature, col_formula) %>% distinct()
 	
 	# Impute using median
 	df_to_impute %>%
-		inner_join(combo_to_impute, by=c(quo_name(.feature), col_formula)) %>%
+		inner_join(combo_to_impute, by=c(quo_names(.feature), col_formula)) %>%
 		
 		# Calculate median for NAs
 		nest(data = -c(col_formula, !!.feature)) %>%
@@ -890,11 +898,11 @@ fill_NA_using_formula = function(.data,
 		# In next command avoid error if no data to impute
 		ifelse_pipe(
 			nrow(.) > 0,
-			~ .x %>% left_join(.data %>% subset(!!.element), by=quo_name(.element))
+			~ .x %>% left_join(.data %>% subset(!!.element), by=quo_names(.element))
 		) %>%
 		
 		# Add oiginal dataset
-		bind_rows(.data %>% anti_join(combo_to_impute, by=c(quo_name(.feature), col_formula))) %>%
+		bind_rows(.data %>% anti_join(combo_to_impute, by=c(quo_names(.feature), col_formula))) %>%
 		select(.data %>% colnames)
 	
 }
@@ -936,11 +944,22 @@ fill_NA_using_value = function(.data,
 		.data %>%
 		select(!!.element, !!.feature, !!.value) %>%
 		distinct %>%
-		pivot_wider(names_from = !!.feature, values_from = !!.value, names_sep = "___", names_prefix = "fill_miss_") %>%
-		pivot_longer(names_to = .data %>% select(!!.feature) %>% names, values_to = quo_name(.value), names_sep = "___", names_prefix = "fill_miss_", cols = contains("fill_miss_"))
+		pivot_wider(
+			names_from = !!.feature,
+			values_from = !!.value,
+			names_sep = "___", 
+			names_prefix = "fill_miss_"
+		) %>%
+		pivot_longer(
+			names_to = .data %>% select(!!.feature) %>% names, 
+			values_to = quo_names(.value), 
+			names_sep = purrr::when(quo_names(.feature), length(.) > 1 ~ "___", ~ NULL), 
+			names_prefix = "fill_miss_", 
+			cols = contains("fill_miss_")
+		)
 		
 	# Select just features/covariates that have missing
-	combo_to_impute = df_to_impute %>% anti_join(.data) %>% select(!!.feature) %>% distinct()
+	combo_to_impute = df_to_impute %>% anti_join(.data, by=c(quo_names(.element), quo_names(.feature))) %>% select(!!.feature, !!.element) %>% distinct()
 	
 	# Impute using median
 	df_to_impute %>%
@@ -952,11 +971,11 @@ fill_NA_using_value = function(.data,
 		# In next command avoid error if no data to impute
 		ifelse_pipe(
 			nrow(.) > 0,
-			~ .x %>% left_join(.data %>% subset(!!.element))
+			~ .x %>% left_join(.data %>% subset(!!.element), by=quo_names(.element))
 		) %>%
 		
 		# Add oiginal dataset
-		bind_rows(.data %>% anti_join(combo_to_impute)) %>%
+		bind_rows(.data %>% anti_join(combo_to_impute, by=c(quo_names(.feature), quo_names(.element)))) %>%
 		select(.data %>% colnames)
 	
 }

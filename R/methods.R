@@ -85,7 +85,8 @@ setGeneric("cluster_elements", function(.data,
 							of_elements = of_elements,
 							transform = transform,
 							...
-						)
+						),
+					by = quo_names(.element)
 				) 
 		}
 		else if (action == "get"){
@@ -108,7 +109,8 @@ setGeneric("cluster_elements", function(.data,
 							of_elements = of_elements,
 							transform = transform,
 							...
-						)
+						),
+					by = quo_names(.element)
 				) 
 			
 		}
@@ -127,65 +129,65 @@ setGeneric("cluster_elements", function(.data,
 				"nanny says: action must be either \"add\" for adding this information to your data frame or \"get\" to just get the information"
 			)
 	}
-	else if (method == "SNN") {
-		if (action == "add"){
-			
-			.data %>%
-				dplyr::left_join(
-					(.) %>%
-						get_clusters_SNN_bulk(
-							.value = !!.value,
-							.element = !!.element,
-							.feature = !!.feature,
-							of_elements = of_elements,
-							transform = transform,
-							...
-						)
-				) 
-			
-		}
-		else if (action == "get"){
-			
-			.data %>%
-				
-				# Selecting the right columns
-				select(
-					!!.element,
-					get_x_y_annotation_columns(.data, !!.element,!!.feature, !!.value)$horizontal_cols
-				) %>%
-				distinct() %>%
-				
-				dplyr::left_join(
-					.data %>%
-						get_clusters_SNN_bulk(
-							.value = !!.value,
-							.element = !!.element,
-							.feature = !!.feature,
-							of_elements = of_elements,
-							transform = transform,
-							...
-						)
-				)
-			
-		}
-		
-		else if (action == "only")
-			get_clusters_SNN_bulk(
-				.data,
-				.value = !!.value,
-				.element = !!.element,
-				.feature = !!.feature,
-				of_elements = of_elements,
-				transform = transform,
-				...
-			)
-		else
-			stop(
-				"nanny says: action must be either \"add\" for adding this information to your data frame or \"get\" to just get the information"
-			)
-	}
+	# else if (method == "SNN") {
+	# 	if (action == "add"){
+	# 		
+	# 		.data %>%
+	# 			dplyr::left_join(
+	# 				(.) %>%
+	# 					get_clusters_SNN_bulk(
+	# 						.value = !!.value,
+	# 						.element = !!.element,
+	# 						.feature = !!.feature,
+	# 						of_elements = of_elements,
+	# 						transform = transform,
+	# 						...
+	# 					)
+	# 			) 
+	# 		
+	# 	}
+	# 	else if (action == "get"){
+	# 		
+	# 		.data %>%
+	# 			
+	# 			# Selecting the right columns
+	# 			select(
+	# 				!!.element,
+	# 				get_x_y_annotation_columns(.data, !!.element,!!.feature, !!.value)$horizontal_cols
+	# 			) %>%
+	# 			distinct() %>%
+	# 			
+	# 			dplyr::left_join(
+	# 				.data %>%
+	# 					get_clusters_SNN_bulk(
+	# 						.value = !!.value,
+	# 						.element = !!.element,
+	# 						.feature = !!.feature,
+	# 						of_elements = of_elements,
+	# 						transform = transform,
+	# 						...
+	# 					)
+	# 			)
+	# 		
+	# 	}
+	# 	
+	# 	else if (action == "only")
+	# 		get_clusters_SNN_bulk(
+	# 			.data,
+	# 			.value = !!.value,
+	# 			.element = !!.element,
+	# 			.feature = !!.feature,
+	# 			of_elements = of_elements,
+	# 			transform = transform,
+	# 			...
+	# 		)
+	# 	else
+	# 		stop(
+	# 			"nanny says: action must be either \"add\" for adding this information to your data frame or \"get\" to just get the information"
+	# 		)
+	# }
 	else
-		stop("nanny says: the only supported methods are \"kmeans\" or \"SNN\" ")
+		stop("nanny says: the only supported methods are \"kmeans\"  ")
 	
 }
 
@@ -300,7 +302,7 @@ setGeneric("reduce_dimensions", function(.data,
 		
 		if (action == "add"){
 			
-			.data %>%	dplyr::left_join(.data_processed,	by = quo_name(.element)) %>%
+			.data %>%	dplyr::left_join(.data_processed,	by = quo_names(.element)) %>%
 				reattach_internals(.data_processed)
 			
 		}
@@ -315,7 +317,7 @@ setGeneric("reduce_dimensions", function(.data,
 				) %>%
 				distinct() %>%
 				
-				dplyr::left_join(.data_processed,	by = quo_name(.element)) %>%
+				dplyr::left_join(.data_processed,	by = quo_names(.element)) %>%
 				reattach_internals(.data_processed)
 			
 		}
@@ -345,7 +347,7 @@ setGeneric("reduce_dimensions", function(.data,
 		if (action == "add"){
 			
 			.data %>%
-				dplyr::left_join(.data_processed,	by = quo_name(.element)) %>%
+				dplyr::left_join(.data_processed,	by = quo_names(.element)) %>%
 				reattach_internals(.data_processed)
 			
 		}
@@ -361,7 +363,7 @@ setGeneric("reduce_dimensions", function(.data,
 				) %>%
 				distinct() %>%
 				
-				dplyr::left_join(.data_processed,	by = quo_name(.element)) %>%
+				dplyr::left_join(.data_processed,	by = quo_names(.element)) %>%
 				reattach_internals(.data_processed)
 			
 		}
@@ -391,7 +393,7 @@ setGeneric("reduce_dimensions", function(.data,
 		if (action == "add"){
 			
 			.data %>%
-				dplyr::left_join(.data_processed,	by = quo_name(.element)	) %>%
+				dplyr::left_join(.data_processed,	by = quo_names(.element)	) %>%
 				reattach_internals(.data_processed)
 			
 		}
@@ -406,7 +408,7 @@ setGeneric("reduce_dimensions", function(.data,
 				) %>%
 				distinct() %>%
 				
-				dplyr::left_join(.data_processed,	by = quo_name(.element)	) %>%
+				dplyr::left_join(.data_processed,	by = quo_names(.element)	) %>%
 				reattach_internals(.data_processed)
 			
 		}
@@ -505,13 +507,13 @@ setGeneric("rotate_dimensions", function(.data,
 	if (quo_is_null(dimension_1_column_rotated))
 		dimension_1_column_rotated = as.symbol(sprintf(
 			"%s rotated %s",
-			quo_name(dimension_1_column),
+			quo_names(dimension_1_column),
 			rotation_degrees
 		))
 	if (quo_is_null(dimension_2_column_rotated))
 		dimension_2_column_rotated = as.symbol(sprintf(
 			"%s rotated %s",
-			quo_name(dimension_2_column),
+			quo_names(dimension_2_column),
 			rotation_degrees
 		))
 	
@@ -530,7 +532,7 @@ setGeneric("rotate_dimensions", function(.data,
 	if (action == "add"){
 		
 		.data %>%
-			dplyr::left_join(	.data_processed,	by = quo_name(.element)	) 
+			dplyr::left_join(	.data_processed,	by = quo_names(.element)	) 
 		
 	}
 	else if (action == "get"){
@@ -544,7 +546,7 @@ setGeneric("rotate_dimensions", function(.data,
 			) %>%
 			distinct() %>%
 			
-			dplyr::left_join(	.data_processed,	by = quo_name(.element)	) 
+			dplyr::left_join(	.data_processed,	by = quo_names(.element)	) 
 		
 	}
 	else if (action == "only") .data_processed
@@ -914,6 +916,9 @@ setGeneric("fill_missing", function(.data,
 	.feature = enquo(.feature)
 	.value = enquo(.value)
 	
+	# Check the value is set
+	if(length(fill_with)==0) stop("nanny says: the argument fill_with must not be empty.")
+	
 	# Validate data frame
 	validation(.data, !!.element, !!.feature, !!.value)
 	
@@ -997,9 +1002,9 @@ setGeneric("permute_nest", function(.data, .names_from, .values_from)
 		unite(run, c(V1, V2), remove = F, sep="___") %>%
 		gather(which, !!.names_from, -run) %>%
 		select(-which) %>%
-		left_join(.data %>% select(!!.names_from, !!.values_from), by = quo_name(.names_from)) %>%
+		left_join(.data %>% select(!!.names_from, !!.values_from), by = quo_names(.names_from)) %>%
 		nest(data = -run) %>%
-		separate(run, sprintf("%s_%s", quo_name(.names_from), 1:2 ), sep="___") %>%
+		separate(run, sprintf("%s_%s", quo_names(.names_from), 1:2 ), sep="___") %>%
 		
 		# Introduce levels
 		mutate_at(vars(1:2),function(x) factor(x, levels = factor_levels))
@@ -1078,9 +1083,9 @@ setGeneric("combine_nest", function(.data, .names_from, .values_from)
 		unite(run, c(V1, V2), remove = F, sep="___") %>%
 		gather(which, !!.names_from, -run) %>%
 		select(-which) %>%
-		left_join(.data %>% select(!!.names_from, !!.values_from), by = quo_name(.names_from)) %>%
+		left_join(.data %>% select(!!.names_from, !!.values_from), by = quo_names(.names_from)) %>%
 		nest(data = -run) %>%
-		separate(run, sprintf("%s_%s", quo_name(.names_from), 1:2), sep="___") %>%
+		separate(run, sprintf("%s_%s", quo_names(.names_from), 1:2), sep="___") %>%
 		
 		# Introduce levels
 		mutate_at(vars(1:2),function(x) factor(x, levels = factor_levels))
@@ -1163,13 +1168,18 @@ setGeneric("keep_variable", function(.data,
 	.feature = enquo(.feature)
 	.value = enquo(.value)
 	
+	# Check that column names do not have the reserved pattern "___"
+	if(.data %>% colnames %>% grep("___", .) %>% length %>% `>` (0))
+		stop("nanny says: your column names cannot include the pattern \"___\" that is reserved for internal manipulation")
+	
 	
 	# Manage Inf
-	top = min(top, .data %>% distinct(!!.feature) %>% nrow)
+	top = min(top, .data %>% select(!!.feature) %>% distinct %>% nrow)
 	
 	x =
 		.data %>%
-		distinct(!!.element, !!.feature, !!.value) %>%
+		select(!!.element, !!.feature, !!.value) %>%
+		distinct %>%
 		
 		# Check if tranfrom is needed
 		ifelse_pipe(
@@ -1184,15 +1194,17 @@ setGeneric("keep_variable", function(.data,
 										))
 		) %>%
 		
-		spread(!!.element, !!.value) %>%
-		as_matrix(rownames = quo_name(.feature))
+		pivot_wider(names_from = !!.element, values_from = !!.value, names_sep = "___") %>%
+		as_matrix(rownames = !!.feature)
 	
 	s <- rowMeans((x - rowMeans(x)) ^ 2)
 	o <- order(s, decreasing = TRUE)
 	x <- x[o[1L:top], , drop = FALSE]
-	variable_features = rownames(x)
 	
-	.data %>% filter(!!.feature %in% variable_features)
+
+	.data %>% inner_join(
+		rownames(x) %>% as_tibble() %>% separate(col = value, into = quo_names(.feature), sep = "___")
+	) 
 	
 }
 
@@ -1301,6 +1313,7 @@ setMethod("lower_triangular", "tbl_df", .lower_triangular)
 #' @import tidyr
 #' @importFrom magrittr set_rownames
 #' @importFrom rlang quo_is_null
+#' @importFrom purrr when
 #'
 #' @param tbl A tibble
 #' @param rownames A character string of the rownames
@@ -1318,14 +1331,18 @@ setMethod("lower_triangular", "tbl_df", .lower_triangular)
 #' @export
 setGeneric("as_matrix", function(.data,
 																 rownames = NULL,
-																 do_check = TRUE)
+																 do_check = TRUE,
+																 sep_rownames = "___")
 	standardGeneric("as_matrix"))
 
 # Set internal
 .as_matrix = function(.data,
 											rownames = NULL,
-											do_check = TRUE) {
+											do_check = TRUE,
+											sep_rownames = "___") {
 	rownames = enquo(rownames)
+
+	
 	.data %>%
 		
 		# Through warning if data frame is not numerical beside the rownames column (if present)
@@ -1333,7 +1350,7 @@ setGeneric("as_matrix", function(.data,
 			do_check &&
 				.data %>%
 				# If rownames defined eliminate it from the data frame
-				ifelse_pipe(!quo_is_null(rownames), ~ .x[,-1], ~ .x) %>%
+				ifelse_pipe(!quo_is_null(rownames), ~ .x %>% select(-!!rownames), ~ .x) %>%
 				dplyr::summarise_all(class) %>%
 				tidyr::gather(variable, class) %>%
 				pull(class) %>%
@@ -1344,14 +1361,18 @@ setGeneric("as_matrix", function(.data,
 				.x
 			}
 		) %>%
+		
+		# If rownames multiple enquo (e.g., c(col1, col2)) merge them
+		unite(col = "rn", !!rownames, sep = sep_rownames) %>%
+
 		as.data.frame() %>%
 		
 		# Deal with rownames column if present
 		ifelse_pipe(
 			!quo_is_null(rownames),
 			~ .x %>%
-				magrittr::set_rownames(.data %>% pull(!!rownames)) %>%
-				select(-1)
+				magrittr::set_rownames(.x %>% pull(rn)) %>%
+				select(-rn)
 		) %>%
 		
 		# Convert to matrix

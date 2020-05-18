@@ -52,18 +52,22 @@ error_if_log_transformed <- function(x, .abundance) {
 #'
 #' @return A tbl
 error_if_duplicated_genes <- function(.data,
-																			.sample = `sample`,
-																			.transcript = `transcript`,
-																			.abundance = `read count`) {
+																			.sample ,
+																			.transcript,
+																			.abundance ) {
 	.sample = enquo(.sample)
 	.transcript = enquo(.transcript)
 	.abundance = enquo(.abundance)
-	
+	 
 	duplicates <-
-		distinct( .data, !!.sample,!!.transcript,!!.abundance) %>%
-		count(!!.sample,!!.transcript) %>%
+		select( .data, !!.sample,!!.transcript,!!.abundance) %>%
+		distinct %>%
+		
+		group_by_at(vars(!!.sample, !!.transcript)) %>%
+		tally() %>%
 		filter(n > 1) %>%
 		arrange(n %>% desc())
+	
 	
 	if (duplicates %>% nrow() > 0) {
 		writeLines("Those are the duplicated genes")
@@ -253,7 +257,9 @@ check_if_data_rectangular = function(.data, .sample, .transcript, .abundance, ty
 	
 	is_rectangular =
 		.data %>%
-		distinct(!!.sample, !!.transcript, !!.abundance) %>%
+		sample(!!.sample, !!.transcript, !!.abundance) %>%
+		distinct %>%
+		
 		count(!!.sample) %>%
 		count(n) %>%
 		nrow %>%
@@ -286,6 +292,13 @@ validation_default = function(.data,
 	.sample = enquo(.sample)
 	.transcript = enquo(.transcript)
 	.abundance = enquo(.abundance)
+	
+	# Check if column names duplicated
+	if(c(
+		quo_names(.sample),
+		quo_names(.transcript),
+		quo_names(.abundance)
+	) %>% duplicated %>% any) stop("nanny says: among your column names .element, .feature, .value there are some duplictaes.")
 	
 	# Type check
 	is_present = check_if_column_missing(.data,!!.sample,!!.transcript,!!.abundance)
