@@ -25,11 +25,8 @@ test_that("reduce dimension MDS", {
   
 })
 
-test_that("reduce dimension tSNE", {
-  res = reduce_dimensions(nanny::test_data2 , cancer_ID, c(`ct 1`, `ct 2`), relation, method="tSNE")
-  expect_equal(ncol(res) , 8)
-  
-  res = reduce_dimensions(nanny::test_data2 , c(`ct 1`, `ct 2`), cancer_ID, relation, method="tSNE")
-  expect_equal(ncol(res) , 8)
+test_that("as matrix", {
+  tibble(a = 1:10, b = 1:10) %>%
+    as_matrix()
   
 })

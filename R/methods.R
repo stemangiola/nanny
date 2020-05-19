@@ -1313,7 +1313,9 @@ setMethod("lower_triangular", "tbl_df", .lower_triangular)
 #' @import tidyr
 #' @importFrom magrittr set_rownames
 #' @importFrom rlang quo_is_null
+#' @importFrom rlang quo_is_symbolic
 #' @importFrom purrr when
+#' 
 #'
 #' @param tbl A tibble
 #' @param rownames A character string of the rownames
@@ -1363,7 +1365,7 @@ setGeneric("as_matrix", function(.data,
 		) %>%
 		
 		# If rownames multiple enquo (e.g., c(col1, col2)) merge them
-		unite(col = "rn", !!rownames, sep = sep_rownames) %>%
+		when(quo_is_symbolic(rownames) ~ (.) %>% unite(col = "rn", !!rownames, sep = sep_rownames), ~ (.)) %>%
 
 		as.data.frame() %>%
 		
