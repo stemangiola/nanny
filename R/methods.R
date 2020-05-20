@@ -1295,7 +1295,7 @@ setGeneric("lower_triangular", function(.data, .col1, .col2, .value)
 		drop_na %>%
 		
 	# Reattach col1 col2 wise annotation
-	left_join(.data %>% subset(c(!!.col1, !!.col2)), by=c(quo_name(.col1), quo_name(.col2)))
+	left_join(.data %>% select(-!!.value) %>% subset(c(!!.col1, !!.col2)), by=c(quo_name(.col1), quo_name(.col2)))
 	
 }
 
