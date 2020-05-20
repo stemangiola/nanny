@@ -1365,7 +1365,7 @@ setGeneric("as_matrix", function(.data,
 		) %>%
 		
 		# If rownames multiple enquo (e.g., c(col1, col2)) merge them
-		when(quo_is_symbolic(rownames) ~ (.) %>% unite(col = "rn", !!rownames, sep = sep_rownames), ~ (.)) %>%
+		when(!quo_is_null(rownames) ~ (.) %>% unite(col = "rn", !!rownames, sep = sep_rownames), ~ (.)) %>%
 
 		as.data.frame() %>%
 		
