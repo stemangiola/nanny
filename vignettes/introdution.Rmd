@@ -1,5 +1,5 @@
 ---
-title: "nanny - tidyverse style high-level data analysis and manipulations"
+title: "nanny: high-level data analysis and manipulations in tidyverse style"
 output: github_documentdate: "`r Sys.Date()`"
 package: nanny
 output:

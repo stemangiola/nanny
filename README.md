@@ -1,4 +1,4 @@
-nanny - tidyverse style high-level data analysis and manipulations
+nanny: high-level data analysis and manipulations in tidyverse style
 ================
 
 <!-- badges: start -->
@@ -187,18 +187,18 @@ mtcars_tidy_tSNE %>%
 ```
 
     ## # A tibble: 32 x 5
-    ##     tSNE1   tSNE2 car_model            hp    vs
-    ##     <dbl>   <dbl> <chr>             <dbl> <dbl>
-    ##  1 -48.6   16.7   Mazda RX4           110     0
-    ##  2 -54.9   16.3   Mazda RX4 Wag       110     0
-    ##  3 -79.7   -0.754 Datsun 710           93     1
-    ##  4  25.0    6.30  Hornet 4 Drive      110     1
-    ##  5  77.2    3.20  Hornet Sportabout   175     0
-    ##  6  31.3    6.46  Valiant             105     1
-    ##  7  69.6  -20.3   Duster 360          245     0
-    ##  8  -1.38   8.10  Merc 240D            62     1
-    ##  9  -2.14  15.4   Merc 230             95     1
-    ## 10 -24.3    7.97  Merc 280            123     1
+    ##     tSNE1  tSNE2 car_model            hp    vs
+    ##     <dbl>  <dbl> <chr>             <dbl> <dbl>
+    ##  1 -13.6   46.8  Mazda RX4           110     0
+    ##  2  -8.21  47.1  Mazda RX4 Wag       110     0
+    ##  3  36.3   35.7  Datsun 710           93     1
+    ##  4  -8.62 -14.9  Hornet 4 Drive      110     1
+    ##  5  -6.64 -61.7  Hornet Sportabout   175     0
+    ##  6 -10.0  -20.1  Valiant             105     1
+    ##  7   6.82 -46.6  Duster 360          245     0
+    ##  8  -7.60   7.72 Merc 240D            62     1
+    ##  9 -13.8    7.69 Merc 230             95     1
+    ## 10 -11.7   27.0  Merc 280            123     1
     ## # … with 22 more rows
 
 ``` r
