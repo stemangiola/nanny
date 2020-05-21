@@ -36,6 +36,101 @@ test_that("rotate dimensions", {
   
 })
 
+test_that("remove redundancy", {
+  res = remove_redundancy(nanny::test_data2 , cancer_ID, c(`ct 1`, `ct 2`), relation) 
+  expect_equal(ncol(res) , 6)
+  
+  res = remove_redundancy(nanny::test_data2 ,  c(`ct 1`, `ct 2`), cancer_ID, relation) 
+  expect_equal(ncol(res) , 6)
+  
+})
+
+test_that("subset", {
+  res = subset(nanny::test_data2 , cancer_ID) 
+  expect_equal(nrow(res) , 32)
+  
+  res = subset(nanny::test_data2 ,  c(`ct 1`, `ct 2`)) 
+  expect_equal(nrow(res) , 70)
+  
+})
+
+test_that("impute missing", {
+  res = impute_missing(nanny::test_data2 , ~ 1, cancer_ID, c(`ct 1`, `ct 2`), relation) 
+  expect_identical(res , nanny::test_data2 %>% mutate_if(is.factor, as.character))
+  
+  res = impute_missing(nanny::test_data2 , ~ 1,  c(`ct 1`, `ct 2`),cancer_ID, relation) 
+  expect_identical(res , nanny::test_data2 )
+  
+  res = impute_missing(nanny::test_data2 %>% slice(-1), ~ 1,  c(`ct 1`, `ct 2`),cancer_ID, relation) 
+  expect_equal(res %>% inner_join(nanny::test_data2 %>% slice(1) %>% select(-relation, -group)) %>% nrow , 1)
+  
+  # Test with formula and covariate
+  res = impute_missing(
+    nanny::test_data2 %>% 
+      slice(-1) %>% 
+      left_join( 
+        (.) %>%
+          distinct(`ct 1`, `ct 2`) %>%
+          mutate(cov = sample(0:1, size = n(), replace = T, prob = c(0.1, 0.9)) %>% as.factor)
+      ), ~ cov,  c(`ct 1`, `ct 2`),cancer_ID, relation) 
+  expect_equal(res %>% inner_join(nanny::test_data2 %>% slice(1) %>% select(-relation, -group)) %>% nrow , 1)
+  
+  
+})
+
+test_that("fill missing", {
+  res = fill_missing(nanny::test_data2 ,cancer_ID, c(`ct 1`, `ct 2`), relation, fill_with = 0) 
+  expect_identical(res , nanny::test_data2 %>% mutate_if(is.factor, as.character))
+  
+  res = fill_missing(nanny::test_data2 ,   c(`ct 1`, `ct 2`),cancer_ID, relation,  fill_with = 0) 
+  expect_identical(res , nanny::test_data2 )
+  
+  res = fill_missing(nanny::test_data2 %>% slice(-1),  c(`ct 1`, `ct 2`),cancer_ID, relation,    fill_with = 0) 
+  expect_equal(res %>% inner_join(nanny::test_data2 %>% slice(1) %>% select(-relation, -group)) %>% pull(relation) , 0)
+  
+})
+
+test_that("permute nest", {
+  res = permute_nest(nanny::test_data2 ,cancer_ID, relation) 
+  expect_equal(nrow(res) ,992)
+  
+  res = permute_nest(nanny::test_data2 ,   `ct 1`, relation) 
+  expect_equal(nrow(res) ,992)
+  
+  res = permute_nest(nanny::test_data2 ,   `ct 1`, c(group, cancer_ID)) 
+  expect_equal(nrow(res) ,992)
+  
+})
+
+test_that("combine nest", {
+  res = combine_nest(nanny::test_data2 ,cancer_ID, relation) 
+  expect_equal(nrow(res) ,496)
+  
+  res = combine_nest(nanny::test_data2 ,   `ct 1`, relation) 
+  expect_equal(nrow(res) ,496)
+  
+  res = combine_nest(nanny::test_data2 ,   `ct 1`, c(group, cancer_ID)) 
+  expect_equal(nrow(res) ,496)
+  
+})
+
+
+test_that("keep variable", {
+  res = keep_variable(nanny::test_data2 ,cancer_ID, c(`ct 1`, `ct 2`), relation, top = 10) 
+  expect_equal(nrow(res) ,320)
+  
+  res = keep_variable(nanny::test_data2 ,   c(`ct 1`, `ct 2`),cancer_ID, relation, top=10) 
+  expect_equal(nrow(res) ,700)
+  
+})
+
+test_that("lower triangular", {
+  res = lower_triangular(nanny::test_data2 %>% filter(cancer_ID == "ACC") ,`ct 2`, `ct 1`, relation) 
+  expect_equal(nrow(res) ,35)
+  
+})
+
+
 test_that("as matrix", {
   
   res = tibble(a = 1:10, b = 1:10) %>% as_matrix()

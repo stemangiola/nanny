@@ -9,13 +9,10 @@
   .element = NULL,
   .feature = NULL,
   .value = NULL,
-  method,
   of_elements = TRUE,
   correlation_threshold = 0.9,
   top = Inf,
-  transform = NULL,
-  Dim_a_column = NULL,
-  Dim_b_column = NULL
+  transform = NULL
 )
 }
 \arguments{
@@ -27,8 +24,6 @@
 
 \item{.value}{The name of the column including the numerical value the clustering is based on (normally feature value)}
 
-\item{method}{A character string. The cluster algorithm to use, ay the moment k-means is the only algorithm included.}
-
 \item{of_elements}{A boolean. In case the input is a nanny object, it indicates Whether the element column will be element or feature column}
 
 \item{correlation_threshold}{A real number between 0 and 1. For correlation based calculation.}
@@ -36,10 +31,6 @@
 \item{top}{An integer. How many top genes to select for correlation based method}
 
 \item{transform}{A function to use to tranforma the data internalli (e.g., log1p)}
-
-\item{Dim_a_column}{A character string. For reduced_dimension based calculation. The column of one principal component}
-
-\item{Dim_b_column}{A character string. For reduced_dimension based calculation. The column of another principal component}
 }
 \value{
 A tbl object with with dropped recundant elements (e.g., elements).

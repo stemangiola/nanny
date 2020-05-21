@@ -331,3 +331,18 @@ rotation = function(m, d) {
 		c(`1` = sin(r), `2` = cos(r))
 	) %>% as_matrix) %*% m)
 }
+
+#' .formula parser
+#'
+#' @importFrom stats terms
+#'
+#' @param fm a formula
+#' @return A character vector
+#'
+#'
+parse_formula <- function(fm) {
+	if (attr(terms(fm), "response") == 1)
+		stop("nanny says: The .formula must be of the kind \"~ covariates\" ")
+	else
+		as.character(attr(terms(fm), "variables"))[-1]
+}

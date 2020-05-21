@@ -70,10 +70,10 @@ error_if_duplicated_genes <- function(.data,
 	
 	
 	if (duplicates %>% nrow() > 0) {
-		writeLines("Those are the duplicated genes")
-		duplicates %>% print()
+		writeLines("Those are the duplicated elements/features pair")
+		duplicates %>% as.data.frame %>% head %>% print()
 		stop(
-			"nanny says: Your dataset include duplicated sample/gene pairs. Please, remove redundancies before proceeding."
+			"nanny says: Your dataset include duplicated element/feature pairs. Please, remove redundancies before proceeding."
 		)
 	}
 	
@@ -176,8 +176,8 @@ check_if_duplicated_genes <- function(.data,
 	is_unique = duplicates %>% nrow() %>% equals(0)
 	
 	if (!is_unique) {
-		writeLines("nanny says: Those are the duplicated genes")
-		duplicates %>% print()
+		writeLines("nanny says: Those are the duplicated elements/features pair")
+		duplicates %>% as.data.frame %>% head %>% print()
 	}
 	
 	is_unique
@@ -335,7 +335,7 @@ validation_default = function(.data,
 		return(.data %>% nanny_to_tbl)
 	}
 	
-	# Check if duplicated genes
+	# Check if duplicated elements/features pair
 	if (!skip_dupli_check) {
 		is_unique = check_if_duplicated_genes(.data,!!.sample,!!.transcript,!!.abundance)
 		if (type == "hard" &

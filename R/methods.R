@@ -626,14 +626,10 @@ setGeneric("remove_redundancy", function(.data,
 																				 .element = NULL,
 																				 .feature = NULL,
 																				 .value = NULL,
-																				 method,
 																				 of_elements = TRUE,
 																				 correlation_threshold = 0.9,
 																				 top = Inf,
-																				 transform = NULL,
-																				 
-																				 Dim_a_column,
-																				 Dim_b_column)
+																				 transform = NULL)
 					 standardGeneric("remove_redundancy"))
 
 # Set internal
@@ -641,23 +637,16 @@ setGeneric("remove_redundancy", function(.data,
 																.element = NULL,
 																.feature = NULL,
 																.value = NULL,
-																method,
 																of_elements = TRUE,
 																correlation_threshold = 0.9,
 																top = Inf,
-																transform = NULL,
-																Dim_a_column = NULL,
-																Dim_b_column = NULL)
+																transform = NULL)
 {
 	# Make col names
 	.value = enquo(.value)
 	.element = enquo(.element)
 	.feature = enquo(.feature)
 	
-	Dim_a_column = enquo(Dim_a_column)
-	Dim_b_column = enquo(Dim_b_column)
-	
-	if (method == "correlation") {
 		# Validate data frame
 		validation(.data, !!.element, !!.feature, !!.value)
 		
@@ -671,23 +660,7 @@ setGeneric("remove_redundancy", function(.data,
 			of_elements = of_elements,
 			transform = transform
 		)
-	}
-	else if (method == "reduced_dimensions") {
-		# Validate data frame
-		# MISSING because feature not needed. I should build a custom funtion.
-		
-		remove_redundancy_elements_though_reduced_dimensions(
-			.data,
-			Dim_a_column = !!Dim_a_column,
-			Dim_b_column = !!Dim_b_column,
-			.element = !!.element,
-			of_elements = of_elements
-		)
-	}
-	else
-		stop(
-			"nanny says: method must be either \"correlation\" for dropping correlated elements or \"reduced_dimension\" to drop the closest pair according to two dimensions (e.g., PCA)"
-		)
+
 	
 }
 
@@ -777,6 +750,7 @@ setMethod("subset",		"tbl",			.subset)
 #' @description impute_missing() takes as imput a `tbl` formatted as | <element> | <feature> | <value> | <...> | and returns a `tbl` with an edditional adjusted value column. This method uses scaled counts if present.
 #'
 #' @importFrom rlang enquo
+#' @importFrom rlang is_formula
 #' @importFrom magrittr "%>%"
 #'
 #' @name impute_missing
@@ -831,6 +805,12 @@ setGeneric("impute_missing", function(.data,
 	.element = enquo(.element)
 	.feature = enquo(.feature)
 	.value = enquo(.value)
+	
+	# Samity check formula
+	formula_error_message = "nanny says: your formula does not look like one. Check it with rlang::is_formula"
+	if(
+		tryCatch(!is_formula(.formula), error=function(x) stop(formula_error_message))
+	) stop(formula_error_message)
 	
 	# Validate data frame
 	validation(.data, !!.element, !!.feature, !!.value)
@@ -992,11 +972,16 @@ setGeneric("permute_nest", function(.data, .names_from, .values_from)
 	.names_from = enquo(.names_from)
 	.values_from = enquo(.values_from)
 	
+	# Check if multiple column inputted
+	if(length(quo_names(.names_from))>1) 
+		stop("nanny says: At the moment only one names column can be used to permute")
+	
 	factor_levels = .data %>% pull(!!.names_from) %>% unique
 	
 	.data %>% 
 		pull(!!.names_from) %>%
 		unique() %>%
+		as.character() %>%
 		gtools::permutations(n = length(.), r = 2, v = .) %>%
 		as_tibble() %>%
 		unite(run, c(V1, V2), remove = F, sep="___") %>%
@@ -1075,9 +1060,16 @@ setGeneric("combine_nest", function(.data, .names_from, .values_from)
 	
 	factor_levels = .data %>% pull(!!.names_from) %>% unique
 	
+	# Check if multiple column inputted
+	if(length(quo_names(.names_from))>1) 
+		stop("nanny says: At the moment only one names column can be used to permute")
+	
+	factor_levels = .data %>% pull(!!.names_from) %>% unique
+	
 	.data %>% 
 		pull(!!.names_from) %>%
 		unique() %>%
+		as.character() %>%
 		gtools::combinations(n = length(.), r = 2, v = .) %>%
 		as_tibble() %>%
 		unite(run, c(V1, V2), remove = F, sep="___") %>%
@@ -1272,18 +1264,22 @@ setGeneric("lower_triangular", function(.data, .col1, .col2, .value)
 	.col2 = enquo(.col2)
 	.value = enquo(.value)
 
-
+	
 	#levs = .data %>% pull(!!.col1) %>% levels
 
 	.data %>%
+		
+		# Check if duplicated elements
+		error_if_duplicated_genes(!!.col1,!!.col2,!!.value) %>%
+	
 		select(!!.col1, !!.col2,    !!.value) %>%
 		spread(!!.col2 ,   !!.value) %>%
-		as_matrix(rownames = "Cell type category_1") %>%
+		as_matrix(rownames = quo_names(.col1)) %>%
 
 		# Drop upper triangular
 		{ ma = (.); ma[lower.tri(ma)] <- NA; ma} %>%
 
-		as_tibble(rownames = "Cell type category_1") %>%
+		as_tibble(rownames = quo_names(.col1)) %>%
 		gather(!!.col2, !!.value, -!!.col1) %>%
 		mutate(
 			# !!.col1 := factor(!!.col1, levels = levs),

@@ -714,17 +714,19 @@ remove_redundancy_elements_through_correlation <- function(.data,
 			}) %>%
 		
 		# Prepare the data frame
-		pivot_longer(names_to = !!.element,values_to = !!.value, cols = -!!.feature) %>%
-		dplyr::rename(rc := !!.value,
-									element := !!.element,
-									feature := !!.feature) %>% # Is rename necessary?
+		pivot_longer(names_to = quo_names(.element),values_to = quo_names(.value), cols = -!!.feature, names_sep = when(length(quo_names(.element)), (.) > 1 ~ "___", ~ NULL)) %>%
 		mutate_if(is.factor, as.character) %>%
+		
+		# Unite columns and rename, needed for widyr
+		unite("element", !!.element, sep="___") %>%
+		unite("feature", !!.feature, sep="___") %>%
+		rename(value := !!.value) %>%
 		
 		# Run pairwise correlation and return a tibble
 		widyr::pairwise_cor(
 			element,
 			feature,
-			rc,
+			value,
 			sort = TRUE,
 			diag = FALSE,
 			upper = FALSE
@@ -732,7 +734,9 @@ remove_redundancy_elements_through_correlation <- function(.data,
 		filter(correlation > correlation_threshold) %>%
 		select(item1) %>%
 		distinct %>%
-		dplyr::rename(!!.element := item1)
+		
+		# Reconstitute columns
+		separate(item1, quo_names(.element), sep="___") 
 	
 	# Return non redudant data frame
 	.data %>% anti_join(.data.correlated) %>%
@@ -821,6 +825,7 @@ remove_redundancy_elements_though_reduced_dimensions <-
 #' @importFrom stats as.formula
 #' @importFrom utils installed.packages
 #' @importFrom utils install.packages
+#' @importFrom rlang quo_is_symbol
 #'
 #' @param .data A tibble
 #' @param .formula a formula with no response variable, of the kind ~ factor_of_intrest + batch
@@ -846,10 +851,28 @@ fill_NA_using_formula = function(.data,
 	.value = enquo(.value)
 	.value_scaled = enquo(.value_scaled)
 	
-	col_formula =
+	# Check that the covariate are unique to elements
+	if(
+		.data %>%
+		select(!!.element, parse_formula(.formula)) %>%
+		distinct() %>%
+		nrow %>% `>` (.data %>% select(!!.element) %>% distinct() %>% nrow )
+	) stop("nanny says: your covariate are not unique to elements. There are elements with multiple covariate values")
+	
+	# Parse formula
+	df_formula =
 		.data %>%
 		select(parse_formula(.formula)) %>%
-		distinct() %>%
+		distinct() 
+	
+	# Check that the at least one covariate is is.character(x) | is.logical(x) | is.factor(x)
+	if(
+		df_formula %>% lapply(class) %>% unlist %>% intersect(c("character", "logical", "factor")) %>% length %>% equals(0) & 
+		length(parse_formula(.formula)) > 0
+	) stop("nanny says: none of your covariate are type character, logical, factor, which is needed for element grouping for imputing missing values from formula")
+	
+	col_formula =
+		df_formula %>%
 		select_if(function(x) is.character(x) | is.logical(x) | is.factor(x)) %>%
 		colnames
 	
@@ -859,7 +882,8 @@ fill_NA_using_formula = function(.data,
 		select(!!.element, !!.feature, !!.value, col_formula) %>%
 		distinct %>%
 		pivot_wider(names_from = !!.feature, values_from = !!.value, names_sep = "___") %>%
-		pivot_longer(names_to = !!.feature,values_to = !!.value, cols = -c( !!.element, col_formula)) 
+		pivot_longer(names_to = quo_names(.feature),values_to = quo_names(.value), cols = -c( !!.element, col_formula),	names_sep = when(quo_names(.feature), length(.) > 1 ~ "___", ~ NULL), 
+) 
 	
 	# Select just features/covariates that have missing
 	combo_to_impute = df_to_impute %>% anti_join(.data, by=c(quo_names(.element), quo_names(.feature))) %>% select(!!.feature, col_formula) %>% distinct()

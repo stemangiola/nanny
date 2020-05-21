@@ -1,6 +1,6 @@
 Package: nanny
 Type: Package
-Title: A tidyverse-style library for high-level data analysis and manipulation
+Title: It tidies up your playground. A tidyverse-style library for high-level data analysis and manipulation
 Version: 0.1.0
 Author: person("Stefano", "Mangiola",
     email=mangiolastefano@gmail.com, role=c("cre", aut"), comment =
@@ -18,7 +18,11 @@ Imports:
     lifecycle,
     ggplot2,
     magrittr,
-    tibble
+    tibble,
+    dplyr,
+    purrr,
+    rlang,
+    tidyr
 RdMacros: lifecycle
 Suggests: 
     testthat
