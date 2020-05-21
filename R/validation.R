@@ -29,6 +29,10 @@ error_if_counts_is_na = function(.data, .abundance) {
 #'
 #' @return NA
 error_if_log_transformed <- function(x, .abundance) {
+	
+	# Comply with CRAN NOTES
+	m = NULL
+	
 	.abundance = enquo(.abundance)
 	
 	if (x %>% nrow %>% `>` (0))
@@ -157,9 +161,16 @@ check_if_wrong_input = function(.data, list_input, expected_type) {
 #'
 #' @return A tbl
 check_if_duplicated_genes <- function(.data,
-																			.sample = `sample`,
-																			.transcript = `transcript`,
-																			.abundance = `read count`) {
+																			.sample ,
+																			.transcript ,
+																			.abundance ) {
+	
+	# Comply with CRAN NOTES
+	transcript = NULL
+	count = NULL
+	my_n = NULL
+	
+	# Column names
 	.sample = enquo(.sample)
 	.transcript = enquo(.transcript)
 	.abundance = enquo(.abundance)
@@ -234,11 +245,15 @@ column_type_checking = function(.data, .sample, .transcript, .abundance) {
 }
 
 check_if_attribute_present = function(.data) {
-	"tt_internals" %in% (.data %>% attributes %>% names) &&
-		"tt_columns" %in% (.data %>% attr("tt_internals")  %>% names)
+	"internals" %in% (.data %>% attributes %>% names) &&
+		"tt_columns" %in% (.data %>% attr("internals")  %>% names)
 }
 
 eliminate_sparse_transcripts = function(.data, .transcript){
+	
+	# Comply with CRAN NOTES
+	my_n = NULL
+	
 	# Parse column names
 	.transcript = enquo(.transcript)
 	
@@ -283,10 +298,6 @@ check_if_data_rectangular = function(.data, .sample, .transcript, .abundance, ty
 	# .data %>% eliminate_sparse_transcripts(!!.transcript)
 	
 	
-}
-
-nanny_to_tbl = function(.data) {
-	.data %>%	drop_class(c("nanny", "tt"))
 }
 
 validation_default = function(.data,

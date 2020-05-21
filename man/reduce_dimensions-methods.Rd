@@ -60,10 +60,11 @@ It can use multi-dimensional scaling (MDS) of principal component analysis (PCA)
 \examples{
 
 
-
-counts.MDS =  reduce_dimensions(nanny::counts_mini, element, feature, count, method="MDS", .dims = 3)
-
-counts.PCA =  reduce_dimensions(nanny::counts_mini, element, feature, count, method="PCA", .dims = 3)
+  reduce_dimensions(mtcars_tidy, car_model, feature, value, method="PCA")
+  
+  reduce_dimensions(mtcars_tidy, car_model, feature, value, method="MDS")
+  
+  reduce_dimensions(mtcars_tidy, car_model, feature, value, method="tSNE")
 
 
 

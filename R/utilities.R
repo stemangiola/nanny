@@ -73,6 +73,12 @@ ifelse2_pipe = function(.x, .p1, .p2, .f1, .f2, .f3 = NULL) {
 #'
 #' @return A tibble with pairs to drop
 select_closest_pairs = function(df) {
+	
+	# Comply with CRAN NOTES
+	. = NULL
+	element_1 = NULL
+	element_2 = NULL
+	
 	couples <- df %>% head(n = 0)
 	
 	while (df %>% nrow() > 0) {
@@ -82,29 +88,13 @@ select_closest_pairs = function(df) {
 		couples <- couples %>% bind_rows(pair)
 		df <- df %>%
 			filter(
-				!`element 1` %in% (pair %>% select(1:2) %>% as.character()) &
-					!`element 2` %in% (pair %>% select(1:2) %>% as.character())
+				!`element_1` %in% (pair %>% select(1:2) %>% as.character()) &
+					!`element_2` %in% (pair %>% select(1:2) %>% as.character())
 			)
 	}
 	
 	couples
 	
-}
-
-#' This function is needed for DE in case the matrix is not rectangular, but includes NA
-#'
-#' @param .matrix A matrix
-#'
-#' @return A matrix
-fill_NA_with_row_median = function(.matrix){
-	
-	if(length(which(rowSums(is.na(.matrix)) > 0)) > 0)
-		rbind(
-			.matrix[rowSums(is.na(.matrix)) == 0,],
-			apply(.matrix[rowSums(is.na(.matrix)) > 0,], 1, FUN = function(.x) { .x[is.na(.x)] = median(.x, na.rm = TRUE); .x}) %>% t
-		)
-	else
-		.matrix
 }
 
 #' get_x_y_annotation_columns
@@ -249,7 +239,11 @@ get_specific_annotation_columns = function(.data, .col){
 	
 }
 
-initialise_tt_internals = function(.data){
+initialise_internals = function(.data){
+	
+	# Comply with CRAN NOTES
+	. = NULL
+	
 	.data %>%
 		ifelse_pipe(
 			"internals" %in% ((.) %>% attributes %>% names) %>% `!`,
@@ -268,7 +262,7 @@ attach_to_internals = function(.data, .object, .name){
 	
 	internals =
 		.data %>%
-		initialise_tt_internals() %>%
+		initialise_internals() %>%
 		attr("internals")
 	
 	# Add tt_bolumns
@@ -346,3 +340,21 @@ parse_formula <- function(fm) {
 	else
 		as.character(attr(terms(fm), "variables"))[-1]
 }
+
+#' Remove class to abject
+#'
+#'
+#' @param var A tibble
+#' @param name A character name of the class
+#'
+#' @return A tibble with an additional attribute
+drop_class = function(var, name) {
+	class(var) <- class(var)[!class(var)%in%name]
+	var
+}
+
+
+nanny_to_tbl = function(.data) {
+	.data %>%	drop_class(c("nanny", "tt"))
+}
+

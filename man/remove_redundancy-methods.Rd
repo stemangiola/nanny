@@ -32,12 +32,6 @@ remove_redundancy(
 \item{top}{An integer. How many top genes to select for correlation based method}
 
 \item{transform}{A function to use to tranforma the data internalli (e.g., log1p)}
-
-\item{method}{A character string. The cluster algorithm to use, ay the moment k-means is the only algorithm included.}
-
-\item{Dim_a_column}{A character string. For reduced_dimension based calculation. The column of one principal component}
-
-\item{Dim_b_column}{A character string. For reduced_dimension based calculation. The column of another principal component}
 }
 \value{
 A tbl object with with dropped recundant elements (e.g., elements).
@@ -54,22 +48,7 @@ This function removes redundant elements from the original data set (e.g., eleme
 
 
 
-   remove_redundancy(
-    nanny::counts_mini,
-	   .element = element,
-	   .feature = feature,
-	   	.value =  count,
-	   	method = "correlation"
-	   	)
+remove_redundancy(mtcars_tidy, car_model, feature, value)
 
-counts.MDS =  reduce_dimensions(nanny::counts_mini, element, feature, count, method="MDS", .dims = 3)
-
-remove_redundancy(
-	counts.MDS,
-	Dim_a_column = `Dim1`,
-	Dim_b_column = `Dim2`,
-	.element = element,
-  method = "reduced_dimensions"
-)
 
 }

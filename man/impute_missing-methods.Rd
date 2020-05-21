@@ -37,15 +37,6 @@ This function imputes the value of missing element-feature pair using the median
 }
 \examples{
 
-
-res =
-	impute_missing(
-		nanny::counts_mini,
-	~ condition,
-	.element = element,
-	.feature = feature,
-	.value = count
-)
-
+ impute_missing(mtcars_tidy, ~1, car_model, feature, value)
 
 }

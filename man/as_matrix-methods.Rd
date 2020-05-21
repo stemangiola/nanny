@@ -8,11 +8,13 @@
 as_matrix(.data, rownames = NULL, do_check = TRUE, sep_rownames = "___")
 }
 \arguments{
+\item{.data}{A tibble}
+
 \item{rownames}{A character string of the rownames}
 
 \item{do_check}{A boolean}
 
-\item{tbl}{A tibble}
+\item{sep_rownames}{A character with which multiple columns are united if rownames is a column array (e.g., rownames = c(col1, col2))}
 }
 \value{
 A matrix
@@ -22,6 +24,10 @@ Get matrix from tibble
 }
 \examples{
 
-as_matrix(head(dplyr::select(nanny::counts_mini, feature, count)), rownames=feature)
-
+ library(dplyr)
+ library(tidyr)
+ select(mtcars_tidy, car_model, feature, value) \%>\%
+	spread(feature, value) \%>\%
+	as_matrix(rownames = car_model) 
+	
 }

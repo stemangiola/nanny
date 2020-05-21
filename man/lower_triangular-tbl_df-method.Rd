@@ -12,6 +12,8 @@
 \item{.col1}{A column name}
 
 \item{.col2}{A column name}
+
+\item{.value}{A column names of the value column}
 }
 \value{
 A `tbl` with filld abundnce

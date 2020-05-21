@@ -13,6 +13,8 @@ lower_triangular(.data, .col1, .col2, .value)
 \item{.col1}{A column name}
 
 \item{.col2}{A column name}
+
+\item{.value}{A column names of the value column}
 }
 \value{
 A `tbl` with filtered rows
@@ -27,15 +29,18 @@ lower_triangular() takes as imput a `tbl` formatted as | <element> | <feature> |
 }
 \examples{
 
+library(dplyr)
+library(purrr)
+library(tidyr)
 
-res =
-	lower_triangular(
-		nanny::counts_mini,
-	~ condition,
-	.element = element,
-	.feature = feature,
-	.value = count
-)
+mtcars_tidy_permuted = permute_nest(mtcars_tidy, car_model, c(feature,value))
 
+mtcars_tidy_permuted \%>\%
+ # Summarise mpg
+ mutate(data = map(data, ~ .x \%>\% filter(feature == "mpg") \%>\% summarise(mean(value)))) \%>\%
+unnest(data) \%>\%
+
+# Lower triangular
+lower_triangular(car_model_1, car_model_2,  `mean(value)`)
 
 }

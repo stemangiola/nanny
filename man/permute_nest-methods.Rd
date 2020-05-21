@@ -27,15 +27,6 @@ permute_nest() takes as imput a `tbl` formatted as | <element> | <feature> | <va
 }
 \examples{
 
-
-res =
-	permute_nest(
-		nanny::counts_mini,
-	~ condition,
-	.element = element,
-	.feature = feature,
-	.value = count
-)
-
+permute_nest(mtcars_tidy, car_model, c(feature,value))
 
 }

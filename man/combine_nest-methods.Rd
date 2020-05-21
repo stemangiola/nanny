@@ -27,15 +27,7 @@ combine_nest() takes as imput a `tbl` formatted as | <element> | <feature> | <va
 }
 \examples{
 
-
-res =
-	combine_nest(
-		nanny::counts_mini,
-	~ condition,
-	.element = element,
-	.feature = feature,
-	.value = count
-)
+combine_nest(mtcars_tidy, car_model, c(feature,value))
 
 
 }

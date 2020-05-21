@@ -52,6 +52,6 @@ At the moment only k-means clustering is supported, the plan is to introduce mor
 \examples{
 
 
-    cluster_elements(nanny::counts_mini, element, feature, count,	centers = 2, method="kmeans")
+   cluster_elements(mtcars_tidy, car_model, feature, value, method="kmeans",	centers = 2)
 
 }

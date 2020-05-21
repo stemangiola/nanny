@@ -10,7 +10,7 @@ subset(.data, .column)
 \arguments{
 \item{.data}{A `tbl` formatted as | <element> | <feature> | <value> | <...> |}
 
-\item{.element}{The name of the element column}
+\item{.column}{The name of the element column}
 }
 \value{
 A `tbl` object
@@ -25,11 +25,7 @@ This functon extracts only element-related information for downstream analysis (
 }
 \examples{
 
-
-	subset(
-		nanny::counts_mini,
-		.element = element
-	)
+subset(mtcars_tidy,car_model)
 
 
 }

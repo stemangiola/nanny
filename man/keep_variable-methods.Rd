@@ -40,15 +40,7 @@ keep_variable() takes as imput a `tbl` formatted as | <element> | <feature> | <v
 }
 \examples{
 
-
-res =
-	keep_variable(
-		nanny::counts_mini,
-	~ condition,
-	.element = element,
-	.feature = feature,
-	.value = count
-)
+keep_variable(mtcars_tidy, car_model, feature, value, top=10)
 
 
 }

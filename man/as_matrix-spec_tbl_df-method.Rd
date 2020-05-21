@@ -7,9 +7,13 @@
 \S4method{as_matrix}{spec_tbl_df}(.data, rownames = NULL, do_check = TRUE, sep_rownames = "___")
 }
 \arguments{
+\item{.data}{A tibble}
+
 \item{rownames}{A character string of the rownames}
 
 \item{do_check}{A boolean}
+
+\item{sep_rownames}{A character with which multiple columns are united if rownames is a column array (e.g., rownames = c(col1, col2))}
 }
 \value{
 A `tbl` with filld abundnce

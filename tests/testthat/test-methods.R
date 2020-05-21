@@ -71,7 +71,7 @@ test_that("impute missing", {
       left_join( 
         (.) %>%
           distinct(`ct 1`, `ct 2`) %>%
-          mutate(cov = sample(0:1, size = n(), replace = T, prob = c(0.1, 0.9)) %>% as.factor)
+          mutate(cov = sample(0:1, size = n(), replace = TRUE, prob = c(0.1, 0.9)) %>% as.factor)
       ), ~ cov,  c(`ct 1`, `ct 2`),cancer_ID, relation) 
   expect_equal(res %>% inner_join(nanny::test_data2 %>% slice(1) %>% select(-relation, -group)) %>% nrow , 1)
   

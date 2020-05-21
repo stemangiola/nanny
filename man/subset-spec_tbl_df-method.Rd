@@ -8,6 +8,8 @@
 }
 \arguments{
 \item{.data}{A `tbl` formatted as | <element> | <feature> | <value> | <...> |}
+
+\item{.column}{The name of the element column}
 }
 \value{
 A `tbl` object

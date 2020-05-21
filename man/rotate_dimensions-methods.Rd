@@ -49,9 +49,9 @@ This function to rotate two dimensions such as the reduced dimensions.
 }
 \examples{
 
-counts.MDS =  reduce_dimensions(nanny::counts_mini, element, feature, count, method="MDS", .dims = 3)
-
-counts.MDS.rotated =  rotate_dimensions(counts.MDS, `Dim1`, `Dim2`, rotation_degrees = 45, .element = element)
+ mtcars_tidy_MDS = reduce_dimensions(mtcars_tidy, car_model, feature, value, method="MDS")
+ 
+ rotate_dimensions(mtcars_tidy_MDS, `Dim1`, `Dim2`, .element = car_model, rotation_degrees = 45)
 
 
 }

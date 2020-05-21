@@ -31,15 +31,7 @@ This function fills the value of missing element-feature pair using the median o
 }
 \examples{
 
-
-res =
-	fill_missing(
-		nanny::counts_mini,
-	~ condition,
-	.element = element,
-	.feature = feature,
-	.value = count
-)
+fill_missing(mtcars_tidy, car_model, feature, value, fill_with = 0)
 
 
 }

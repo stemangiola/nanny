@@ -37,3 +37,5 @@ vignettes/*.pdf
 
 # Rproj
 *.Rproj
+doc
+Meta

@@ -26,11 +26,10 @@
 #'
 #' @return A tbl object with additional columns with cluster labels
 #'
-#'
 #' @examples
 #'
 #'
-#'     cluster_elements(nanny::counts_mini, element, feature, count,	centers = 2, method="kmeans")
+#'    cluster_elements(mtcars_tidy, car_model, feature, value, method="kmeans",	centers = 2)
 #'
 #' @docType methods
 #' @rdname cluster_elements-methods
@@ -58,6 +57,10 @@ setGeneric("cluster_elements", function(.data,
 															 action = "add",
 															 ...)
 {
+	
+	# Comply with CRAN NOTES
+	. = NULL
+	
 	# Get column names
 	.element = enquo(.element)
 	.feature = enquo(.feature)
@@ -237,10 +240,11 @@ setMethod("cluster_elements", "tbl_df", .cluster_elements)
 #' @examples
 #'
 #'
-#'
-#' counts.MDS =  reduce_dimensions(nanny::counts_mini, element, feature, count, method="MDS", .dims = 3)
-#'
-#' counts.PCA =  reduce_dimensions(nanny::counts_mini, element, feature, count, method="PCA", .dims = 3)
+#'   reduce_dimensions(mtcars_tidy, car_model, feature, value, method="PCA")
+#'   
+#'   reduce_dimensions(mtcars_tidy, car_model, feature, value, method="MDS")
+#'   
+#'   reduce_dimensions(mtcars_tidy, car_model, feature, value, method="tSNE")
 #'
 #'
 #'
@@ -463,9 +467,9 @@ setMethod("reduce_dimensions", "tbl_df", .reduce_dimensions)
 #'
 #' @examples
 #'
-#' counts.MDS =  reduce_dimensions(nanny::counts_mini, element, feature, count, method="MDS", .dims = 3)
-#'
-#' counts.MDS.rotated =  rotate_dimensions(counts.MDS, `Dim1`, `Dim2`, rotation_degrees = 45, .element = element)
+#'  mtcars_tidy_MDS = reduce_dimensions(mtcars_tidy, car_model, feature, value, method="MDS")
+#'  
+#'  rotate_dimensions(mtcars_tidy_MDS, `Dim1`, `Dim2`, .element = car_model, rotation_degrees = 45)
 #'
 #'
 #' @docType methods
@@ -582,13 +586,10 @@ setMethod("rotate_dimensions", "tbl_df", .rotate_dimensions)
 #' @param .feature The name of the feature column (normally features)
 #' @param .value The name of the column including the numerical value the clustering is based on (normally feature value)
 #'
-#' @param method A character string. The cluster algorithm to use, ay the moment k-means is the only algorithm included.
 #' @param of_elements A boolean. In case the input is a nanny object, it indicates Whether the element column will be element or feature column
 #' @param transform A function to use to tranforma the data internalli (e.g., log1p)
 #' @param correlation_threshold A real number between 0 and 1. For correlation based calculation.
 #' @param top An integer. How many top genes to select for correlation based method
-#' @param Dim_a_column A character string. For reduced_dimension based calculation. The column of one principal component
-#' @param Dim_b_column A character string. For reduced_dimension based calculation. The column of another principal component
 #'
 #'
 #' @details This function removes redundant elements from the original data set (e.g., elements or features). For example, if we want to define cell-type specific signatures with low element redundancy. This function returns a tibble with dropped recundant elements (e.g., elements). Two redundancy estimation approaches are supported: (i) removal of highly correlated clusters of elements (keeping a representative) with method="correlation"; (ii) removal of most proximal element pairs in a reduced dimensional space.
@@ -599,23 +600,8 @@ setMethod("rotate_dimensions", "tbl_df", .rotate_dimensions)
 #'
 #'
 #'
-#'    remove_redundancy(
-#'     nanny::counts_mini,
-#' 	   .element = element,
-#' 	   .feature = feature,
-#' 	   	.value =  count,
-#' 	   	method = "correlation"
-#' 	   	)
+#' remove_redundancy(mtcars_tidy, car_model, feature, value)
 #'
-#' counts.MDS =  reduce_dimensions(nanny::counts_mini, element, feature, count, method="MDS", .dims = 3)
-#'
-#' remove_redundancy(
-#' 	counts.MDS,
-#' 	Dim_a_column = `Dim1`,
-#' 	Dim_b_column = `Dim2`,
-#' 	.element = element,
-#'   method = "reduced_dimensions"
-#' )
 #'
 #' @docType methods
 #' @rdname remove_redundancy-methods
@@ -685,7 +671,7 @@ setMethod("remove_redundancy", "tbl_df", .remove_redundancy)
 #' @name subset
 #'
 #' @param .data A `tbl` formatted as | <element> | <feature> | <value> | <...> |
-#' @param .element The name of the element column
+#' @param .column The name of the element column
 #'
 #'
 #' @details This functon extracts only element-related information for downstream analysis (e.g., visualisation). It is disruptive in the sense that it cannot be passed anymore to nanny function.
@@ -697,11 +683,7 @@ setMethod("remove_redundancy", "tbl_df", .remove_redundancy)
 #'
 #' @examples
 #'
-#'
-#' 	subset(
-#'			nanny::counts_mini,
-#'			.element = element
-#'		)
+#' subset(mtcars_tidy,car_model)
 #'
 #'
 #' @docType methods
@@ -770,16 +752,7 @@ setMethod("subset",		"tbl",			.subset)
 #'
 #' @examples
 #'
-#'
-#' res =
-#' 	impute_missing(
-#' 		nanny::counts_mini,
-#' 	~ condition,
-#' 	.element = element,
-#' 	.feature = feature,
-#' 	.value = count
-#' )
-#'
+#'  impute_missing(mtcars_tidy, ~1, car_model, feature, value)
 #'
 #' @docType methods
 #' @rdname impute_missing-methods
@@ -860,15 +833,7 @@ setMethod("impute_missing", "tbl_df", .impute_missing)
 #'
 #' @examples
 #'
-#'
-#' res =
-#' 	fill_missing(
-#' 		nanny::counts_mini,
-#' 	~ condition,
-#' 	.element = element,
-#' 	.feature = feature,
-#' 	.value = count
-#' )
+#' fill_missing(mtcars_tidy, car_model, feature, value, fill_with = 0)
 #'
 #'
 #' @docType methods
@@ -947,16 +912,7 @@ setMethod("fill_missing", "tbl_df", .fill_missing)
 #'
 #' @examples
 #'
-#'
-#' res =
-#' 	permute_nest(
-#' 		nanny::counts_mini,
-#' 	~ condition,
-#' 	.element = element,
-#' 	.feature = feature,
-#' 	.value = count
-#' )
-#'
+#' permute_nest(mtcars_tidy, car_model, c(feature,value))
 #'
 #' @docType methods
 #' @rdname permute_nest-methods
@@ -969,6 +925,14 @@ setGeneric("permute_nest", function(.data, .names_from, .values_from)
 
 # Set internal
 .permute_nest = 	function(.data, .names_from, .values_from){
+	
+	# Comply with CRAN NOTES
+	. = NULL
+	run = NULL
+	# V1 = NULL
+	# V2 - NULL
+	
+	# Column names
 	.names_from = enquo(.names_from)
 	.values_from = enquo(.values_from)
 	
@@ -984,7 +948,7 @@ setGeneric("permute_nest", function(.data, .names_from, .values_from)
 		as.character() %>%
 		gtools::permutations(n = length(.), r = 2, v = .) %>%
 		as_tibble() %>%
-		unite(run, c(V1, V2), remove = F, sep="___") %>%
+		unite("run", c("V1", "V2"), remove = FALSE, sep="___") %>%
 		gather(which, !!.names_from, -run) %>%
 		select(-which) %>%
 		left_join(.data %>% select(!!.names_from, !!.values_from), by = quo_names(.names_from)) %>%
@@ -1033,15 +997,7 @@ setMethod("permute_nest", "tbl_df", .permute_nest)
 #'
 #' @examples
 #'
-#'
-#' res =
-#' 	combine_nest(
-#' 		nanny::counts_mini,
-#' 	~ condition,
-#' 	.element = element,
-#' 	.feature = feature,
-#' 	.value = count
-#' )
+#' combine_nest(mtcars_tidy, car_model, c(feature,value))
 #'
 #'
 #' @docType methods
@@ -1055,6 +1011,14 @@ setGeneric("combine_nest", function(.data, .names_from, .values_from)
 
 # Set internal
 .combine_nest = function(.data, .names_from, .values_from){
+	
+	# Comply with CRAN NOTES
+	. = NULL
+	run = NULL
+	# V1 = NULL
+	# V2 - NULL
+	
+	# Column names
 	.names_from = enquo(.names_from)
 	.values_from = enquo(.values_from)
 	
@@ -1072,7 +1036,7 @@ setGeneric("combine_nest", function(.data, .names_from, .values_from)
 		as.character() %>%
 		gtools::combinations(n = length(.), r = 2, v = .) %>%
 		as_tibble() %>%
-		unite(run, c(V1, V2), remove = F, sep="___") %>%
+		unite("run", c("V1", "V2"), remove = FALSE, sep="___") %>%
 		gather(which, !!.names_from, -run) %>%
 		select(-which) %>%
 		left_join(.data %>% select(!!.names_from, !!.values_from), by = quo_names(.names_from)) %>%
@@ -1123,15 +1087,7 @@ setMethod("combine_nest", "tbl_df", .combine_nest)
 #'
 #' @examples
 #'
-#'
-#' res =
-#' 	keep_variable(
-#' 		nanny::counts_mini,
-#' 	~ condition,
-#' 	.element = element,
-#' 	.feature = feature,
-#' 	.value = count
-#' )
+#' keep_variable(mtcars_tidy, car_model, feature, value, top=10)
 #'
 #'
 #' @docType methods
@@ -1155,6 +1111,13 @@ setGeneric("keep_variable", function(.data,
 													.value = NULL,
 													top = Inf,
 													transform = NULL) {
+	
+	# Comply with CRAN NOTES
+	. = NULL
+	value = NULL
+	variable = NULL
+	
+	
 	# Get column names
 	.element = enquo(.element)
 	.feature = enquo(.feature)
@@ -1226,6 +1189,7 @@ setMethod("keep_variable", "tbl_df", .keep_variable)
 #' @param .data A `tbl`
 #' @param .col1 A column name
 #' @param .col2 A column name
+#' @param .value A column names of the value column
 #'
 #' @details ...
 #'
@@ -1236,16 +1200,19 @@ setMethod("keep_variable", "tbl_df", .keep_variable)
 #'
 #' @examples
 #'
-#'
-#' res =
-#' 	lower_triangular(
-#' 		nanny::counts_mini,
-#' 	~ condition,
-#' 	.element = element,
-#' 	.feature = feature,
-#' 	.value = count
-#' )
-#'
+#' library(dplyr)
+#' library(purrr)
+#' library(tidyr)
+#' 
+#' mtcars_tidy_permuted = permute_nest(mtcars_tidy, car_model, c(feature,value))
+#' 
+#' mtcars_tidy_permuted %>%
+#'  # Summarise mpg
+#'  mutate(data = map(data, ~ .x %>% filter(feature == "mpg") %>% summarise(mean(value)))) %>%
+#'	unnest(data) %>%
+#'	
+#'	# Lower triangular
+#'	lower_triangular(car_model_1, car_model_2,  `mean(value)`)
 #'
 #' @docType methods
 #' @rdname lower_triangular-methods
@@ -1257,7 +1224,10 @@ setGeneric("lower_triangular", function(.data, .col1, .col2, .value)
 	standardGeneric("lower_triangular"))
 
 # Set internal
-.lower_triangular = function(.data, .col1, .col2, .value){	
+.lower_triangular = function(.data, .col1, .col2, .value){
+	
+	# Comply with CRAN NOTES
+	. = NULL
 	
 	# Column names
 	.col1 = enquo(.col1)
@@ -1316,16 +1286,21 @@ setMethod("lower_triangular", "tbl_df", .lower_triangular)
 #' @importFrom purrr when
 #' 
 #'
-#' @param tbl A tibble
+#' @param .data A tibble
 #' @param rownames A character string of the rownames
 #' @param do_check A boolean
+#' @param sep_rownames A character with which multiple columns are united if rownames is a column array (e.g., rownames = c(col1, col2))
 #'
 #' @return A matrix
 #'
 #' @examples
 #'
-#' as_matrix(head(dplyr::select(nanny::counts_mini, feature, count)), rownames=feature)
-#'
+#'  library(dplyr)
+#'  library(tidyr)
+#'  select(mtcars_tidy, car_model, feature, value) %>%
+#' 	spread(feature, value) %>%
+#' 	as_matrix(rownames = car_model) 
+#' 	
 #' @docType methods
 #' @rdname as_matrix-methods
 #'
@@ -1341,6 +1316,10 @@ setGeneric("as_matrix", function(.data,
 											rownames = NULL,
 											do_check = TRUE,
 											sep_rownames = "___") {
+	
+	# Comply with CRAN NOTES
+	variable = NULL
+	
 	rownames = enquo(rownames)
 
 	

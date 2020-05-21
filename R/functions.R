@@ -6,6 +6,7 @@
 #' @importFrom stats kmeans
 #' @importFrom rlang :=
 #' @importFrom rlang is_function
+#' @importFrom magrittr `%$%`
 #'
 #' @param .data A tibble
 #' @param .value A column symbol with the value the clustering is based on (e.g., `count`)
@@ -26,6 +27,12 @@ get_clusters_kmeans_bulk <-
 					 of_elements = TRUE,
 					 transform = NULL,
 					 ...) {
+		
+		# Comply with CRAN NOTES
+		. = NULL
+		seurat_clusters = NULL
+		cluster = NULL
+		cluster_kmeans = NULL
 		
 		# Check that column names do not have the reserved pattern "___"
 		if(.data %>% colnames %>% grep("___", .) %>% length %>% `>` (0))
@@ -106,6 +113,11 @@ get_clusters_SNN_bulk <-
 					 of_elements = TRUE,
 					 transform = NULL,
 					 ...) {
+		
+		# Comply with CRAN NOTES
+		rn = NULL
+		seurat_clusters = NULL
+		
 		# Get column names
 		.element = enquo(.element)
 		.feature = enquo(.feature)
@@ -177,6 +189,7 @@ get_clusters_SNN_bulk <-
 #' @importFrom rlang :=
 #' @importFrom stats setNames
 #' @importFrom rlang is_function
+#' @importFrom magrittr `%$%`
 #'
 #' @param .data A tibble
 #' @param .value A column symbol with the value the clustering is based on (e.g., `count`)
@@ -199,8 +212,11 @@ get_reduced_dimensions_MDS_bulk <-
 					 top = Inf,
 					 of_elements = TRUE,
 					 transform = NULL) {
+		
 		# Comply with CRAN NOTES
 		. = NULL
+		cmdscale.out = NULL
+		rn = NULL
 		
 		# Get column names
 		.element = enquo(.element)
@@ -256,7 +272,7 @@ get_reduced_dimensions_MDS_bulk <-
 			attach_to_internals(mds_object, "MDS") %>%
 			# Communicate the attribute added
 			{
-				message("nanny says: to access the raw results do `attr(..., \"tt_internals\")$MDS`")
+				message("nanny says: to access the raw results do `attr(..., \"internals\")$MDS`")
 				(.)
 			}
 		
@@ -270,6 +286,7 @@ get_reduced_dimensions_MDS_bulk <-
 #' @importFrom rlang :=
 #' @importFrom stats prcomp
 #' @importFrom rlang is_function
+#' @importFrom magrittr `%$%`
 #'
 #' @param .data A tibble
 #' @param .value A column symbol with the value the clustering is based on (e.g., `count`)
@@ -296,8 +313,14 @@ get_reduced_dimensions_PCA_bulk <-
 					 transform = NULL,
 					 scale = FALSE,
 					 ...) {
+		
 		# Comply with CRAN NOTES
 		. = NULL
+		sdev = NULL
+		name = NULL
+		value = NULL
+		rn = NULL
+		Y = NULL
 		
 		# Get column names
 		.element = enquo(.element)
@@ -405,7 +428,7 @@ get_reduced_dimensions_PCA_bulk <-
 			attach_to_internals(prcomp_obj, "PCA") %>%
 			# Communicate the attribute added
 			{
-				message("nanny says: to access the raw results do `attr(..., \"tt_internals\")$PCA`")
+				message("nanny says: to access the raw results do `attr(..., \"internals\")$PCA`")
 				(.)
 			}
 		
@@ -421,6 +444,7 @@ get_reduced_dimensions_PCA_bulk <-
 #' @importFrom utils installed.packages
 #' @importFrom utils install.packages
 #' @importFrom rlang is_function
+#' @importFrom magrittr `%$%`
 #'
 #' @param .data A tibble
 #' @param .value A column symbol with the value the clustering is based on (e.g., `count`)
@@ -444,8 +468,10 @@ get_reduced_dimensions_TSNE_bulk <-
 					 of_elements = TRUE,
 					 transform = NULL,
 					 ...) {
+		
 		# Comply with CRAN NOTES
 		. = NULL
+		Y = NULL
 		
 		# Get column names
 		.element = enquo(.element)
@@ -493,12 +519,6 @@ get_reduced_dimensions_TSNE_bulk <-
 			# Prepare data frame
 			select(!!.feature,!!.element,!!.value) %>%
 			distinct %>%
-			
-			# # Check if data rectangular
-			# ifelse_pipe(
-			# 	(.) %>% check_if_data_rectangular(!!.element,!!.feature,!!.value, type = "soft"),
-			# 	~ .x %>% eliminate_sparse_features(!!.feature)
-			# ) %>%
 			
 			# Check if tranfrom is needed
 			ifelse_pipe(
@@ -565,6 +585,13 @@ get_rotated_dimensions =
 					 of_elements = TRUE,
 					 dimension_1_column_rotated = NULL,
 					 dimension_2_column_rotated = NULL) {
+		
+		# Comply with CRAN NOTES
+		. = NULL
+		Y = NULL
+		rotated_dimensions = NULL
+		value = NULL
+		
 		# Get column names
 		.element = enquo(.element)
 		dimension_1_column = enquo(dimension_1_column)
@@ -601,13 +628,13 @@ get_rotated_dimensions =
 			as_matrix(rownames = !!.element) %>% t %>%
 			rotation(rotation_degrees) %>%
 			as_tibble() %>%
-			mutate(`rotated dimensions` =
+			mutate(`rotated_dimensions` =
 						 	c(
 						 		quo_names(dimension_1_column_rotated),
 						 		quo_names(dimension_2_column_rotated)
 						 	)) %>%
-			pivot_longer(names_to = quo_names(.element),values_to = "value", cols = -`rotated dimensions`, names_sep = when(length(quo_names(.element)), (.) > 1 ~ "___", ~ NULL)) %>%
-			pivot_wider(names_from = `rotated dimensions`, values_from = value) %>%
+			pivot_longer(names_to = quo_names(.element),values_to = "value", cols = -`rotated_dimensions`, names_sep = when(length(quo_names(.element)), (.) > 1 ~ "___", ~ NULL)) %>%
+			pivot_wider(names_from = `rotated_dimensions`, values_from = value) %>%
 			
 
 			
@@ -646,6 +673,11 @@ remove_redundancy_elements_through_correlation <- function(.data,
 																													 transform = NULL) {
 	# Comply with CRAN NOTES
 	. = NULL
+	value = NULL
+	element = NULL
+	feature = NULL
+	correlation = NULL
+	item1 = NULL
 	
 	# Get column names
 	.element = enquo(.element)
@@ -765,6 +797,14 @@ remove_redundancy_elements_though_reduced_dimensions <-
 					 Dim_b_column,
 					 .element = NULL,
 					 of_elements = TRUE) {
+		
+		# Comply with CRAN NOTES
+		. = NULL
+		element_a = NULL
+		element_b = NULL
+		element_1 = NULL
+		element_2 = NULL
+		
 		# This function identifies the closest pairs and return one of them
 		
 		# Get column names
@@ -784,18 +824,18 @@ remove_redundancy_elements_though_reduced_dimensions <-
 			dist() %>%
 			
 			# Prepare matrix
-			as.matrix() %>% as_tibble(rownames = "element a") %>%
-			gather(`element b`, dist,-`element a`) %>%
-			filter(`element a` != `element b`) %>%
+			as.matrix() %>% as_tibble(rownames = "element_a") %>%
+			gather(`element_b`, dist,-`element_a`) %>%
+			filter(`element_a` != `element_b`) %>%
 			
 			# Sort the elements of the two columns to avoid eliminating all elements
 			rowwise() %>%
 			mutate(
-				`element 1` = c(`element a`, `element b`) %>% sort() %>% `[`(1),
-				`element 2` = c(`element a`, `element b`) %>% sort() %>% `[`(2)
+				`element_1` = c(`element_a`, `element_b`) %>% sort() %>% `[`(1),
+				`element_2` = c(`element_a`, `element_b`) %>% sort() %>% `[`(2)
 			) %>%
 			ungroup() %>%
-			select(`element 1`, `element 2`, dist) %>%
+			select(`element_1`, `element_2`, dist) %>%
 			distinct() %>%
 			
 			# Select closestpairs
@@ -845,6 +885,10 @@ fill_NA_using_formula = function(.data,
 																 .value = NULL,
 																 .value_scaled = NULL){
 	
+	# Comply with CRAN NOTES
+	data = NULL
+	. = NULL
+
 	# Get column names
 	.element = enquo(.element)
 	.feature = enquo(.feature)
@@ -899,7 +943,7 @@ fill_NA_using_formula = function(.data,
 												mutate(
 													!!.value := ifelse(
 														!!.value %>% is.na,
-														median(!!.value, na.rm = T),!!.value
+														median(!!.value, na.rm = TRUE),!!.value
 													)
 												) %>%
 												
@@ -909,7 +953,7 @@ fill_NA_using_formula = function(.data,
 													~ .x %>% mutate(
 														!!.value_scaled := ifelse(
 															!!.value_scaled %>% is.na,
-															median(!!.value_scaled, na.rm = T),!!.value_scaled
+															median(!!.value_scaled, na.rm = TRUE),!!.value_scaled
 														)
 													)
 												) %>%
@@ -960,6 +1004,9 @@ fill_NA_using_value = function(.data,
 																 .feature = NULL,
 																 .value = NULL,
 																 fill_with){
+	
+	# Comply with CRAN NOTES
+	. = NULL
 	 
 	# Get column names
 	.element = enquo(.element)
