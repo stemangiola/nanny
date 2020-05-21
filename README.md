@@ -12,7 +12,7 @@ nanny: high-level data analysis and manipulations in tidyverse style
 
 -->
 
-# <img src="inst/logo.png" height="139px" width="120px" />
+# <img src="inst/logo-02.png" height="139px" width="120px" />
 
 ## Functions/utilities available
 
