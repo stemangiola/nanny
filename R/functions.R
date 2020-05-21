@@ -5,6 +5,7 @@
 #' @import tibble
 #' @importFrom stats kmeans
 #' @importFrom rlang :=
+#' @importFrom rlang is_function
 #'
 #' @param .data A tibble
 #' @param .value A column symbol with the value the clustering is based on (e.g., `count`)
@@ -70,7 +71,7 @@ get_clusters_kmeans_bulk <-
 			cluster %>%
 			as.list() %>%
 			as_tibble() %>%
-			pivot_longer(names_to = quo_names(.element), cols=everything(), names_sep = "___", values_to = "cluster_kmeans") %>%
+			pivot_longer(names_to = quo_names(.element), cols=everything(), names_sep = when(length(quo_names(.element)), (.) > 1 ~ "___", ~ NULL), values_to = "cluster_kmeans") %>%
 			mutate(cluster_kmeans = cluster_kmeans %>% as.factor()) %>%
 			
 			# Attach attributes
@@ -85,6 +86,7 @@ get_clusters_kmeans_bulk <-
 #' @importFrom rlang :=
 #' @importFrom utils installed.packages
 #' @importFrom utils install.packages
+#' @importFrom rlang is_function
 #'
 #' @param .data A tibble
 #' @param .value A column symbol with the value the clustering is based on (e.g., `count`)
@@ -174,6 +176,7 @@ get_clusters_SNN_bulk <-
 #' @importFrom purrr map_dfr
 #' @importFrom rlang :=
 #' @importFrom stats setNames
+#' @importFrom rlang is_function
 #'
 #' @param .data A tibble
 #' @param .value A column symbol with the value the clustering is based on (e.g., `count`)
@@ -266,6 +269,7 @@ get_reduced_dimensions_MDS_bulk <-
 #' @import tibble
 #' @importFrom rlang :=
 #' @importFrom stats prcomp
+#' @importFrom rlang is_function
 #'
 #' @param .data A tibble
 #' @param .value A column symbol with the value the clustering is based on (e.g., `count`)
@@ -416,6 +420,7 @@ get_reduced_dimensions_PCA_bulk <-
 #' @importFrom stats setNames
 #' @importFrom utils installed.packages
 #' @importFrom utils install.packages
+#' @importFrom rlang is_function
 #'
 #' @param .data A tibble
 #' @param .value A column symbol with the value the clustering is based on (e.g., `count`)
@@ -570,7 +575,13 @@ get_rotated_dimensions =
 		if (.data %>%
 				select(!!.element, !!dimension_1_column, !!dimension_2_column) %>%
 				distinct %>%
-				count(!!.element, !!dimension_1_column, !!dimension_2_column) %>%
+				
+				# Count
+				group_by_at(vars(!!.element, !!dimension_1_column, !!dimension_2_column)) %>%
+				tally() %>%
+				ungroup() %>%
+				
+				# Check
 				pull(n) %>%
 				max %>%
 				`>` (1))
@@ -578,15 +589,6 @@ get_rotated_dimensions =
 				"nanny says: %s must be unique for each row for the calculation of rotation",
 				quo_names(.element)
 			))
-		
-		# Function that rotates a 2D space of a arbitrary angle
-		rotation = function(m, d) {
-			r = d * pi / 180
-			((dplyr::bind_rows(
-				c(`1` = cos(r), `2` = -sin(r)),
-				c(`1` = sin(r), `2` = cos(r))
-			) %>% as_matrix) %*% m)
-		}
 		
 		# Sanity check of the angle selected
 		if (rotation_degrees %>% between(-360, 360) %>% `!`)
@@ -604,8 +606,8 @@ get_rotated_dimensions =
 						 		quo_names(dimension_1_column_rotated),
 						 		quo_names(dimension_2_column_rotated)
 						 	)) %>%
-			pivot_longer(names_to = !!.element,values_to = value, cols = -`rotated dimensions`) %>%
-			pivot_wider(names_from = `rotated dimensions`, values_from = value, names_sep = "___") %>%
+			pivot_longer(names_to = quo_names(.element),values_to = "value", cols = -`rotated dimensions`, names_sep = when(length(quo_names(.element)), (.) > 1 ~ "___", ~ NULL)) %>%
+			pivot_wider(names_from = `rotated dimensions`, values_from = value) %>%
 			
 
 			
@@ -620,6 +622,7 @@ get_rotated_dimensions =
 #' @import tidyr
 #' @import tibble
 #' @importFrom rlang :=
+#' @importFrom rlang is_function
 #'
 #' @param .data A tibble
 #' @param .value A column symbol with the value the clustering is based on (e.g., `count`)

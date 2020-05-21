@@ -322,3 +322,12 @@ quo_names <- function(v) {
 		strsplit(', ') %>% 
 		unlist 
 }
+
+# Function that rotates a 2D space of a arbitrary angle
+rotation = function(m, d) {
+	r = d * pi / 180
+	((dplyr::bind_rows(
+		c(`1` = cos(r), `2` = -sin(r)),
+		c(`1` = sin(r), `2` = cos(r))
+	) %>% as_matrix) %*% m)
+}

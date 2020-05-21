@@ -169,6 +169,7 @@ check_if_duplicated_genes <- function(.data,
 		distinct() %>%
 		group_by_at(vars(!!.sample, !!.transcript)) %>%
 		tally() %>%
+		ungroup() %>%
 		filter(n > 1) %>%
 		arrange(n %>% desc())
 	
@@ -219,6 +220,7 @@ check_if_column_missing = function(.data, .sample, .transcript, .abundance) {
 		equals(length(my_cols))
 }
 
+#' @importFrom purrr map_chr
 column_type_checking = function(.data, .sample, .transcript, .abundance) {
 	# Parse column names
 	.sample = enquo(.sample)
@@ -260,7 +262,12 @@ check_if_data_rectangular = function(.data, .sample, .transcript, .abundance, ty
 		sample(!!.sample, !!.transcript, !!.abundance) %>%
 		distinct %>%
 		
-		count(!!.sample) %>%
+		# count
+		group_by_at(vars(!!.sample)) %>%
+		tally() %>%
+		ungroup() %>%
+		
+		# Re-count
 		count(n) %>%
 		nrow %>%
 		equals(1)
