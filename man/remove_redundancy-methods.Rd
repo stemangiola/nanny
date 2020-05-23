@@ -37,7 +37,7 @@ remove_redundancy(
 A tbl object with with dropped recundant elements (e.g., elements).
 }
 \description{
-remove_redundancy() takes as imput a `tbl` formatted as | <element> | <feature> | <value> | <...> | for correlation method or | <DIMENSION 1> | <DIMENSION 2> | <...> | for reduced_dimensions method, and returns a `tbl` with dropped elements (e.g., elements).
+remove_redundancy() takes as imput a `tbl` formatted as | <element> | <feature> | <value> | <...> | for correlation method, and returns a `tbl` with dropped elements (e.g., elements). The backend function used is widyr::pairwise_cor (David Robinson, 2020)
 }
 \details{
 \lifecycle{maturing}

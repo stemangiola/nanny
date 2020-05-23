@@ -31,7 +31,7 @@ keep_variable(
 A `tbl` with filtered features
 }
 \description{
-keep_variable() takes as imput a `tbl` formatted as | <element> | <feature> | <value> | <...> | and returns a `tbl` with data nested for each permutation.
+keep_variable() takes as imput a `tbl` formatted as | <element> | <feature> | <value> | <...> | and returns a `tbl` with the filtered most variable features. The formula used is from limma::plotMDS (Robinson et al., 2010, <doi:10.1093/bioinformatics/btp616>)
 }
 \details{
 \lifecycle{maturing}

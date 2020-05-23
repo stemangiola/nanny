@@ -1,11 +1,10 @@
 ---
-title: "nanny: high-level data analysis and manipulations in tidyverse style"
+title: "nanny: high-level data analysis and manipulations in tidyverse style."
 output: github_document
 ---
+**It tidies up your playground!**
 
-<!-- badges: start -->
-  [![Lifecycle:maturing](https://img.shields.io/badge/lifecycle-maturing-blue.svg)](https://www.tidyverse.org/lifecycle/#maturing)
- <!-- badges: end -->
+#  <img src="inst/logo-02.png" height="139px" width="120px" />
 
 <!---
 
@@ -13,8 +12,12 @@ output: github_document
 
 -->
 
+<!-- badges: start -->
+  [![Lifecycle:maturing](https://img.shields.io/badge/lifecycle-maturing-blue.svg)](https://www.tidyverse.org/lifecycle/#maturing)
+ <!-- badges: end -->
 
-#  <img src="inst/logo-02.png" height="139px" width="120px" />
+
+
 
 ## Functions/utilities available
 
@@ -104,7 +107,7 @@ mtcars_tidy
 
 We may want to reduce the dimensions of our data, for example using PCA,  MDS of tSNE algorithms. `reduce_dimensions` takes a tibble, column names (as symbols; for `element`, `feature` and `value`) and a method (e.g., MDS,  PCA or tSNE) as arguments and returns a tibble with additional columns for the reduced dimensions.
 
-**MDS** (Robinson et al., 10.1093/bioinformatics/btp616)
+**MDS** 
 
 ```{r mds, cache=TRUE}
 mtcars_tidy_MDS =

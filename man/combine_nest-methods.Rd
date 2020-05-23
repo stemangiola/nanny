@@ -18,7 +18,7 @@ combine_nest(.data, .names_from, .values_from)
 A nested `tbl`
 }
 \description{
-combine_nest() takes as imput a `tbl` formatted as | <element> | <feature> | <value> | <...> | and returns a `tbl` with data nested for each permutation.
+combine_nest() takes as imput a `tbl` formatted as | <element> | <feature> | <value> | <...> | and returns a `tbl` with data nested for each combination  The package used in the backend is gtools (Gregory R. Warnes, Ben Bolker, and Thomas Lumley, 2020)
 }
 \details{
 \lifecycle{maturing}

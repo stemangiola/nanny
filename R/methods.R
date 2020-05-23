@@ -210,7 +210,7 @@ setMethod("cluster_elements", "tbl_df", .cluster_elements)
 #'
 #' \lifecycle{maturing}
 #'
-#' @description reduce_dimensions() takes as imput a `tbl` formatted as | <element> | <feature> | <value> | <...> | and calculates the reduced dimensional space of the feature value.
+#' @description reduce_dimensions() takes as imput a `tbl` formatted as | <element> | <feature> | <value> | <...> | and calculates the reduced dimensional space of the feature value. The functions available are PCA, MDS (Robinson et al., 2010, <doi:10.1093/bioinformatics/btp616>), tSNE (Laurens van der Maaten, 2009)
 #'
 #' @importFrom rlang enquo
 #' @importFrom magrittr "%>%"
@@ -574,7 +574,7 @@ setMethod("rotate_dimensions", "tbl_df", .rotate_dimensions)
 #'
 #' \lifecycle{maturing}
 #'
-#' @description remove_redundancy() takes as imput a `tbl` formatted as | <element> | <feature> | <value> | <...> | for correlation method or | <DIMENSION 1> | <DIMENSION 2> | <...> | for reduced_dimensions method, and returns a `tbl` with dropped elements (e.g., elements).
+#' @description remove_redundancy() takes as imput a `tbl` formatted as | <element> | <feature> | <value> | <...> | for correlation method, and returns a `tbl` with dropped elements (e.g., elements). The backend function used is widyr::pairwise_cor (David Robinson, 2020)
 #'
 #' @importFrom rlang enquo
 #' @importFrom magrittr "%>%"
@@ -892,7 +892,7 @@ setMethod("fill_missing", "tbl_df", .fill_missing)
 #'
 #' \lifecycle{maturing}
 #'
-#' @description permute_nest() takes as imput a `tbl` formatted as | <element> | <feature> | <value> | <...> | and returns a `tbl` with data nested for each permutation. 
+#' @description permute_nest() takes as imput a `tbl` formatted as | <element> | <feature> | <value> | <...> | and returns a `tbl` with data nested for each permutation. The package used in the backend is gtools (Gregory R. Warnes, Ben Bolker, and Thomas Lumley, 2020)
 #'
 #' @importFrom rlang enquo
 #' @importFrom magrittr "%>%"
@@ -977,7 +977,7 @@ setMethod("permute_nest", "tbl_df", .permute_nest)
 #'
 #' \lifecycle{maturing}
 #'
-#' @description combine_nest() takes as imput a `tbl` formatted as | <element> | <feature> | <value> | <...> | and returns a `tbl` with data nested for each permutation. 
+#' @description combine_nest() takes as imput a `tbl` formatted as | <element> | <feature> | <value> | <...> | and returns a `tbl` with data nested for each combination  The package used in the backend is gtools (Gregory R. Warnes, Ben Bolker, and Thomas Lumley, 2020)
 #'
 #' @importFrom rlang enquo
 #' @importFrom magrittr "%>%"
@@ -1064,7 +1064,7 @@ setMethod("combine_nest", "tbl_df", .combine_nest)
 #'
 #' \lifecycle{maturing}
 #'
-#' @description keep_variable() takes as imput a `tbl` formatted as | <element> | <feature> | <value> | <...> | and returns a `tbl` with data nested for each permutation. 
+#' @description keep_variable() takes as imput a `tbl` formatted as | <element> | <feature> | <value> | <...> | and returns a `tbl` with the filtered most variable features. The formula used is from limma::plotMDS (Robinson et al., 2010, <doi:10.1093/bioinformatics/btp616>)
 #'
 #' @importFrom rlang enquo
 #' @importFrom magrittr "%>%"

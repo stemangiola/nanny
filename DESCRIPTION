@@ -1,6 +1,6 @@
 Package: nanny
 Type: Package
-Title: It tidies up your playground. A tidyverse-style library for high-level data analysis and manipulation
+Title: High-level data analysis and manipulation in tidyverse style
 Version: 0.1.1
 Authors@R: 
     person(given = "Stefano",
@@ -9,10 +9,10 @@ Authors@R:
            email = "mangiolastefano@gmail.com")
 Maintainer: Stefano Mangiola <mangiolastefano@gmail.com>
 Description: 
-    This package includes wrapper functions for the main high-level data analysis and manipulations, 
+    Includes wrapper functions for the main high-level data analysis and manipulations, 
     such as cluster, dimensionality reduction, redundancy elimination, identify variable elements. 
     It operates on tidy data frames with element, feature and value column.
-License: GPL-3 + file LICENSE
+License: GPL-3
 Depends:
     R (>= 3.6.0)
 Encoding: UTF-8
