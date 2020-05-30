@@ -32,11 +32,11 @@ Imports:
     stats,
     utils,
     knitr,
-    widyr
+    widyr,
+    Rtsne
 RdMacros: lifecycle
 Suggests: 
     testthat,
-    Rtsne,
     Seurat,
     gtools,
     limma,

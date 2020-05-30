@@ -91,7 +91,6 @@ get_clusters_kmeans_bulk <-
 #' @import tidyr
 #' @import tibble
 #' @importFrom rlang :=
-#' @importFrom utils install.packages
 #' @importFrom rlang is_function
 #'
 #' @param .data A tibble
@@ -124,14 +123,10 @@ get_clusters_SNN_bulk <-
 		
 		# Check if package is installed, otherwise install
 		if (find.package("Seurat", quiet = T) %>% length %>% equals(0)) {
-			readline(prompt="Seurat is not installed. For keeping the DEPENDENCY structure light it has to be installed now. Do you want to install Seurat? (y/n)") %>%
-				when((.) == "y" ~ 	install.packages("Seurat", repos = "https://cloud.r-project.org"), 
-						 ~ stop("nanny says: Seurat is necessary for this operation. Please install it with 	install.packages(\"Seurat\", repos = \"https://cloud.r-project.org\")"))
+	 stop("nanny says: Seurat is necessary for this operation. Please install it with 	install.packages(\"Seurat\", repos = \"https://cloud.r-project.org\")")
 		}
 		if (find.package("KernSmooth", quiet = T) %>% length %>% equals(0)) {
-			readline(prompt="KernSmooth is not installed. For keeping the DEPENDENCY structure light it has to be installed now. Do you want to install KernSmooth? (y/n)") %>%
-				when((.) == "y" ~ 	install.packages("KernSmooth", repos = "https://cloud.r-project.org"), 
-						 ~ stop("nanny says: KernSmooth is necessary for this operation. Please install it with 	install.packages(\"KernSmooth\")"))
+	 stop("nanny says: KernSmooth is necessary for this operation. Please install it with 	install.packages(\"KernSmooth\")")
 		}
 		
 		my_df =
@@ -445,9 +440,9 @@ get_reduced_dimensions_PCA_bulk <-
 #' @import tibble
 #' @importFrom rlang :=
 #' @importFrom stats setNames
-#' @importFrom utils install.packages
 #' @importFrom rlang is_function
 #' @importFrom magrittr `%$%`
+#' @importFrom Rtsne Rtsne
 #'
 #' @param .data A tibble
 #' @param .value A column symbol with the value the clustering is based on (e.g., `count`)
@@ -490,13 +485,10 @@ get_reduced_dimensions_TSNE_bulk <-
 		if (!"dims" %in% names(arguments))
 			arguments = arguments %>% c(dims = .dims)
 		
-		
-		# Check if package is installed, otherwise install
-		if (find.package("Rtsne", quiet = T) %>% length %>% equals(0)) {
-			readline(prompt="Rtsne is not installed. For keeping the DEPENDENCY structure light it has to be installed now. Do you want to install Rtsne? (y/n)") %>%
-				when((.) == "y" ~ 	install.packages("Rtsne", repos = "https://cloud.r-project.org"), 
-						 ~ stop("nanny says: Rtsne is necessary for this operation. Please install it with 	install.packages(\"Rtsne\")"))
-		}
+		# # Check if package is installed, otherwise install
+		# if (find.package("Rtsne", quiet = T) %>% length %>% equals(0)) {
+		# 	 stop("nanny says: Rtsne is necessary for this operation. Please install it with 	install.packages(\"Rtsne\")")
+		# }
 		
 		# Set perprexity to not be too high
 		if (!"perplexity" %in% names(arguments))
@@ -546,7 +538,7 @@ get_reduced_dimensions_TSNE_bulk <-
 			# distinct %>%
 			as_matrix(rownames = quo_names(.element))
 		
-		do.call(Rtsne::Rtsne, c(list(df_tsne), arguments)) %$%
+		do.call(Rtsne, c(list(df_tsne), arguments)) %$%
 			Y %>%
 			as_tibble(.name_repair = "minimal") %>%
 			setNames(c("tSNE1", "tSNE2")) %>%
@@ -688,15 +680,6 @@ remove_redundancy_elements_through_correlation <- function(.data,
 	.element = enquo(.element)
 	.feature = enquo(.feature)
 	.value = enquo(.value)
-	
-	# # Check if package is installed, otherwise install
-	# if (find.package("widyr", quiet = T) %>% length %>% equals(0)) {
-	# 	#message("Installing widyr needed for correlation analyses")
-	# 	readline(prompt="widyr is not installed. For keeping the DEPENDENCY structure light it has to be installed now. Do you want to install widyr? (y/n)") %>%
-	# 		when((.) == "y" ~ install.packages("widyr"), 
-	# 		~ stop("nanny says: widyr is necessary for this operation. Please install it with install.packages(\"widyr\")"))
-	# 	
-	# }
 	
 	# Get the redundant data frame
 	.data.correlated =
@@ -871,7 +854,6 @@ remove_redundancy_elements_though_reduced_dimensions <-
 #' @importFrom magrittr set_colnames
 #' @importFrom stats model.matrix
 #' @importFrom stats as.formula
-#' @importFrom utils install.packages
 #' @importFrom rlang quo_is_symbol
 #'
 #' @param .data A tibble
@@ -993,7 +975,6 @@ fill_NA_using_formula = function(.data,
 #' @importFrom magrittr set_colnames
 #' @importFrom stats model.matrix
 #' @importFrom stats as.formula
-#' @importFrom utils install.packages
 #'
 #' @param .data A `tbl` formatted as | <element> | <feature> | <value> | <...> |
 #' @param .element The name of the element column
