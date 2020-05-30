@@ -91,7 +91,6 @@ get_clusters_kmeans_bulk <-
 #' @import tidyr
 #' @import tibble
 #' @importFrom rlang :=
-#' @importFrom utils find.package
 #' @importFrom utils install.packages
 #' @importFrom rlang is_function
 #'
@@ -289,6 +288,7 @@ get_reduced_dimensions_MDS_bulk <-
 #' @importFrom stats prcomp
 #' @importFrom rlang is_function
 #' @importFrom magrittr `%$%`
+#' @importFrom utils capture.output
 #'
 #' @param .data A tibble
 #' @param .value A column symbol with the value the clustering is based on (e.g., `count`)
@@ -413,7 +413,7 @@ get_reduced_dimensions_PCA_bulk <-
 					as.data.frame() %>%
 					
 					# Print as message
-					capture.output %>% paste0(collapse = "\n") %>% message
+					capture.output() %>% paste0(collapse = "\n") %>% message()
 				
 				(.)
 				
@@ -445,7 +445,6 @@ get_reduced_dimensions_PCA_bulk <-
 #' @import tibble
 #' @importFrom rlang :=
 #' @importFrom stats setNames
-#' @importFrom utils find.package
 #' @importFrom utils install.packages
 #' @importFrom rlang is_function
 #' @importFrom magrittr `%$%`
@@ -872,7 +871,6 @@ remove_redundancy_elements_though_reduced_dimensions <-
 #' @importFrom magrittr set_colnames
 #' @importFrom stats model.matrix
 #' @importFrom stats as.formula
-#' @importFrom utils find.package
 #' @importFrom utils install.packages
 #' @importFrom rlang quo_is_symbol
 #'
@@ -995,7 +993,6 @@ fill_NA_using_formula = function(.data,
 #' @importFrom magrittr set_colnames
 #' @importFrom stats model.matrix
 #' @importFrom stats as.formula
-#' @importFrom utils find.package
 #' @importFrom utils install.packages
 #'
 #' @param .data A `tbl` formatted as | <element> | <feature> | <value> | <...> |

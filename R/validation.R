@@ -47,6 +47,7 @@ error_if_log_transformed <- function(x, .abundance) {
 #' @import dplyr
 #' @import tidyr
 #' @import tibble
+#' @importFrom utils capture.output
 #'
 #'
 #' @param .data A tibble of read counts
@@ -80,7 +81,7 @@ error_if_duplicated_genes <- function(.data,
 			head %>% 
 			
 			# Print as message
-			capture.output %>% paste0(collapse = "\n") %>% message
+			capture.output() %>% paste0(collapse = "\n") %>% message()
 
 		stop(
 			"nanny says: Your dataset include duplicated element/feature pairs. Please, remove redundancies before proceeding."
@@ -158,6 +159,7 @@ check_if_wrong_input = function(.data, list_input, expected_type) {
 #' @import dplyr
 #' @import tidyr
 #' @import tibble
+#' @importFrom utils capture.output
 #'
 #'
 #' @param .data A tibble of read counts
@@ -199,7 +201,7 @@ check_if_duplicated_genes <- function(.data,
 			head %>% 
 			
 			# Print as message
-			capture.output %>% paste0(collapse = "\n") %>% message
+			capture.output() %>% paste0(collapse = "\n") %>% message()
 		
 	}
 	

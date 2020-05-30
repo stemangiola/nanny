@@ -40,7 +40,6 @@ Suggests:
     Seurat,
     gtools,
     limma,
-    widyr,
     GGally,
     tidyverse
 VignetteBuilder: 
