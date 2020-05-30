@@ -91,7 +91,7 @@ get_clusters_kmeans_bulk <-
 #' @import tidyr
 #' @import tibble
 #' @importFrom rlang :=
-#' @importFrom utils installed.packages
+#' @importFrom utils find.package
 #' @importFrom utils install.packages
 #' @importFrom rlang is_function
 #'
@@ -124,13 +124,15 @@ get_clusters_SNN_bulk <-
 		.value = enquo(.value)
 		
 		# Check if package is installed, otherwise install
-		if ("Seurat" %in% rownames(installed.packages()) == FALSE) {
-			message("Installing Seurat")
-			install.packages("Seurat", repos = "https://cloud.r-project.org")
+		if (find.package("Seurat", quiet = T) %>% length %>% equals(0)) {
+			readline(prompt="Seurat is not installed. For keeping the DEPENDENCY structure light it has to be installed now. Do you want to install Seurat? (y/n)") %>%
+				when((.) == "y" ~ 	install.packages("Seurat", repos = "https://cloud.r-project.org"), 
+						 ~ stop("nanny says: Seurat is necessary for this operation. Please install it with 	install.packages(\"Seurat\", repos = \"https://cloud.r-project.org\")"))
 		}
-		if ("KernSmooth" %in% rownames(installed.packages()) == FALSE) {
-			message("Installing KernSmooth")
-			install.packages("KernSmooth", repos = "https://cloud.r-project.org")
+		if (find.package("KernSmooth", quiet = T) %>% length %>% equals(0)) {
+			readline(prompt="KernSmooth is not installed. For keeping the DEPENDENCY structure light it has to be installed now. Do you want to install KernSmooth? (y/n)") %>%
+				when((.) == "y" ~ 	install.packages("KernSmooth", repos = "https://cloud.r-project.org"), 
+						 ~ stop("nanny says: KernSmooth is necessary for this operation. Please install it with 	install.packages(\"KernSmooth\")"))
 		}
 		
 		my_df =
@@ -443,7 +445,7 @@ get_reduced_dimensions_PCA_bulk <-
 #' @import tibble
 #' @importFrom rlang :=
 #' @importFrom stats setNames
-#' @importFrom utils installed.packages
+#' @importFrom utils find.package
 #' @importFrom utils install.packages
 #' @importFrom rlang is_function
 #' @importFrom magrittr `%$%`
@@ -491,9 +493,10 @@ get_reduced_dimensions_TSNE_bulk <-
 		
 		
 		# Check if package is installed, otherwise install
-		if ("Rtsne" %in% rownames(installed.packages()) == FALSE) {
-			message("Installing Rtsne")
-			install.packages("Rtsne", repos = "https://cloud.r-project.org")
+		if (find.package("Rtsne", quiet = T) %>% length %>% equals(0)) {
+			readline(prompt="Rtsne is not installed. For keeping the DEPENDENCY structure light it has to be installed now. Do you want to install Rtsne? (y/n)") %>%
+				when((.) == "y" ~ 	install.packages("Rtsne", repos = "https://cloud.r-project.org"), 
+						 ~ stop("nanny says: Rtsne is necessary for this operation. Please install it with 	install.packages(\"Rtsne\")"))
 		}
 		
 		# Set perprexity to not be too high
@@ -687,9 +690,12 @@ remove_redundancy_elements_through_correlation <- function(.data,
 	.value = enquo(.value)
 	
 	# Check if package is installed, otherwise install
-	if ("widyr" %in% rownames(installed.packages()) == FALSE) {
-		message("Installing widyr needed for correlation analyses")
-		install.packages("widyr")
+	if (find.package("widyr", quiet = T) %>% length %>% equals(0)) {
+		#message("Installing widyr needed for correlation analyses")
+		readline(prompt="widyr is not installed. For keeping the DEPENDENCY structure light it has to be installed now. Do you want to install widyr? (y/n)") %>%
+			when((.) == "y" ~ install.packages("widyr"), 
+			~ stop("nanny says: widyr is necessary for this operation. Please install it with install.packages(\"widyr\")"))
+		
 	}
 	
 	# Get the redundant data frame
@@ -865,7 +871,7 @@ remove_redundancy_elements_though_reduced_dimensions <-
 #' @importFrom magrittr set_colnames
 #' @importFrom stats model.matrix
 #' @importFrom stats as.formula
-#' @importFrom utils installed.packages
+#' @importFrom utils find.package
 #' @importFrom utils install.packages
 #' @importFrom rlang quo_is_symbol
 #'
@@ -988,7 +994,7 @@ fill_NA_using_formula = function(.data,
 #' @importFrom magrittr set_colnames
 #' @importFrom stats model.matrix
 #' @importFrom stats as.formula
-#' @importFrom utils installed.packages
+#' @importFrom utils find.package
 #' @importFrom utils install.packages
 #'
 #' @param .data A `tbl` formatted as | <element> | <feature> | <value> | <...> |
