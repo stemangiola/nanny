@@ -74,8 +74,14 @@ error_if_duplicated_genes <- function(.data,
 	
 	
 	if (duplicates %>% nrow() > 0) {
-		writeLines("Those are the duplicated elements/features pair")
-		duplicates %>% as.data.frame %>% head %>% print()
+		message("Those are the duplicated elements/features pair")
+		duplicates %>% 
+			as.data.frame %>% 
+			head %>% 
+			
+			# Print as message
+			capture.output %>% paste0(collapse = "\n") %>% message
+
 		stop(
 			"nanny says: Your dataset include duplicated element/feature pairs. Please, remove redundancies before proceeding."
 		)
@@ -187,8 +193,14 @@ check_if_duplicated_genes <- function(.data,
 	is_unique = duplicates %>% nrow() %>% equals(0)
 	
 	if (!is_unique) {
-		writeLines("nanny says: Those are the duplicated elements/features pair")
-		duplicates %>% as.data.frame %>% head %>% print()
+		message("nanny says: Those are the duplicated elements/features pair")
+		duplicates %>% 
+			as.data.frame %>%
+			head %>% 
+			
+			# Print as message
+			capture.output %>% paste0(collapse = "\n") %>% message
+		
 	}
 	
 	is_unique

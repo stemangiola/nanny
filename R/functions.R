@@ -125,11 +125,11 @@ get_clusters_SNN_bulk <-
 		
 		# Check if package is installed, otherwise install
 		if ("Seurat" %in% rownames(installed.packages()) == FALSE) {
-			writeLines("Installing Seurat")
+			message("Installing Seurat")
 			install.packages("Seurat", repos = "https://cloud.r-project.org")
 		}
 		if ("KernSmooth" %in% rownames(installed.packages()) == FALSE) {
-			writeLines("Installing KernSmooth")
+			message("Installing KernSmooth")
 			install.packages("KernSmooth", repos = "https://cloud.r-project.org")
 		}
 		
@@ -399,7 +399,7 @@ get_reduced_dimensions_PCA_bulk <-
 			# input: PCA object
 			# output: PCA object
 			{
-				writeLines("Fraction of variance explained by the selected principal components")
+				message("Fraction of variance explained by the selected principal components")
 				
 				(.) %$% sdev %>% `^` (2) %>% # Eigen value
 					`/` (sum(.)) %>%
@@ -409,7 +409,9 @@ get_reduced_dimensions_PCA_bulk <-
 					rename(`Fraction of variance` = value) %>%
 					mutate(PC = components) %>%
 					as.data.frame() %>%
-					print()
+					
+					# Print as message
+					capture.output %>% paste0(collapse = "\n") %>% message
 				
 				(.)
 				
@@ -490,7 +492,7 @@ get_reduced_dimensions_TSNE_bulk <-
 		
 		# Check if package is installed, otherwise install
 		if ("Rtsne" %in% rownames(installed.packages()) == FALSE) {
-			writeLines("Installing Rtsne")
+			message("Installing Rtsne")
 			install.packages("Rtsne", repos = "https://cloud.r-project.org")
 		}
 		
@@ -686,7 +688,7 @@ remove_redundancy_elements_through_correlation <- function(.data,
 	
 	# Check if package is installed, otherwise install
 	if ("widyr" %in% rownames(installed.packages()) == FALSE) {
-		writeLines("Installing widyr needed for correlation analyses")
+		message("Installing widyr needed for correlation analyses")
 		install.packages("widyr")
 	}
 	

@@ -1,7 +1,7 @@
 Package: nanny
 Type: Package
-Title: High-level data analysis and manipulation in tidyverse style
-Version: 0.1.2
+Title: High-Level Data Analysis and Manipulation in Tidyverse Style
+Version: 0.1.3
 Authors@R: 
     person(given = "Stefano",
            family = "Mangiola",
