@@ -31,7 +31,8 @@ Imports:
     lme4,
     stats,
     utils,
-    knitr
+    knitr,
+    widyr
 RdMacros: lifecycle
 Suggests: 
     testthat,

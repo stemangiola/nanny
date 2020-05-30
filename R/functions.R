@@ -655,6 +655,7 @@ get_rotated_dimensions =
 #' @import tibble
 #' @importFrom rlang :=
 #' @importFrom rlang is_function
+#' @importFrom widyr pairwise_cor
 #'
 #' @param .data A tibble
 #' @param .value A column symbol with the value the clustering is based on (e.g., `count`)
@@ -689,14 +690,14 @@ remove_redundancy_elements_through_correlation <- function(.data,
 	.feature = enquo(.feature)
 	.value = enquo(.value)
 	
-	# Check if package is installed, otherwise install
-	if (find.package("widyr", quiet = T) %>% length %>% equals(0)) {
-		#message("Installing widyr needed for correlation analyses")
-		readline(prompt="widyr is not installed. For keeping the DEPENDENCY structure light it has to be installed now. Do you want to install widyr? (y/n)") %>%
-			when((.) == "y" ~ install.packages("widyr"), 
-			~ stop("nanny says: widyr is necessary for this operation. Please install it with install.packages(\"widyr\")"))
-		
-	}
+	# # Check if package is installed, otherwise install
+	# if (find.package("widyr", quiet = T) %>% length %>% equals(0)) {
+	# 	#message("Installing widyr needed for correlation analyses")
+	# 	readline(prompt="widyr is not installed. For keeping the DEPENDENCY structure light it has to be installed now. Do you want to install widyr? (y/n)") %>%
+	# 		when((.) == "y" ~ install.packages("widyr"), 
+	# 		~ stop("nanny says: widyr is necessary for this operation. Please install it with install.packages(\"widyr\")"))
+	# 	
+	# }
 	
 	# Get the redundant data frame
 	.data.correlated =
@@ -763,7 +764,7 @@ remove_redundancy_elements_through_correlation <- function(.data,
 		rename(value := !!.value) %>%
 		
 		# Run pairwise correlation and return a tibble
-		widyr::pairwise_cor(
+		pairwise_cor(
 			element,
 			feature,
 			value,
