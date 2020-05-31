@@ -55,13 +55,13 @@ test_that("subset", {
 })
 
 test_that("impute missing", {
-  res = impute_missing(nanny::test_data2 , ~ 1, cancer_ID, c(`ct 1`, `ct 2`), relation) 
+  res = impute_missing(nanny::test_data2 , cancer_ID, c(`ct 1`, `ct 2`), relation, ~ 1) 
   expect_identical(res , nanny::test_data2 %>% mutate_if(is.factor, as.character))
   
-  res = impute_missing(nanny::test_data2 , ~ 1,  c(`ct 1`, `ct 2`),cancer_ID, relation) 
+  res = impute_missing(nanny::test_data2 ,  c(`ct 1`, `ct 2`),cancer_ID, relation, ~ 1)
   expect_identical(res , nanny::test_data2 )
   
-  res = impute_missing(nanny::test_data2 %>% slice(-1), ~ 1,  c(`ct 1`, `ct 2`),cancer_ID, relation) 
+  res = impute_missing(nanny::test_data2 %>% slice(-1),   c(`ct 1`, `ct 2`),cancer_ID, relation, ~ 1) 
   expect_equal(res %>% inner_join(nanny::test_data2 %>% slice(1) %>% select(-relation, -group)) %>% nrow , 1)
   
   # Test with formula and covariate
