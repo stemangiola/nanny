@@ -5,14 +5,7 @@
 \alias{keep_variable}
 \title{Keep top variable features across elements}
 \usage{
-keep_variable(
-  .data,
-  .element = NULL,
-  .feature = NULL,
-  .value = NULL,
-  top = Inf,
-  transform = NULL
-)
+keep_variable(.data, .element, .feature, .value, top = Inf, transform = NULL)
 }
 \arguments{
 \item{.data}{A `tbl`}

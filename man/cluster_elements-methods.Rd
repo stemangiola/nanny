@@ -7,9 +7,9 @@
 \usage{
 cluster_elements(
   .data,
-  .element = NULL,
-  .feature = NULL,
-  .value = NULL,
+  .element,
+  .feature,
+  .value,
   method,
   of_elements = TRUE,
   transform = NULL,

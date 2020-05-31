@@ -10,7 +10,7 @@ rotate_dimensions(
   dimension_1_column,
   dimension_2_column,
   rotation_degrees,
-  .element = NULL,
+  .element,
   of_elements = TRUE,
   dimension_1_column_rotated = NULL,
   dimension_2_column_rotated = NULL,

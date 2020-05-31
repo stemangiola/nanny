@@ -5,7 +5,7 @@
 \alias{fill_missing}
 \title{Fill feature value if missing from element-feature pairs}
 \usage{
-fill_missing(.data, .element = NULL, .feature = NULL, .value = NULL, fill_with)
+fill_missing(.data, .element, .feature, .value, fill_with)
 }
 \arguments{
 \item{.data}{A `tbl` formatted as | <element> | <feature> | <value> | <...> |}

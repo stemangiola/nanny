@@ -4,7 +4,7 @@
 \alias{fill_missing,spec_tbl_df-method}
 \title{fill_missing}
 \usage{
-\S4method{fill_missing}{spec_tbl_df}(.data, .element = NULL, .feature = NULL, .value = NULL, fill_with)
+\S4method{fill_missing}{spec_tbl_df}(.data, .element, .feature, .value, fill_with)
 }
 \arguments{
 \item{.data}{A `tbl` formatted as | <element> | <feature> | <value> | <...> |}

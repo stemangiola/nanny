@@ -191,16 +191,16 @@ mtcars_tidy_tSNE %>%
     ## # A tibble: 32 x 5
     ##     tSNE1  tSNE2 car_model            hp    vs
     ##     <dbl>  <dbl> <chr>             <dbl> <dbl>
-    ##  1 -13.6   46.8  Mazda RX4           110     0
-    ##  2  -8.21  47.1  Mazda RX4 Wag       110     0
-    ##  3  36.3   35.7  Datsun 710           93     1
-    ##  4  -8.62 -14.9  Hornet 4 Drive      110     1
-    ##  5  -6.64 -61.7  Hornet Sportabout   175     0
-    ##  6 -10.0  -20.1  Valiant             105     1
-    ##  7   6.82 -46.6  Duster 360          245     0
-    ##  8  -7.60   7.72 Merc 240D            62     1
-    ##  9 -13.8    7.69 Merc 230             95     1
-    ## 10 -11.7   27.0  Merc 280            123     1
+    ##  1   8.30  29.4  Mazda RX4           110     0
+    ##  2   9.82  33.5  Mazda RX4 Wag       110     0
+    ##  3  11.7   54.7  Datsun 710           93     1
+    ##  4 -16.7  -17.5  Hornet 4 Drive      110     1
+    ##  5 -21.0  -46.5  Hornet Sportabout   175     0
+    ##  6 -16.6  -21.8  Valiant             105     1
+    ##  7  -3.83 -58.0  Duster 360          245     0
+    ##  8 -16.0    1.06 Merc 240D            62     1
+    ##  9 -20.2    3.53 Merc 230             95     1
+    ## 10  -5.10  14.3  Merc 280            123     1
     ## # … with 22 more rows
 
 ``` r
@@ -353,7 +353,7 @@ according to a grouping
 
 ``` r
 mtcars_tidy_non_rectangular %>% mutate(vs = factor(vs)) %>% 
-    impute_missing( ~ vs, car_model, feature, value) %>%
+    impute_missing( car_model, feature, value,  ~ vs) %>%
     
     # Print imputed first
     arrange(car_model != "Mazda RX4" | feature != "mpg")

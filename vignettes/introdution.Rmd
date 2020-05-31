@@ -313,7 +313,7 @@ We impute the missing value with the a summary value (median by default) accordi
 
 ```{r}
 mtcars_tidy_non_rectangular %>% mutate(vs = factor(vs)) %>% 
-	impute_missing( ~ vs, car_model, feature, value) %>%
+	impute_missing( car_model, feature, value, ~ vs) %>%
 	
 	# Print imputed first
 	arrange(car_model != "Mazda RX4" | feature != "mpg")

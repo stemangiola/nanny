@@ -4,14 +4,7 @@
 \alias{keep_variable,spec_tbl_df-method}
 \title{keep_variable}
 \usage{
-\S4method{keep_variable}{spec_tbl_df}(
-  .data,
-  .element = NULL,
-  .feature = NULL,
-  .value = NULL,
-  top = Inf,
-  transform = NULL
-)
+\S4method{keep_variable}{spec_tbl_df}(.data, .element, .feature, .value, top = Inf, transform = NULL)
 }
 \arguments{
 \item{.data}{A `tbl`}
