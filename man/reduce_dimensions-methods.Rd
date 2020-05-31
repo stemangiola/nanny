@@ -7,9 +7,9 @@
 \usage{
 reduce_dimensions(
   .data,
-  .element = NULL,
-  .feature = NULL,
-  .value = NULL,
+  .element,
+  .feature,
+  .value,
   method,
   .dims = 2,
   top = Inf,

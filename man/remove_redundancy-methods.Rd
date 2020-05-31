@@ -7,9 +7,9 @@
 \usage{
 remove_redundancy(
   .data,
-  .element = NULL,
-  .feature = NULL,
-  .value = NULL,
+  .element,
+  .feature,
+  .value,
   of_elements = TRUE,
   correlation_threshold = 0.9,
   top = Inf,

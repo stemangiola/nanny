@@ -36,9 +36,9 @@
 #' @export
 #'
 setGeneric("cluster_elements", function(.data,
-																				.element = NULL,
-																				.feature = NULL,
-																				.value = NULL,
+																				.element,
+																				.feature,
+																				.value,
 																				method,
 																				of_elements = TRUE,
 																				transform = NULL,
@@ -48,9 +48,9 @@ setGeneric("cluster_elements", function(.data,
 
 # Set internal
 .cluster_elements = 		function(.data,
-															 .element = NULL,
-															 .feature = NULL,
-															 .value = NULL,
+															 .element,
+															 .feature,
+															 .value,
 															 method ,
 															 of_elements = TRUE,
 															 transform = NULL,
@@ -254,9 +254,9 @@ setMethod("cluster_elements", "tbl_df", .cluster_elements)
 #'
 #'
 setGeneric("reduce_dimensions", function(.data,
-																				 .element = NULL,
-																				 .feature = NULL,
-																				 .value = NULL,
+																				 .element,
+																				 .feature,
+																				 .value,
 																				 method,
 																				 .dims = 2,
 																				 top = Inf,
@@ -269,9 +269,9 @@ setGeneric("reduce_dimensions", function(.data,
 
 # Set internal
 .reduce_dimensions = 		function(.data,
-																.element = NULL,
-																.feature = NULL,
-																.value = NULL,
+																.element,
+																.feature,
+																.value,
 																method,
 																.dims = 2,
 																top = Inf,
@@ -480,7 +480,7 @@ setGeneric("rotate_dimensions", function(.data,
 																				 dimension_1_column,
 																				 dimension_2_column,
 																				 rotation_degrees,
-																				 .element = NULL,
+																				 .element,
 																				 of_elements = TRUE,
 																				 dimension_1_column_rotated = NULL,
 																				 dimension_2_column_rotated = NULL,
@@ -492,7 +492,7 @@ setGeneric("rotate_dimensions", function(.data,
 																dimension_1_column,
 																dimension_2_column,
 																rotation_degrees,
-																.element = NULL,
+																.element,
 																of_elements = TRUE,
 																dimension_1_column_rotated = NULL,
 																dimension_2_column_rotated = NULL,
@@ -609,9 +609,9 @@ setMethod("rotate_dimensions", "tbl_df", .rotate_dimensions)
 #'
 #'
 setGeneric("remove_redundancy", function(.data,
-																				 .element = NULL,
-																				 .feature = NULL,
-																				 .value = NULL,
+																				 .element,
+																				 .feature,
+																				 .value,
 																				 of_elements = TRUE,
 																				 correlation_threshold = 0.9,
 																				 top = Inf,
@@ -620,9 +620,9 @@ setGeneric("remove_redundancy", function(.data,
 
 # Set internal
 .remove_redundancy = 	 function(.data,
-																.element = NULL,
-																.feature = NULL,
-																.value = NULL,
+																.element,
+																.feature,
+																.value,
 																of_elements = TRUE,
 																correlation_threshold = 0.9,
 																top = Inf,
@@ -844,17 +844,17 @@ setMethod("impute_missing", "tbl_df", .impute_missing)
 #'
 #'
 setGeneric("fill_missing", function(.data,
-																			.element = NULL,
-																			.feature = NULL,
-																			.value = NULL,
+																			.element,
+																			.feature,
+																			.value,
 																			fill_with)
 	standardGeneric("fill_missing"))
 
 # Set internal
 .fill_missing = 	function(.data,
-														.element = NULL,
-														.feature = NULL,
-														.value = NULL,
+														.element,
+														.feature,
+														.value,
 													fill_with)
 {
 	# Get column names
@@ -1098,18 +1098,18 @@ setMethod("combine_nest", "tbl_df", .combine_nest)
 #'
 #'
 setGeneric("keep_variable", function(.data,
-																		 .element = NULL,
-																		 .feature = NULL,
-																		 .value = NULL,
+																		 .element,
+																		 .feature,
+																		 .value,
 																		 top = Inf,
 																		 transform = NULL)
 	standardGeneric("keep_variable"))
 
 # Set internal
 .keep_variable = function(.data,
-													.element = NULL,
-													.feature = NULL,
-													.value = NULL,
+													.element,
+													.feature,
+													.value,
 													top = Inf,
 													transform = NULL) {
 	

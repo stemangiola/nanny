@@ -6,9 +6,9 @@
 \usage{
 \S4method{reduce_dimensions}{tbl_df}(
   .data,
-  .element = NULL,
-  .feature = NULL,
-  .value = NULL,
+  .element,
+  .feature,
+  .value,
   method,
   .dims = 2,
   top = Inf,

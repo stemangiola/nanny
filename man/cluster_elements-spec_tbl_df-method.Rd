@@ -6,9 +6,9 @@
 \usage{
 \S4method{cluster_elements}{spec_tbl_df}(
   .data,
-  .element = NULL,
-  .feature = NULL,
-  .value = NULL,
+  .element,
+  .feature,
+  .value,
   method,
   of_elements = TRUE,
   transform = NULL,

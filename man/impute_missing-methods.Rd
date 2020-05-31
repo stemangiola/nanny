@@ -5,24 +5,18 @@
 \alias{impute_missing}
 \title{Impute feature value if missing from element-feature pairs}
 \usage{
-impute_missing(
-  .data,
-  .formula,
-  .element = NULL,
-  .feature = NULL,
-  .value = NULL
-)
+impute_missing(.data, .element, .feature, .value, .formula)
 }
 \arguments{
 \item{.data}{A `tbl` formatted as | <element> | <feature> | <value> | <...> |}
-
-\item{.formula}{A formula with no response variable, representing the desired linear model where the first covariate is the factor of interest and the second covariate is the unwanted variation (of the kind ~ factor_of_intrest + batch)}
 
 \item{.element}{The name of the element column}
 
 \item{.feature}{The name of the feature/gene column}
 
 \item{.value}{The name of the feature/gene value column}
+
+\item{.formula}{A formula with no response variable, representing the desired linear model where the first covariate is the factor of interest and the second covariate is the unwanted variation (of the kind ~ factor_of_intrest + batch)}
 }
 \value{
 A `tbl` non-sparse value
@@ -37,6 +31,6 @@ This function imputes the value of missing element-feature pair using the median
 }
 \examples{
 
- impute_missing(mtcars_tidy, ~1, car_model, feature, value)
+ impute_missing(mtcars_tidy, car_model, feature, value, ~1)
 
 }

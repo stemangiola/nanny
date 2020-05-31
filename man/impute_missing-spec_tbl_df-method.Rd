@@ -4,24 +4,18 @@
 \alias{impute_missing,spec_tbl_df-method}
 \title{impute_missing}
 \usage{
-\S4method{impute_missing}{spec_tbl_df}(
-  .data,
-  .formula,
-  .element = NULL,
-  .feature = NULL,
-  .value = NULL
-)
+\S4method{impute_missing}{spec_tbl_df}(.data, .element, .feature, .value, .formula)
 }
 \arguments{
 \item{.data}{A `tbl` formatted as | <element> | <feature> | <value> | <...> |}
-
-\item{.formula}{A formula with no response variable, representing the desired linear model where the first covariate is the factor of interest and the second covariate is the unwanted variation (of the kind ~ factor_of_intrest + batch)}
 
 \item{.element}{The name of the element column}
 
 \item{.feature}{The name of the feature/gene column}
 
 \item{.value}{The name of the feature/gene value column}
+
+\item{.formula}{A formula with no response variable, representing the desired linear model where the first covariate is the factor of interest and the second covariate is the unwanted variation (of the kind ~ factor_of_intrest + batch)}
 }
 \value{
 A `tbl` with imputed abundnce
