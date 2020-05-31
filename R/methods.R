@@ -753,7 +753,7 @@ setMethod("subset",		"tbl",			.subset)
 #'
 #' @examples
 #'
-#'  impute_missing(mtcars_tidy, ~1, car_model, feature, value)
+#'  impute_missing(mtcars_tidy, car_model, feature, value, ~1)
 #'
 #' @docType methods
 #' @rdname impute_missing-methods
@@ -762,17 +762,17 @@ setMethod("subset",		"tbl",			.subset)
 #'
 #'
 setGeneric("impute_missing", function(.data,
-																				.element = NULL,
-																				.feature = NULL,
-																				.value = NULL,
+																				.element,
+																				.feature,
+																				.value,
 																				.formula)
 	standardGeneric("impute_missing"))
 
 # Set internal
 .impute_missing = 	function(.data,
-														.element = NULL,
-														.feature = NULL,
-														.value = NULL,
+														.element,
+														.feature,
+														.value,
 														.formula)
 {
 	# Get column names
