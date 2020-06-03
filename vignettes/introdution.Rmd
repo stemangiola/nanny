@@ -1,5 +1,5 @@
 ---
-title: "nanny: high-level data analysis and manipulations in tidyverse style"
+title: "nanny: high-level data analysis and manipulation in tidyverse style"
 output: github_documentdate: "`r Sys.Date()`"
 package: nanny
 output:
@@ -108,11 +108,11 @@ mtcars_tidy
 ```
 
 
-## Reduce `dimensions`
+## `reduce_dimensions`
 
 We may want to reduce the dimensions of our data, for example using PCA,  MDS of tSNE algorithms. `reduce_dimensions` takes a tibble, column names (as symbols; for `element`, `feature` and `value`) and a method (e.g., MDS,  PCA or tSNE) as arguments and returns a tibble with additional columns for the reduced dimensions.
 
-**MDS** (Robinson et al., 10.1093/bioinformatics/btp616)
+**MDS** 
 
 ```{r mds, cache=TRUE}
 mtcars_tidy_MDS =
@@ -172,7 +172,7 @@ mtcars_tidy_tSNE %>%
 	ggplot(aes(x = `tSNE1`, y = `tSNE2`, color=factor(vs))) + geom_point() + my_theme
 ```
 
-## Rotate `dimensions`
+## `rotate_dimensions`
 
 We may want to rotate the reduced dimensions (or any two numeric columns really) of our data, of a set angle. `rotate_dimensions` takes a tibble, column names (as symbols; for `element`, `feature` and `value`) and an angle as arguments and returns a tibble with additional columns for the rotated dimensions. The rotated dimensions will be added to the original data set as `<NAME OF DIMENSION> rotated <ANGLE>` by default, or as specified in the input arguments.
 
@@ -203,7 +203,7 @@ mtcars_tidy_MDS.rotated %>%
 ```
 
 
-## Cluster `elements`
+## `cluster_elements`
 
 We may want to cluster our data (e.g., using k-means element-wise). `cluster_elements` takes as arguments a tibble, column names (as symbols; for `element`, `feature` and `value`) and returns a tibble with additional columns for the cluster annotation. At the moment only k-means clustering is supported, the plan is to introduce more clustering methods.
 
@@ -244,7 +244,7 @@ mtcars_tidy_SNN %>%
 
 ```
 
-## Drop `redundant` features
+## `drop_redundant` 
 
 We may want to remove redundant elements from the original data set (e.g., elements or features), for example if we want to define cell-type specific signatures with low element redundancy. `remove_redundancy` takes as arguments a tibble, column names (as symbols; for `element`, `feature` and `value`) and returns a tibble dropped recundant elements (e.g., elements). Two redundancy estimation approaches are supported:
 
@@ -289,9 +289,9 @@ mtcars_tidy_non_redundant %>%
 ```
 
 
-## `fill_missing` element/feature pairs
+## `fill_missing` 
 
-This function allows to obtain a rectangular underlying data structure, where every element has one feature
+This function allows to obtain a rectangular underlying data structure, where every element has one feature, filling missing element/feature pairs with a value of choice (e.g., 0)
 
 We create a non-rectangular data frame
 
@@ -305,21 +305,22 @@ We fill the missing value with the value of 0
 mtcars_tidy_non_rectangular %>% fill_missing(car_model, feature, value, fill_with = 0)
 ```
 
-## `impute_missing` element/feature pairs
+## `impute_missing` 
 
-This function allows to obtain a rectangular underlying data structure, where every element has one feature
+This function allows to obtain a rectangular underlying data structure, where every element has one feature, imputig missing element/feature pairs with a function of choice (e.g., median)
 
 We impute the missing value with the a summary value (median by default) according to a grouping
 
 ```{r}
 mtcars_tidy_non_rectangular %>% mutate(vs = factor(vs)) %>% 
-	impute_missing( car_model, feature, value, ~ vs) %>%
+	impute_missing( car_model, feature, value,  ~ vs) %>%
 	
 	# Print imputed first
 	arrange(car_model != "Mazda RX4" | feature != "mpg")
 ```
 
-## `permute_nest`, From one column build a two permuted columns with nested information
+## `permute_nest`
+From one column build a two permuted columns with nested information
 
 ```{r}
 mtcars_tidy_permuted = 
@@ -329,14 +330,16 @@ mtcars_tidy_permuted =
 mtcars_tidy_permuted
 ```
 
-## `combine_nest`, From one column build a two combination columns with nested information
+## `combine_nest`
+From one column build a two combination columns with nested information
 
 ```{r}
 mtcars_tidy %>%
 	combine_nest(car_model, value)
 ```
 
-## `lower_triangular` | keep rows corresponding to a lower triangular matrix
+## `lower_triangular` 
+keep rows corresponding to a lower triangular matrix
 
 ```{r}
 mtcars_tidy_permuted %>%
@@ -349,14 +352,16 @@ mtcars_tidy_permuted %>%
 	lower_triangular(car_model_1, car_model_2,  `mean(value)`)
 ```
 
-## `keep_variable`, Keep top variable features
+## `keep_variable`
+Keep top variable features
 
 ```{r}
 mtcars_tidy %>%
 	keep_variable(car_model, feature, value, top=10)
 ```
 
-## `as_matrix` Robustly convert a tibble to matrix 
+## `as_matrix`
+Robustly convert a tibble to matrix 
 
 ```{r}
 mtcars_tidy %>%
@@ -367,7 +372,8 @@ mtcars_tidy %>%
 ```
 
 
-## `subset` Select columns with information relative to a column of interest
+## `subset` 
+Select columns with information relative to a column of interest
 
 ```{r}
 mtcars_tidy %>%
@@ -375,8 +381,15 @@ mtcars_tidy %>%
 
 ```
 
+## `nest_subset` 
+Nest a data frame based on the columns with information relative to the column provided to nest
 
-## ADD versus GET versus ONLY modes
+```{r}
+mtcars_tidy %>% nest_subset(data = -car_model)
+
+```
+
+## `ADD` versus `GET` versus `ONLY` modes
 
 Every function takes a tidyfeatureomics structured data as input, and (i) with action="add" outputs the new information joint to the original input data frame (default), (ii) with action="get" the new information with the element or feature relative informatin depending on what the analysis is about, or (iii) with action="only" just the new information. For example, from this data set
 

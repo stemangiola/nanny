@@ -1,4 +1,4 @@
-nanny: high-level data analysis and manipulations in tidyverse style.
+nanny: high-level data analysis and manipulation in tidyverse style.
 ================
 
 **It tidies up your playground\!**
@@ -86,7 +86,7 @@ mtcars_tidy
     ## 10 Merc 280            123     1 mpg     -0.148
     ## # … with 278 more rows
 
-## Reduce `dimensions`
+## `reduce_dimensions`
 
 We may want to reduce the dimensions of our data, for example using PCA,
 MDS of tSNE algorithms. `reduce_dimensions` takes a tibble, column names
@@ -189,18 +189,18 @@ mtcars_tidy_tSNE %>%
 ```
 
     ## # A tibble: 32 x 5
-    ##     tSNE1  tSNE2 car_model            hp    vs
-    ##     <dbl>  <dbl> <chr>             <dbl> <dbl>
-    ##  1   8.30  29.4  Mazda RX4           110     0
-    ##  2   9.82  33.5  Mazda RX4 Wag       110     0
-    ##  3  11.7   54.7  Datsun 710           93     1
-    ##  4 -16.7  -17.5  Hornet 4 Drive      110     1
-    ##  5 -21.0  -46.5  Hornet Sportabout   175     0
-    ##  6 -16.6  -21.8  Valiant             105     1
-    ##  7  -3.83 -58.0  Duster 360          245     0
-    ##  8 -16.0    1.06 Merc 240D            62     1
-    ##  9 -20.2    3.53 Merc 230             95     1
-    ## 10  -5.10  14.3  Merc 280            123     1
+    ##     tSNE1   tSNE2 car_model            hp    vs
+    ##     <dbl>   <dbl> <chr>             <dbl> <dbl>
+    ##  1 -63.2    0.149 Mazda RX4           110     0
+    ##  2 -65.6   -7.21  Mazda RX4 Wag       110     0
+    ##  3 -60.8  -50.2   Datsun 710           93     1
+    ##  4  28.4    0.525 Hornet 4 Drive      110     1
+    ##  5  98.9   23.6   Hornet Sportabout   175     0
+    ##  6  36.0    2.21  Valiant             105     1
+    ##  7  74.7   48.5   Duster 360          245     0
+    ##  8  -5.49  -6.48  Merc 240D            62     1
+    ##  9  -7.30 -15.1   Merc 230             95     1
+    ## 10 -33.1    1.88  Merc 280            123     1
     ## # … with 22 more rows
 
 ``` r
@@ -211,7 +211,7 @@ mtcars_tidy_tSNE %>%
 
 ![](README_files/figure-gfm/unnamed-chunk-4-1.png)<!-- -->
 
-## Rotate `dimensions`
+## `rotate_dimensions`
 
 We may want to rotate the reduced dimensions (or any two numeric columns
 really) of our data, of a set angle. `rotate_dimensions` takes a tibble,
@@ -251,7 +251,7 @@ mtcars_tidy_MDS.rotated %>%
 
 ![](README_files/figure-gfm/plot_rotate_2-1.png)<!-- -->
 
-## Cluster `elements`
+## `cluster_elements`
 
 We may want to cluster our data (e.g., using k-means element-wise).
 `cluster_elements` takes as arguments a tibble, column names (as
@@ -279,7 +279,7 @@ plot.
 
 ![](README_files/figure-gfm/plot_cluster-1.png)<!-- -->
 
-## Drop `redundant` features
+## `drop_redundant`
 
 We may want to remove redundant elements from the original data set
 (e.g., elements or features), for example if we want to define cell-type
@@ -310,10 +310,11 @@ mtcars_tidy_non_redundant %>%
 
 ![](README_files/figure-gfm/plot_drop-1.png)<!-- -->
 
-## `fill_missing` element/feature pairs
+## `fill_missing`
 
 This function allows to obtain a rectangular underlying data structure,
-where every element has one feature
+where every element has one feature, filling missing element/feature
+pairs with a value of choice (e.g., 0)
 
 We create a non-rectangular data frame
 
@@ -343,10 +344,11 @@ mtcars_tidy_non_rectangular %>% fill_missing(car_model, feature, value, fill_wit
     ## 10 Merc 280            123     1 mpg     -0.148
     ## # … with 278 more rows
 
-## `impute_missing` element/feature pairs
+## `impute_missing`
 
 This function allows to obtain a rectangular underlying data structure,
-where every element has one feature
+where every element has one feature, imputig missing element/feature
+pairs with a function of choice (e.g., median)
 
 We impute the missing value with the a summary value (median by default)
 according to a grouping
@@ -374,7 +376,9 @@ mtcars_tidy_non_rectangular %>% mutate(vs = factor(vs)) %>%
     ## 10 Chrysler Imperial     230 0     mpg     -0.894
     ## # … with 278 more rows
 
-## `permute_nest`, From one column build a two permuted columns with nested information
+## `permute_nest`
+
+From one column build a two permuted columns with nested information
 
 ``` r
 mtcars_tidy_permuted = 
@@ -399,7 +403,9 @@ mtcars_tidy_permuted
     ## 10 AMC Javelin Ford Pantera L     <tibble [18 × 3]>
     ## # … with 982 more rows
 
-## `combine_nest`, From one column build a two combination columns with nested information
+## `combine_nest`
+
+From one column build a two combination columns with nested information
 
 ``` r
 mtcars_tidy %>%
@@ -421,7 +427,9 @@ mtcars_tidy %>%
     ## 10 AMC Javelin Ford Pantera L     <tibble [18 × 2]>
     ## # … with 486 more rows
 
-## `lower_triangular` | keep rows corresponding to a lower triangular matrix
+## `lower_triangular`
+
+keep rows corresponding to a lower triangular matrix
 
 ``` r
 mtcars_tidy_permuted %>%
@@ -449,7 +457,9 @@ mtcars_tidy_permuted %>%
     ## 10 Hornet 4 Drive Hornet Sportabout      -0.00674
     ## # … with 486 more rows
 
-## `keep_variable`, Keep top variable features
+## `keep_variable`
+
+Keep top variable features
 
 ``` r
 mtcars_tidy %>%
@@ -471,7 +481,9 @@ mtcars_tidy %>%
     ## 10 Merc 280            123     1 mpg     -0.148
     ## # … with 278 more rows
 
-## `as_matrix` Robustly convert a tibble to matrix
+## `as_matrix`
+
+Robustly convert a tibble to matrix
 
 ``` r
 mtcars_tidy %>%
@@ -496,7 +508,9 @@ mtcars_tidy %>%
     ## Datsun 710          0.4235542  0.4495434  0.42600682 -0.9170046
     ## Dodge Challenger   -0.9318192 -0.7616832 -0.54772305  0.3094156
 
-## `subset` Select columns with information relative to a column of interest
+## `subset`
+
+Select columns with information relative to a column of interest
 
 ``` r
 mtcars_tidy %>%
@@ -518,7 +532,31 @@ mtcars_tidy %>%
     ## 10 Merc 280            123     1
     ## # … with 22 more rows
 
-## ADD versus GET versus ONLY modes
+## `nest_subset`
+
+Nest a data frame based on the columns with information relative to the
+column provided to nest
+
+``` r
+mtcars_tidy %>% nest_subset(data = -car_model)
+```
+
+    ## # A tibble: 32 x 4
+    ##    car_model            hp    vs data            
+    ##    <chr>             <dbl> <dbl> <list>          
+    ##  1 Mazda RX4           110     0 <tibble [9 × 2]>
+    ##  2 Mazda RX4 Wag       110     0 <tibble [9 × 2]>
+    ##  3 Datsun 710           93     1 <tibble [9 × 2]>
+    ##  4 Hornet 4 Drive      110     1 <tibble [9 × 2]>
+    ##  5 Hornet Sportabout   175     0 <tibble [9 × 2]>
+    ##  6 Valiant             105     1 <tibble [9 × 2]>
+    ##  7 Duster 360          245     0 <tibble [9 × 2]>
+    ##  8 Merc 240D            62     1 <tibble [9 × 2]>
+    ##  9 Merc 230             95     1 <tibble [9 × 2]>
+    ## 10 Merc 280            123     1 <tibble [9 × 2]>
+    ## # … with 22 more rows
+
+## `ADD` versus `GET` versus `ONLY` modes
 
 Every function takes a tidyfeatureomics structured data as input, and
 (i) with action=“add” outputs the new information joint to the original
