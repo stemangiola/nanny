@@ -7,9 +7,9 @@
 \S4method{subset}{spec_tbl_df}(.data, .column)
 }
 \arguments{
-\item{.data}{A `tbl` formatted as | <element> | <feature> | <value> | <...> |}
+\item{.data}{A `tbl`}
 
-\item{.column}{The name of the element column}
+\item{.column}{The name of the column of interest}
 }
 \value{
 A `tbl` object

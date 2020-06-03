@@ -660,21 +660,21 @@ setMethod("remove_redundancy", "spec_tbl_df", .remove_redundancy)
 #' @return A tbl object with with dropped recundant elements (e.g., elements).
 setMethod("remove_redundancy", "tbl_df", .remove_redundancy)
 
-#' Extract sampe-wise information
+#' Extract selected-column-wise information
 #'
 #' \lifecycle{maturing}
 #'
-#' @description subset() takes as imput a `tbl` formatted as | <element> | <ENSEMBL_ID> | <value> | <...> | and returns a `tbl` with only sampe-related columns
+#' @description subset() takes as imput a `tbl` and returns a `tbl` with only selected-column-related columns
 #'
 #' @importFrom magrittr "%>%"
 #'
 #' @name subset
 #'
-#' @param .data A `tbl` formatted as | <element> | <feature> | <value> | <...> |
-#' @param .column The name of the element column
+#' @param .data A `tbl` 
+#' @param .column The name of the column of interest
 #'
 #'
-#' @details This functon extracts only element-related information for downstream analysis (e.g., visualisation). It is disruptive in the sense that it cannot be passed anymore to nanny function.
+#' @details This functon extracts only selected-column-related information for downstream analysis (e.g., visualisation). It is disruptive in the sense that it cannot be passed anymore to nanny function.
 #'
 #' @return A `tbl` object
 #'
@@ -727,6 +727,81 @@ setMethod("subset",		"tbl_df",				.subset)
 #' @inheritParams subset
 #' @return A `tbl` object
 setMethod("subset",		"tbl",			.subset)
+
+#' Nest according to selected-column-wise information
+#'
+#' \lifecycle{maturing}
+#'
+#' @description nest_subset() takes as imput a `tbl` and returns a nested `tbl` according to only selected-column-related columns
+#'
+#' @importFrom magrittr "%>%"
+#' @importFrom tidyr nest
+#' @importFrom purrr map
+#' @importFrom purrr imap
+#' @importFrom rlang set_names
+#'
+#' @name nest_subset
+#'
+#' @param .data A `tbl` 
+#' @param .column The name of the column of interest
+#'
+#'
+#' @details This functon extracts only selected-column-related information for downstream analysis (e.g., visualisation). It is disruptive in the sense that it cannot be passed anymore to nanny function.
+#'
+#' @return A `tbl` object
+#'
+#'
+#'
+#'
+#' @examples
+#'
+#' nest_subset(mtcars_tidy,data = -car_model)
+#'
+#'
+#' @docType methods
+#' @rdname nest_subset-methods
+#' @export
+#'
+#'
+setGeneric("nest_subset", function(.data, ...)
+	standardGeneric("nest_subset"))
+
+# Set internal
+.nest_subset = 		function(.data, ..., .names_sep = NULL)	{
+	
+	# Make col names - from tidyr
+	cols = enquos(...)
+	cols <- map(cols, ~ names(tidyselect::eval_select(.x, .data)))
+	cols <- map(cols, set_names)
+	if (!is.null(.names_sep)) cols <- imap(cols, strip_names, .names_sep)
+	asis <- setdiff(names(.data), unlist(cols))
+	
+	# Check if column present
+	if(asis %in% colnames(.data) %>% all %>% `!`)
+		stop("nanny says: some of the .column specified do not exist in the input data frame.")
+	
+	# Get my subset columns
+	asis_subset = asis %>% c(get_specific_annotation_columns(.data, !!as.symbol(asis)))	
+	
+	# Apply nest on those
+	tidyr::nest(.data, data = -c(asis_subset))
+	
+}
+
+#' nest_subset
+#' @inheritParams nest_subset
+#' @return A `tbl` object
+setMethod("nest_subset",		"spec_tbl_df",		.nest_subset)
+
+#' nest_subset
+#' @inheritParams nest_subset
+#' @return A `tbl` object
+setMethod("nest_subset",		"tbl_df",				.nest_subset)
+
+#' nest_subset
+#' @inheritParams nest_subset
+#' @return A `tbl` object
+setMethod("nest_subset",		"tbl",			.nest_subset)
 
 
 #' Impute feature value if missing from element-feature pairs
