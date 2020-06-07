@@ -7,6 +7,8 @@ my_stop = function() {
 }
 
 #' This is a generalisation of ifelse that acceots an object and return an objects
+#' 
+#' @keywords internal
 #'
 #' @import dplyr
 #' @import tidyr
@@ -28,7 +30,9 @@ ifelse_pipe = function(.x, .p, .f1, .f2 = NULL) {
 	
 }
 
-#' This is a generalisation of ifelse that acceots an object and return an objects
+#' This is a generalisation of ifelse that accepts an object and return an objects
+#' 
+#' @keywords internal
 #'
 #' @import dplyr
 #' @import tidyr
@@ -64,6 +68,8 @@ ifelse2_pipe = function(.x, .p1, .p2, .f1, .f2, .f3 = NULL) {
 }
 
 #' Sub function of remove_redundancy_elements_though_reduced_dimensions
+#' 
+#' @keywords internal
 #'
 #' @importFrom stats dist
 #' @importFrom utils head
@@ -98,6 +104,8 @@ select_closest_pairs = function(df) {
 }
 
 #' get_x_y_annotation_columns
+#' 
+#' @keywords internal
 #'
 #' @importFrom magrittr equals
 #'
@@ -277,6 +285,8 @@ drop_internals = function(.data){
 }
 
 #' Add attribute to abject
+#' 
+#' @keywords internal
 #'
 #'
 #' @param var A tibble
@@ -290,6 +300,8 @@ add_attr = function(var, attribute, name) {
 }
 
 #' Drop attribute to abject
+#' 
+#' @keywords internal
 #'
 #'
 #' @param var A tibble
@@ -302,6 +314,8 @@ drop_attr = function(var, name) {
 }
 
 #' Convert array of quosure (e.g. c(col_a, col_b)) into character vector
+#' 
+#' @keywords internal
 #'
 #' @importFrom rlang quo_name
 #' @importFrom rlang quo_squash
@@ -327,6 +341,8 @@ rotation = function(m, d) {
 }
 
 #' .formula parser
+#' 
+#' @keywords internal
 #'
 #' @importFrom stats terms
 #'
@@ -342,6 +358,8 @@ parse_formula <- function(fm) {
 }
 
 #' Remove class to abject
+#' 
+#' @keywords internal
 #'
 #'
 #' @param var A tibble

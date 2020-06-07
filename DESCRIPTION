@@ -20,7 +20,6 @@ LazyData: true
 RoxygenNote: 7.1.0
 Imports: 
     lifecycle,
-    ggplot2,
     magrittr,
     tibble,
     dplyr,
@@ -42,7 +41,7 @@ Suggests:
     Seurat,
     limma,
     GGally,
-    tidyverse
+    ggplot2
 VignetteBuilder: 
     knitr
 Biarch: true

@@ -13,4 +13,4 @@ test_data2
 \description{
 Example data set reduced
 }
-\keyword{datasets}
+\keyword{internal}
