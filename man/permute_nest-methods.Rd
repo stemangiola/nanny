@@ -3,9 +3,15 @@
 \docType{methods}
 \name{permute_nest}
 \alias{permute_nest}
+\alias{permute_nest,spec_tbl_df-method}
+\alias{permute_nest,tbl_df-method}
 \title{Permute columns and nest data for each permutation}
 \usage{
 permute_nest(.data, .names_from, .values_from)
+
+\S4method{permute_nest}{spec_tbl_df}(.data, .names_from, .values_from)
+
+\S4method{permute_nest}{tbl_df}(.data, .names_from, .values_from)
 }
 \arguments{
 \item{.data}{A `tbl` formatted as | <element> | <feature> | <value> | <...> |}
@@ -16,9 +22,13 @@ permute_nest(.data, .names_from, .values_from)
 }
 \value{
 A nested `tbl`
+
+A `tbl` with filled abundance
+
+A `tbl` with filled abundance
 }
 \description{
-permute_nest() takes as imput a `tbl` formatted as | <element> | <feature> | <value> | <...> | and returns a `tbl` with data nested for each permutation. The package used in the backend is gtools (Gregory R. Warnes, Ben Bolker, and Thomas Lumley, 2020)
+permute_nest() takes as input a `tbl` formatted as | <element> | <feature> | <value> | <...> | and returns a `tbl` with data nested for each permutation. The package used in the backend is gtools (Gregory R. Warnes, Ben Bolker, and Thomas Lumley, 2020)
 }
 \details{
 \lifecycle{maturing}

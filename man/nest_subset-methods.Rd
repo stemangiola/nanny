@@ -3,16 +3,28 @@
 \docType{methods}
 \name{nest_subset}
 \alias{nest_subset}
+\alias{nest_subset,spec_tbl_df-method}
+\alias{nest_subset,tbl_df-method}
 \title{Nest according to selected-column-wise information}
 \usage{
-nest_subset(.data, ...)
+nest_subset(.data, ..., .names_sep = NULL)
+
+\S4method{nest_subset}{spec_tbl_df}(.data, ..., .names_sep = NULL)
+
+\S4method{nest_subset}{tbl_df}(.data, ..., .names_sep = NULL)
 }
 \arguments{
 \item{.data}{A `tbl`}
 
-\item{.column}{The name of the column of interest}
+\item{...}{The name of the columns of interest}
+
+\item{.names_sep}{Deprecated by tidyr}
 }
 \value{
+A `tbl` object
+
+A `tbl` object
+
 A `tbl` object
 }
 \description{
@@ -21,7 +33,7 @@ nest_subset() takes as imput a `tbl` and returns a nested `tbl` according to onl
 \details{
 \lifecycle{maturing}
 
-This functon extracts only selected-column-related information for downstream analysis (e.g., visualisation). It is disruptive in the sense that it cannot be passed anymore to nanny function.
+This function extracts only selected-column-related information for downstream analysis (e.g., visualisation). It is disruptive in the sense that it cannot be passed anymore to nanny function.
 }
 \examples{
 

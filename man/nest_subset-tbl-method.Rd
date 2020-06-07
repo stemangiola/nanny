@@ -8,6 +8,10 @@
 }
 \arguments{
 \item{.data}{A `tbl`}
+
+\item{...}{The name of the columns of interest}
+
+\item{.names_sep}{Deprecated by tidyr}
 }
 \value{
 A `tbl` object

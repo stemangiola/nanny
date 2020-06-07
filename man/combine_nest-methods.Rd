@@ -3,9 +3,15 @@
 \docType{methods}
 \name{combine_nest}
 \alias{combine_nest}
+\alias{combine_nest,spec_tbl_df-method}
+\alias{combine_nest,tbl_df-method}
 \title{Combine columns and nest data for each permutation}
 \usage{
 combine_nest(.data, .names_from, .values_from)
+
+\S4method{combine_nest}{spec_tbl_df}(.data, .names_from, .values_from)
+
+\S4method{combine_nest}{tbl_df}(.data, .names_from, .values_from)
 }
 \arguments{
 \item{.data}{A `tbl` formatted as | <element> | <feature> | <value> | <...> |}
@@ -16,6 +22,10 @@ combine_nest(.data, .names_from, .values_from)
 }
 \value{
 A nested `tbl`
+
+A `tbl` with filled abundance
+
+A `tbl` with filled abundance
 }
 \description{
 combine_nest() takes as imput a `tbl` formatted as | <element> | <feature> | <value> | <...> | and returns a `tbl` with data nested for each combination  The package used in the backend is gtools (Gregory R. Warnes, Ben Bolker, and Thomas Lumley, 2020)

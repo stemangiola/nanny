@@ -3,9 +3,15 @@
 \docType{methods}
 \name{lower_triangular}
 \alias{lower_triangular}
+\alias{lower_triangular,spec_tbl_df-method}
+\alias{lower_triangular,tbl_df-method}
 \title{Keep rows corresponding of a lower triangular matrix built from two columns}
 \usage{
 lower_triangular(.data, .col1, .col2, .value)
+
+\S4method{lower_triangular}{spec_tbl_df}(.data, .col1, .col2, .value)
+
+\S4method{lower_triangular}{tbl_df}(.data, .col1, .col2, .value)
 }
 \arguments{
 \item{.data}{A `tbl`}
@@ -18,6 +24,10 @@ lower_triangular(.data, .col1, .col2, .value)
 }
 \value{
 A `tbl` with filtered rows
+
+A `tbl` with filled abundance
+
+A `tbl` with filled abundance
 }
 \description{
 lower_triangular() takes as imput a `tbl` formatted as | <element> | <feature> | <value> | <...> | and returns a filtered `tbl`

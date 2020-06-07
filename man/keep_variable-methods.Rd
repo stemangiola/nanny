@@ -3,9 +3,15 @@
 \docType{methods}
 \name{keep_variable}
 \alias{keep_variable}
+\alias{keep_variable,spec_tbl_df-method}
+\alias{keep_variable,tbl_df-method}
 \title{Keep top variable features across elements}
 \usage{
 keep_variable(.data, .element, .feature, .value, top = Inf, transform = NULL)
+
+\S4method{keep_variable}{spec_tbl_df}(.data, .element, .feature, .value, top = Inf, transform = NULL)
+
+\S4method{keep_variable}{tbl_df}(.data, .element, .feature, .value, top = Inf, transform = NULL)
 }
 \arguments{
 \item{.data}{A `tbl`}
@@ -22,6 +28,10 @@ keep_variable(.data, .element, .feature, .value, top = Inf, transform = NULL)
 }
 \value{
 A `tbl` with filtered features
+
+A `tbl` with filled abundance
+
+A `tbl` with filled abundance
 }
 \description{
 keep_variable() takes as imput a `tbl` formatted as | <element> | <feature> | <value> | <...> | and returns a `tbl` with the filtered most variable features. The formula used is from limma::plotMDS (Robinson et al., 2010, <doi:10.1093/bioinformatics/btp616>)

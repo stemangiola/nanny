@@ -3,9 +3,15 @@
 \docType{methods}
 \name{fill_missing}
 \alias{fill_missing}
+\alias{fill_missing,spec_tbl_df-method}
+\alias{fill_missing,tbl_df-method}
 \title{Fill feature value if missing from element-feature pairs}
 \usage{
 fill_missing(.data, .element, .feature, .value, fill_with)
+
+\S4method{fill_missing}{spec_tbl_df}(.data, .element, .feature, .value, fill_with)
+
+\S4method{fill_missing}{tbl_df}(.data, .element, .feature, .value, fill_with)
 }
 \arguments{
 \item{.data}{A `tbl` formatted as | <element> | <feature> | <value> | <...> |}
@@ -20,6 +26,10 @@ fill_missing(.data, .element, .feature, .value, fill_with)
 }
 \value{
 A `tbl` non-sparse value
+
+A `tbl` with filled abundance
+
+A `tbl` with filled abundance
 }
 \description{
 fill_missing() takes as imput a `tbl` formatted as | <element> | <feature> | <value> | <...> | and returns a `tbl` with an edditional adjusted value column. This method uses scaled counts if present.

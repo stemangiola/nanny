@@ -24,6 +24,7 @@ Imports:
     magrittr,
     tibble,
     dplyr,
+    tidyselect,
     purrr,
     rlang,
     tidyr,
@@ -33,12 +34,12 @@ Imports:
     utils,
     knitr,
     widyr,
-    Rtsne
+    Rtsne,
+    gtools
 RdMacros: lifecycle
 Suggests: 
     testthat,
     Seurat,
-    gtools,
     limma,
     GGally,
     tidyverse
