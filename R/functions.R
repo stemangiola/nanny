@@ -1,4 +1,6 @@
 #' Get K-mean clusters to a tibble
+#' 
+#' @keywords internal
 #'
 #' @import dplyr
 #' @import tidyr
@@ -86,6 +88,8 @@ get_clusters_kmeans_bulk <-
 	}
 
 #' Get SNN shared nearest neighbour clusters to a tibble
+#' 
+#' @keywords internal
 #'
 #' @import dplyr
 #' @import tidyr
@@ -177,6 +181,8 @@ get_clusters_SNN_bulk <-
 	}
 
 #' Get dimensionality information to a tibble using MDS
+#' 
+#' @keywords internal
 #'
 #' @import dplyr
 #' @import tidyr
@@ -275,6 +281,8 @@ get_reduced_dimensions_MDS_bulk <-
 	}
 
 #' Get principal component information to a tibble using PCA
+#' 
+#' @keywords internal
 #'
 #' @import dplyr
 #' @import tidyr
@@ -434,6 +442,8 @@ get_reduced_dimensions_PCA_bulk <-
 	}
 
 #' Get principal component information to a tibble using tSNE
+#' 
+#' @keywords internal
 #'
 #' @import dplyr
 #' @import tidyr
@@ -553,6 +563,8 @@ get_reduced_dimensions_TSNE_bulk <-
 	}
 
 #' Get rotated dimensions of two principal components or MDS dimension of choice, of an angle
+#' 
+#' @keywords internal
 #'
 #' @import dplyr
 #' @import tidyr
@@ -640,6 +652,8 @@ get_rotated_dimensions =
 	}
 
 #' Drop redundant elements (e.g., elements) for which feature (e.g., genes) aboundances are correlated
+#' 
+#' @keywords internal
 #'
 #' @import dplyr
 #' @import tidyr
@@ -769,6 +783,8 @@ remove_redundancy_elements_through_correlation <- function(.data,
 }
 
 #' Identifies the closest pairs in a MDS contaxt and return one of them
+#' 
+#' @keywords internal
 #'
 #' @importFrom stats setNames
 #' @importFrom stats dist
@@ -847,6 +863,8 @@ remove_redundancy_elements_though_reduced_dimensions <-
 
 
 #' This function is needed for DE in case the matrix is not rectangular, but includes NA
+#' 
+#' @keywords internal
 #'
 #' @import dplyr
 #' @import tidyr
@@ -968,6 +986,8 @@ fill_NA_using_formula = function(.data,
 }
 
 #' This function is needed for DE in case the matrix is not rectangular, but includes NA
+#' 
+#' @keywords internal
 #'
 #' @import dplyr
 #' @import tidyr

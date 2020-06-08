@@ -29,3 +29,4 @@ A tibble with adjusted counts
 \description{
 This function is needed for DE in case the matrix is not rectangular, but includes NA
 }
+\keyword{internal}

@@ -195,13 +195,15 @@ setGeneric("cluster_elements", function(.data,
 }
 
 #' cluster_elements
-#' @inheritParams cluster_elements
+#' @docType methods
+#' @rdname cluster_elements-methods
 #' @return A tbl object with additional columns with cluster labels
 #'
 setMethod("cluster_elements", "spec_tbl_df", .cluster_elements)
 
 #' cluster_elements
-#' @inheritParams cluster_elements
+#' @docType methods
+#' @rdname cluster_elements-methods
 #' @return A tbl object with additional columns with cluster labels
 #'
 setMethod("cluster_elements", "tbl_df", .cluster_elements)
@@ -429,12 +431,14 @@ setGeneric("reduce_dimensions", function(.data,
 }
 
 #' reduce_dimensions
-#' @inheritParams reduce_dimensions
+#' @docType methods
+#' @rdname reduce_dimensions-methods
 #' @return A tbl object with additional columns for the reduced dimensions
 setMethod("reduce_dimensions", "spec_tbl_df", .reduce_dimensions)
 
 #' reduce_dimensions
-#' @inheritParams reduce_dimensions
+#' @docType methods
+#' @rdname reduce_dimensions-methods
 #' @return A tbl object with additional columns for the reduced dimensions
 setMethod("reduce_dimensions", "tbl_df", .reduce_dimensions)
 
@@ -561,12 +565,14 @@ setGeneric("rotate_dimensions", function(.data,
 }
 
 #' rotate_dimensions
-#' @inheritParams rotate_dimensions
+#' @docType methods
+#' @rdname rotate_dimensions-methods
 #' @return A tbl object with additional columns for the reduced dimensions. additional columns for the rotated dimensions. The rotated dimensions will be added to the original data set as `<NAME OF DIMENSION> rotated <ANGLE>` by default, or as specified in the input arguments.
 setMethod("rotate_dimensions", "spec_tbl_df", .rotate_dimensions)
 
 #' rotate_dimensions
-#' @inheritParams rotate_dimensions
+#' @docType methods
+#' @rdname rotate_dimensions-methods
 #' @return A tbl object with additional columns for the reduced dimensions. additional columns for the rotated dimensions. The rotated dimensions will be added to the original data set as `<NAME OF DIMENSION> rotated <ANGLE>` by default, or as specified in the input arguments.
 setMethod("rotate_dimensions", "tbl_df", .rotate_dimensions)
 
@@ -651,30 +657,32 @@ setGeneric("remove_redundancy", function(.data,
 }
 
 #' remove_redundancy
-#' @inheritParams remove_redundancy
+#' @docType methods
+#' @rdname remove_redundancy-methods
 #' @return A tbl object with with dropped recundant elements (e.g., elements).
 setMethod("remove_redundancy", "spec_tbl_df", .remove_redundancy)
 
 #' remove_redundancy
-#' @inheritParams remove_redundancy
+#' @docType methods
+#' @rdname remove_redundancy-methods
 #' @return A tbl object with with dropped recundant elements (e.g., elements).
 setMethod("remove_redundancy", "tbl_df", .remove_redundancy)
 
-#' Extract sampe-wise information
+#' Extract selected-column-wise information
 #'
 #' \lifecycle{maturing}
 #'
-#' @description subset() takes as imput a `tbl` formatted as | <element> | <ENSEMBL_ID> | <value> | <...> | and returns a `tbl` with only sampe-related columns
+#' @description subset() takes as imput a `tbl` and returns a `tbl` with only selected-column-related columns
 #'
 #' @importFrom magrittr "%>%"
 #'
 #' @name subset
 #'
-#' @param .data A `tbl` formatted as | <element> | <feature> | <value> | <...> |
-#' @param .column The name of the element column
+#' @param .data A `tbl` 
+#' @param .column The name of the column of interest
 #'
 #'
-#' @details This functon extracts only element-related information for downstream analysis (e.g., visualisation). It is disruptive in the sense that it cannot be passed anymore to nanny function.
+#' @details This functon extracts only selected-column-related information for downstream analysis (e.g., visualisation). It is disruptive in the sense that it cannot be passed anymore to nanny function.
 #'
 #' @return A `tbl` object
 #'
@@ -701,6 +709,10 @@ setGeneric("subset", function(.data,
 	# Make col names
 	.column = enquo(.column)
 	
+	# Check if column present
+	if(quo_names(.column) %in% colnames(.data) %>% all %>% `!`)
+		stop("nanny says: some of the .column specified do not exist in the input data frame.")
+		
 	.data %>%
 		
 		# Selecting the right columns
@@ -710,19 +722,101 @@ setGeneric("subset", function(.data,
 }
 
 #' subset
-#' @inheritParams subset
+#' @docType methods
+#' @rdname subset-methods
 #' @return A `tbl` object
 setMethod("subset",		"spec_tbl_df",		.subset)
 
 #' subset
-#' @inheritParams subset
+#' @docType methods
+#' @rdname subset-methods
 #' @return A `tbl` object
 setMethod("subset",		"tbl_df",				.subset)
 
 #' subset
-#' @inheritParams subset
+#' @docType methods
+#' @rdname subset-methods
 #' @return A `tbl` object
 setMethod("subset",		"tbl",			.subset)
+
+#' Nest according to selected-column-wise information
+#'
+#' \lifecycle{maturing}
+#'
+#' @description nest_subset() takes as imput a `tbl` and returns a nested `tbl` according to only selected-column-related columns
+#'
+#' @importFrom magrittr "%>%"
+#' @importFrom tidyr nest
+#' @importFrom purrr map
+#' @importFrom purrr imap
+#' @importFrom rlang set_names
+#' @importFrom tidyselect eval_select
+#'
+#' @name nest_subset
+#'
+#' @param .data A `tbl` 
+#' @param ... The name of the columns of interest
+#' @param .names_sep Deprecated by tidyr
+#'
+#'
+#' @details This function extracts only selected-column-related information for downstream analysis (e.g., visualisation). It is disruptive in the sense that it cannot be passed anymore to nanny function.
+#'
+#' @return A `tbl` object
+#'
+#'
+#'
+#'
+#' @examples
+#'
+#' nest_subset(mtcars_tidy,data = -car_model)
+#'
+#'
+#' @docType methods
+#' @rdname nest_subset-methods
+#' @export
+#'
+#'
+setGeneric("nest_subset", function(.data, ..., .names_sep = NULL)
+	standardGeneric("nest_subset"))
+
+# Set internal
+.nest_subset = 		function(.data, ..., .names_sep = NULL)	{
+	
+	# Make col names - from tidyr
+	cols = enquos(...)
+	cols <- map(cols, ~ names(eval_select(.x, .data)))
+	cols <- map(cols, set_names)
+	if (!is.null(.names_sep)) cols <- imap(cols, strip_names, .names_sep)
+	asis <- setdiff(names(.data), unlist(cols))
+	
+	# Check if column present
+	if(asis %in% colnames(.data) %>% all %>% `!`)
+		stop("nanny says: some of the .column specified do not exist in the input data frame.")
+	
+	# Get my subset columns
+	asis_subset = asis %>% c(get_specific_annotation_columns(.data, !!as.symbol(asis)))	
+	
+	# Apply nest on those
+	tidyr::nest(.data, data = -c(asis_subset))
+	
+}
+
+#' nest_subset
+#' @docType methods
+#' @rdname nest_subset-methods
+#' @return A `tbl` object
+setMethod("nest_subset",		"spec_tbl_df",		.nest_subset)
+
+#' nest_subset
+#' @docType methods
+#' @rdname nest_subset-methods
+#' @return A `tbl` object
+setMethod("nest_subset",		"tbl_df",				.nest_subset)
+
+#' nest_subset
+#' @inheritParams nest_subset
+#' @return A `tbl` object
+setMethod("nest_subset",		"tbl",			.nest_subset)
 
 
 #' Impute feature value if missing from element-feature pairs
@@ -780,7 +874,7 @@ setGeneric("impute_missing", function(.data,
 	.feature = enquo(.feature)
 	.value = enquo(.value)
 	
-	# Samity check formula
+	# Sanity check formula
 	formula_error_message = "nanny says: your formula does not look like one. Check it with rlang::is_formula"
 	if(
 		tryCatch(!is_formula(.formula), error=function(x) stop(formula_error_message))
@@ -798,12 +892,14 @@ setGeneric("impute_missing", function(.data,
 }
 
 #' impute_missing
-#' @inheritParams impute_missing
+#' @docType methods
+#' @rdname impute_missing-methods
 #' @return A `tbl` with imputed abundnce
 setMethod("impute_missing", "spec_tbl_df", .impute_missing)
 
 #' impute_missing
-#' @inheritParams impute_missing
+#' @docType methods
+#' @rdname impute_missing-methods
 #' @return A `tbl` with imputed abundnce
 setMethod("impute_missing", "tbl_df", .impute_missing)
 
@@ -877,13 +973,15 @@ setGeneric("fill_missing", function(.data,
 }
 
 #' fill_missing
-#' @inheritParams fill_missing
-#' @return A `tbl` with filld abundnce
+#' @docType methods
+#' @rdname fill_missing-methods
+#' @return A `tbl` with filled abundance
 setMethod("fill_missing", "spec_tbl_df", .fill_missing)
 
 #' fill_missing
-#' @inheritParams fill_missing
-#' @return A `tbl` with filld abundnce
+#' @docType methods
+#' @rdname fill_missing-methods
+#' @return A `tbl` with filled abundance
 setMethod("fill_missing", "tbl_df", .fill_missing)
 
 
@@ -893,10 +991,11 @@ setMethod("fill_missing", "tbl_df", .fill_missing)
 #'
 #' \lifecycle{maturing}
 #'
-#' @description permute_nest() takes as imput a `tbl` formatted as | <element> | <feature> | <value> | <...> | and returns a `tbl` with data nested for each permutation. The package used in the backend is gtools (Gregory R. Warnes, Ben Bolker, and Thomas Lumley, 2020)
+#' @description permute_nest() takes as input a `tbl` formatted as | <element> | <feature> | <value> | <...> | and returns a `tbl` with data nested for each permutation. The package used in the backend is gtools (Gregory R. Warnes, Ben Bolker, and Thomas Lumley, 2020)
 #'
 #' @importFrom rlang enquo
 #' @importFrom magrittr "%>%"
+#' @importFrom gtools permutations
 #'
 #' @name permute_nest
 #'
@@ -947,7 +1046,7 @@ setGeneric("permute_nest", function(.data, .names_from, .values_from)
 		pull(!!.names_from) %>%
 		unique() %>%
 		as.character() %>%
-		gtools::permutations(n = length(.), r = 2, v = .) %>%
+		permutations(n = length(.), r = 2, v = .) %>%
 		as_tibble() %>%
 		unite("run", c("V1", "V2"), remove = FALSE, sep="___") %>%
 		gather(which, !!.names_from, -run) %>%
@@ -962,13 +1061,15 @@ setGeneric("permute_nest", function(.data, .names_from, .values_from)
 }
 
 #' permute_nest
-#' @inheritParams permute_nest
-#' @return A `tbl` with filld abundnce
+#' @docType methods
+#' @rdname permute_nest-methods
+#' @return A `tbl` with filled abundance
 setMethod("permute_nest", "spec_tbl_df", .permute_nest)
 
 #' permute_nest
-#' @inheritParams permute_nest
-#' @return A `tbl` with filld abundnce
+#' @docType methods
+#' @rdname permute_nest-methods
+#' @return A `tbl` with filled abundance
 setMethod("permute_nest", "tbl_df", .permute_nest)
 
 
@@ -982,6 +1083,7 @@ setMethod("permute_nest", "tbl_df", .permute_nest)
 #'
 #' @importFrom rlang enquo
 #' @importFrom magrittr "%>%"
+#' @importFrom gtools combinations
 #'
 #' @name combine_nest
 #'
@@ -1050,13 +1152,15 @@ setGeneric("combine_nest", function(.data, .names_from, .values_from)
 }
 
 #' combine_nest
-#' @inheritParams combine_nest
-#' @return A `tbl` with filld abundnce
+#' @docType methods
+#' @rdname combine_nest-methods
+#' @return A `tbl` with filled abundance
 setMethod("combine_nest", "spec_tbl_df", .combine_nest)
 
 #' combine_nest
-#' @inheritParams combine_nest
-#' @return A `tbl` with filld abundnce
+#' @docType methods
+#' @rdname combine_nest-methods
+#' @return A `tbl` with filled abundance
 setMethod("combine_nest", "tbl_df", .combine_nest)
 
 
@@ -1165,13 +1269,15 @@ setGeneric("keep_variable", function(.data,
 }
 
 #' keep_variable
-#' @inheritParams keep_variable
-#' @return A `tbl` with filld abundnce
+#' @docType methods
+#' @rdname keep_variable-methods
+#' @return A `tbl` with filled abundance
 setMethod("keep_variable", "spec_tbl_df", .keep_variable)
 
 #' keep_variable
-#' @inheritParams keep_variable
-#' @return A `tbl` with filld abundnce
+#' @docType methods
+#' @rdname keep_variable-methods
+#' @return A `tbl` with filled abundance
 setMethod("keep_variable", "tbl_df", .keep_variable)
 
 
@@ -1267,13 +1373,15 @@ setGeneric("lower_triangular", function(.data, .col1, .col2, .value)
 }
 
 #' lower_triangular
-#' @inheritParams lower_triangular
-#' @return A `tbl` with filld abundnce
+#' @docType methods
+#' @rdname lower_triangular-methods
+#' @return A `tbl` with filled abundance
 setMethod("lower_triangular", "spec_tbl_df", .lower_triangular)
 
 #' lower_triangular
-#' @inheritParams lower_triangular
-#' @return A `tbl` with filld abundnce
+#' @docType methods
+#' @rdname lower_triangular-methods
+#' @return A `tbl` with filled abundance
 setMethod("lower_triangular", "tbl_df", .lower_triangular)
 
 
@@ -1352,7 +1460,7 @@ setGeneric("as_matrix", function(.data,
 		ifelse_pipe(
 			!quo_is_null(rownames),
 			~ .x %>%
-				magrittr::set_rownames(.x %>% pull(rn)) %>%
+				set_rownames(.x %>% pull(rn)) %>%
 				select(-rn)
 		) %>%
 		
@@ -1361,11 +1469,13 @@ setGeneric("as_matrix", function(.data,
 }
 
 #' as_matrix
-#' @inheritParams as_matrix
-#' @return A `tbl` with filld abundnce
+#' @docType methods
+#' @rdname as_matrix-methods
+#' @return A `tbl` with filled abundance
 setMethod("as_matrix", "spec_tbl_df", .as_matrix)
 
 #' as_matrix
-#' @inheritParams as_matrix
-#' @return A `tbl` with filld abundnce
+#' @docType methods
+#' @rdname as_matrix-methods
+#' @return A `tbl` with filled abundance
 setMethod("as_matrix", "tbl_df", .as_matrix)

@@ -3,9 +3,41 @@
 \docType{methods}
 \name{reduce_dimensions}
 \alias{reduce_dimensions}
+\alias{reduce_dimensions,spec_tbl_df-method}
+\alias{reduce_dimensions,tbl_df-method}
 \title{Dimension reduction of the feature value data}
 \usage{
 reduce_dimensions(
+  .data,
+  .element,
+  .feature,
+  .value,
+  method,
+  .dims = 2,
+  top = Inf,
+  of_elements = TRUE,
+  transform = NULL,
+  scale = TRUE,
+  action = "add",
+  ...
+)
+
+\S4method{reduce_dimensions}{spec_tbl_df}(
+  .data,
+  .element,
+  .feature,
+  .value,
+  method,
+  .dims = 2,
+  top = Inf,
+  of_elements = TRUE,
+  transform = NULL,
+  scale = TRUE,
+  action = "add",
+  ...
+)
+
+\S4method{reduce_dimensions}{tbl_df}(
   .data,
   .element,
   .feature,
@@ -46,6 +78,10 @@ reduce_dimensions(
 \item{...}{Further parameters passed to the function prcomp if you choose method="PCA" or Rtsne if you choose method="tSNE"}
 }
 \value{
+A tbl object with additional columns for the reduced dimensions
+
+A tbl object with additional columns for the reduced dimensions
+
 A tbl object with additional columns for the reduced dimensions
 }
 \description{

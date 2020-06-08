@@ -38,3 +38,4 @@ A tibble with redundant elemens removed
 \description{
 Drop redundant elements (e.g., elements) for which feature (e.g., genes) aboundances are correlated
 }
+\keyword{internal}

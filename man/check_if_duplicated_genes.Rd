@@ -21,3 +21,4 @@ A tbl
 \description{
 Check whether there are duplicated genes/transcripts
 }
+\keyword{internal}

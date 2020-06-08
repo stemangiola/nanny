@@ -13,4 +13,4 @@ mtcars_tidy
 \description{
 Cibersort reference
 }
-\keyword{datasets}
+\keyword{internal}

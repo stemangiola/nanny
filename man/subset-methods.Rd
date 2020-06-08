@@ -3,25 +3,40 @@
 \docType{methods}
 \name{subset}
 \alias{subset}
-\title{Extract sampe-wise information}
+\alias{subset,spec_tbl_df-method}
+\alias{subset,tbl_df-method}
+\alias{subset,tbl-method}
+\title{Extract selected-column-wise information}
 \usage{
 subset(.data, .column)
+
+\S4method{subset}{spec_tbl_df}(.data, .column)
+
+\S4method{subset}{tbl_df}(.data, .column)
+
+\S4method{subset}{tbl}(.data, .column)
 }
 \arguments{
-\item{.data}{A `tbl` formatted as | <element> | <feature> | <value> | <...> |}
+\item{.data}{A `tbl`}
 
-\item{.column}{The name of the element column}
+\item{.column}{The name of the column of interest}
 }
 \value{
 A `tbl` object
+
+A `tbl` object
+
+A `tbl` object
+
+A `tbl` object
 }
 \description{
-subset() takes as imput a `tbl` formatted as | <element> | <ENSEMBL_ID> | <value> | <...> | and returns a `tbl` with only sampe-related columns
+subset() takes as imput a `tbl` and returns a `tbl` with only selected-column-related columns
 }
 \details{
 \lifecycle{maturing}
 
-This functon extracts only element-related information for downstream analysis (e.g., visualisation). It is disruptive in the sense that it cannot be passed anymore to nanny function.
+This functon extracts only selected-column-related information for downstream analysis (e.g., visualisation). It is disruptive in the sense that it cannot be passed anymore to nanny function.
 }
 \examples{
 

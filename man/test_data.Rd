@@ -13,4 +13,4 @@ test_data
 \description{
 Example data set
 }
-\keyword{datasets}
+\keyword{internal}
