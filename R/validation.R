@@ -1,4 +1,6 @@
 #' Check whether there are NA counts
+#' 
+#' @keywords internal
 #'
 #' @import dplyr
 #' @import tidyr
@@ -23,6 +25,8 @@ error_if_counts_is_na = function(.data, .abundance) {
 
 
 #' Check whether a numeric vector has been log transformed
+#' 
+#' @keywords internal
 #'
 #' @param x A numeric vector
 #' @param .abundance A character name of the transcript/gene abundance column
@@ -43,6 +47,8 @@ error_if_log_transformed <- function(x, .abundance) {
 }
 
 #' Check whether there are duplicated genes/transcripts
+#' 
+#' @keywords internal
 #'
 #' @import dplyr
 #' @import tidyr
@@ -95,6 +101,8 @@ error_if_duplicated_genes <- function(.data,
 
 
 #' Check whether there are NA counts
+#' 
+#' @keywords internal
 #'
 #' @import dplyr
 #' @import tidyr
@@ -128,6 +136,8 @@ error_if_wrong_input = function(.data, list_input, expected_type) {
 }
 
 #' Check whether there are NA counts
+#' 
+#' @keywords internal
 #'
 #' @import dplyr
 #' @import tidyr
@@ -155,6 +165,8 @@ check_if_wrong_input = function(.data, list_input, expected_type) {
 }
 
 #' Check whether there are duplicated genes/transcripts
+#' 
+#' @keywords internal
 #'
 #' @import dplyr
 #' @import tidyr
@@ -209,6 +221,8 @@ check_if_duplicated_genes <- function(.data,
 }
 
 #' Check whether there are NA counts
+#' 
+#' @keywords internal
 #'
 #' @import dplyr
 #' @import tidyr

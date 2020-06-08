@@ -3,9 +3,35 @@
 \docType{methods}
 \name{cluster_elements}
 \alias{cluster_elements}
+\alias{cluster_elements,spec_tbl_df-method}
+\alias{cluster_elements,tbl_df-method}
 \title{Get clusters of elements (e.g., elements or features)}
 \usage{
 cluster_elements(
+  .data,
+  .element,
+  .feature,
+  .value,
+  method,
+  of_elements = TRUE,
+  transform = NULL,
+  action = "add",
+  ...
+)
+
+\S4method{cluster_elements}{spec_tbl_df}(
+  .data,
+  .element,
+  .feature,
+  .value,
+  method,
+  of_elements = TRUE,
+  transform = NULL,
+  action = "add",
+  ...
+)
+
+\S4method{cluster_elements}{tbl_df}(
   .data,
   .element,
   .feature,
@@ -37,6 +63,10 @@ cluster_elements(
 \item{...}{Further parameters passed to the function kmeans}
 }
 \value{
+A tbl object with additional columns with cluster labels
+
+A tbl object with additional columns with cluster labels
+
 A tbl object with additional columns with cluster labels
 }
 \description{

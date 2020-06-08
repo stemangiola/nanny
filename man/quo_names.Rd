@@ -15,3 +15,4 @@ A character vector
 \description{
 Convert array of quosure (e.g. c(col_a, col_b)) into character vector
 }
+\keyword{internal}

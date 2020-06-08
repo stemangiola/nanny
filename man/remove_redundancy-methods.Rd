@@ -3,9 +3,33 @@
 \docType{methods}
 \name{remove_redundancy}
 \alias{remove_redundancy}
+\alias{remove_redundancy,spec_tbl_df-method}
+\alias{remove_redundancy,tbl_df-method}
 \title{Drop redundant elements (e.g., elements) for which feature (e.g., feature/gene) aboundances are correlated}
 \usage{
 remove_redundancy(
+  .data,
+  .element,
+  .feature,
+  .value,
+  of_elements = TRUE,
+  correlation_threshold = 0.9,
+  top = Inf,
+  transform = NULL
+)
+
+\S4method{remove_redundancy}{spec_tbl_df}(
+  .data,
+  .element,
+  .feature,
+  .value,
+  of_elements = TRUE,
+  correlation_threshold = 0.9,
+  top = Inf,
+  transform = NULL
+)
+
+\S4method{remove_redundancy}{tbl_df}(
   .data,
   .element,
   .feature,
@@ -34,6 +58,10 @@ remove_redundancy(
 \item{transform}{A function to use to tranforma the data internalli (e.g., log1p)}
 }
 \value{
+A tbl object with with dropped recundant elements (e.g., elements).
+
+A tbl object with with dropped recundant elements (e.g., elements).
+
 A tbl object with with dropped recundant elements (e.g., elements).
 }
 \description{

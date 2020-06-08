@@ -21,3 +21,4 @@ A list
 \description{
 This function recognise what are the element-wise columns and transcrip-wise columns
 }
+\keyword{internal}

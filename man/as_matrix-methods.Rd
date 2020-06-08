@@ -3,9 +3,15 @@
 \docType{methods}
 \name{as_matrix}
 \alias{as_matrix}
+\alias{as_matrix,spec_tbl_df-method}
+\alias{as_matrix,tbl_df-method}
 \title{Get matrix from tibble}
 \usage{
 as_matrix(.data, rownames = NULL, do_check = TRUE, sep_rownames = "___")
+
+\S4method{as_matrix}{spec_tbl_df}(.data, rownames = NULL, do_check = TRUE, sep_rownames = "___")
+
+\S4method{as_matrix}{tbl_df}(.data, rownames = NULL, do_check = TRUE, sep_rownames = "___")
 }
 \arguments{
 \item{.data}{A tibble}
@@ -18,9 +24,17 @@ as_matrix(.data, rownames = NULL, do_check = TRUE, sep_rownames = "___")
 }
 \value{
 A matrix
+
+A `tbl` with filled abundance
+
+A `tbl` with filled abundance
 }
 \description{
 Get matrix from tibble
+
+as_matrix
+
+as_matrix
 }
 \examples{
 
