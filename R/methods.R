@@ -2,7 +2,7 @@
 #'
 #' \lifecycle{maturing}
 #'
-#' @description cluster_elements() takes as imput a `tbl` formatted as | <element> | <feature> | <value> | <...> | and identify clusters in the data.
+#' @description cluster_elements() takes as input a `tbl` formatted as | <element> | <feature> | <value> | <...> | and identify clusters in the data.
 #'
 #' @importFrom rlang enquo
 #' @importFrom magrittr "%>%"
@@ -16,7 +16,7 @@
 #'
 #' @param method A character string. The cluster algorithm to use, ay the moment k-means is the only algorithm included.
 #' @param of_elements A boolean. In case the input is a nanny object, it indicates Whether the element column will be element or feature column
-#' @param transform A function to use to tranforma the data internalli (e.g., log1p)
+#' @param transform A function to use to transform the data internally (e.g., log1p)
 #' @param action A character string. Whether to join the new information to the input tbl (add), or just get the non-redundant tbl with the new information (get).
 #' @param ... Further parameters passed to the function kmeans
 #' 
@@ -212,7 +212,7 @@ setMethod("cluster_elements", "tbl_df", .cluster_elements)
 #'
 #' \lifecycle{maturing}
 #'
-#' @description reduce_dimensions() takes as imput a `tbl` formatted as | <element> | <feature> | <value> | <...> | and calculates the reduced dimensional space of the feature value. The functions available are PCA, MDS (Robinson et al., 2010, <doi:10.1093/bioinformatics/btp616>), tSNE (Laurens van der Maaten, 2009)
+#' @description reduce_dimensions() takes as input a `tbl` formatted as | <element> | <feature> | <value> | <...> | and calculates the reduced dimensional space of the feature value. The functions available are PCA, MDS (Robinson et al., 2010, <doi:10.1093/bioinformatics/btp616>), tSNE (Laurens van der Maaten, 2009)
 #'
 #' @importFrom rlang enquo
 #' @importFrom magrittr "%>%"
@@ -446,7 +446,7 @@ setMethod("reduce_dimensions", "tbl_df", .reduce_dimensions)
 #'
 #' \lifecycle{maturing}
 #'
-#' @description rotate_dimensions() takes as imput a `tbl` formatted as | <DIMENSION 1> | <DIMENSION 2> | <...> | and calculates the rotated dimensional space of the feature value.
+#' @description rotate_dimensions() takes as input a `tbl` formatted as | <DIMENSION 1> | <DIMENSION 2> | <...> | and calculates the rotated dimensional space of the feature value.
 #'
 #' @importFrom rlang enquo
 #' @importFrom magrittr "%>%"
@@ -580,7 +580,7 @@ setMethod("rotate_dimensions", "tbl_df", .rotate_dimensions)
 #'
 #' \lifecycle{maturing}
 #'
-#' @description remove_redundancy() takes as imput a `tbl` formatted as | <element> | <feature> | <value> | <...> | for correlation method, and returns a `tbl` with dropped elements (e.g., elements). The backend function used is widyr::pairwise_cor (David Robinson, 2020)
+#' @description remove_redundancy() takes as input a `tbl` formatted as | <element> | <feature> | <value> | <...> | for correlation method, and returns a `tbl` with dropped elements (e.g., elements). The backend function used is widyr::pairwise_cor (David Robinson, 2020)
 #'
 #' @importFrom rlang enquo
 #' @importFrom magrittr "%>%"
@@ -672,7 +672,7 @@ setMethod("remove_redundancy", "tbl_df", .remove_redundancy)
 #'
 #' \lifecycle{maturing}
 #'
-#' @description subset() takes as imput a `tbl` and returns a `tbl` with only selected-column-related columns
+#' @description subset() takes as input a `tbl` and returns a `tbl` with only selected-column-related columns
 #'
 #' @importFrom magrittr "%>%"
 #'
@@ -743,7 +743,7 @@ setMethod("subset",		"tbl",			.subset)
 #'
 #' \lifecycle{maturing}
 #'
-#' @description nest_subset() takes as imput a `tbl` and returns a nested `tbl` according to only selected-column-related columns
+#' @description nest_subset() takes as input a `tbl` and returns a nested `tbl` according to only selected-column-related columns
 #'
 #' @importFrom magrittr "%>%"
 #' @importFrom tidyr nest
@@ -823,7 +823,7 @@ setMethod("nest_subset",		"tbl",			.nest_subset)
 #'
 #' \lifecycle{maturing}
 #'
-#' @description impute_missing() takes as imput a `tbl` formatted as | <element> | <feature> | <value> | <...> | and returns a `tbl` with an edditional adjusted value column. This method uses scaled counts if present.
+#' @description impute_missing() takes as input a `tbl` formatted as | <element> | <feature> | <value> | <...> | and returns a `tbl` with an edditional adjusted value column. This method uses scaled counts if present.
 #'
 #' @importFrom rlang enquo
 #' @importFrom rlang is_formula
@@ -908,7 +908,7 @@ setMethod("impute_missing", "tbl_df", .impute_missing)
 #'
 #' \lifecycle{maturing}
 #'
-#' @description fill_missing() takes as imput a `tbl` formatted as | <element> | <feature> | <value> | <...> | and returns a `tbl` with an edditional adjusted value column. This method uses scaled counts if present.
+#' @description fill_missing() takes as input a `tbl` formatted as | <element> | <feature> | <value> | <...> | and returns a `tbl` with an edditional adjusted value column. This method uses scaled counts if present.
 #'
 #' @importFrom rlang enquo
 #' @importFrom magrittr "%>%"
@@ -1079,7 +1079,7 @@ setMethod("permute_nest", "tbl_df", .permute_nest)
 #'
 #' \lifecycle{maturing}
 #'
-#' @description combine_nest() takes as imput a `tbl` formatted as | <element> | <feature> | <value> | <...> | and returns a `tbl` with data nested for each combination  The package used in the backend is gtools (Gregory R. Warnes, Ben Bolker, and Thomas Lumley, 2020)
+#' @description combine_nest() takes as input a `tbl` formatted as | <element> | <feature> | <value> | <...> | and returns a `tbl` with data nested for each combination  The package used in the backend is gtools (Gregory R. Warnes, Ben Bolker, and Thomas Lumley, 2020)
 #'
 #' @importFrom rlang enquo
 #' @importFrom magrittr "%>%"
@@ -1169,7 +1169,7 @@ setMethod("combine_nest", "tbl_df", .combine_nest)
 #'
 #' \lifecycle{maturing}
 #'
-#' @description keep_variable() takes as imput a `tbl` formatted as | <element> | <feature> | <value> | <...> | and returns a `tbl` with the filtered most variable features. The formula used is from limma::plotMDS (Robinson et al., 2010, <doi:10.1093/bioinformatics/btp616>)
+#' @description keep_variable() takes as input a `tbl` formatted as | <element> | <feature> | <value> | <...> | and returns a `tbl` with the filtered most variable features. The formula used is from limma::plotMDS (Robinson et al., 2010, <doi:10.1093/bioinformatics/btp616>)
 #'
 #' @importFrom rlang enquo
 #' @importFrom magrittr "%>%"
@@ -1286,7 +1286,7 @@ setMethod("keep_variable", "tbl_df", .keep_variable)
 #'
 #' \lifecycle{maturing}
 #'
-#' @description lower_triangular() takes as imput a `tbl` formatted as | <element> | <feature> | <value> | <...> | and returns a filtered `tbl` 
+#' @description lower_triangular() takes as input a `tbl` formatted as | <element> | <feature> | <value> | <...> | and returns a filtered `tbl` 
 #'
 #' @importFrom rlang enquo
 #' @importFrom magrittr "%>%"
