@@ -1311,11 +1311,15 @@ setMethod("keep_variable", "tbl_df", .keep_variable)
 #' library(purrr)
 #' library(tidyr)
 #' 
-#' mtcars_tidy_permuted = permute_nest(mtcars_tidy, car_model, c(feature,value))
+#' mtcars_tidy_permuted = 
+#'   mtcars_tidy %>% 
+#'   filter(feature == "mpg") %>% 
+#'   head(5) %>% 
+#'   permute_nest(car_model, c(feature,value))
 #' 
 #' mtcars_tidy_permuted %>%
 #'  # Summarise mpg
-#'  mutate(data = map(data, ~ .x %>% filter(feature == "mpg") %>% summarise(mean(value)))) %>%
+#'  mutate(data = map(data, ~ .x %>% summarise(mean(value)))) %>%
 #'	unnest(data) %>%
 #'	
 #'	# Lower triangular
