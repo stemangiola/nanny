@@ -130,7 +130,6 @@ On the x and y axes axis we have the reduced dimensions 1 to 3, data is coloured
 ```{r plot_mds, cache=TRUE}
 mtcars_tidy_MDS %>% subset(car_model)  %>% select(contains("Dim"), everything())
 
-if(find.package("GGally", quiet = TRUE) %>% length %>% `>` (0))
 mtcars_tidy_MDS %>%
 	subset(car_model) %>%
   ggpairs(columns = 4:6, ggplot2::aes(colour=factor(vs)))
@@ -152,7 +151,6 @@ On the x and y axes axis we have the reduced dimensions 1 to 3, data is coloured
 
 mtcars_tidy_PCA %>% subset(car_model) %>% select(contains("PC"), everything())
 
-if(find.package("GGally", quiet = TRUE) %>% length %>% `>` (0))
 mtcars_tidy_PCA %>%
 	 subset(car_model) %>%
   ggpairs(columns = 4:6, ggplot2::aes(colour=factor(vs)))
