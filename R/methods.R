@@ -794,7 +794,7 @@ setGeneric("nest_subset", function(.data, ..., .names_sep = NULL)
 		stop("nanny says: some of the .column specified do not exist in the input data frame.")
 	
 	# Get my subset columns
-	asis_subset = asis %>% c(get_specific_annotation_columns(.data, !!as.symbol(asis)))	
+	asis_subset = asis %>% c(get_specific_annotation_columns(.data, asis))
 	
 	# Apply nest on those
 	tidyr::nest(.data, data = -c(asis_subset))
