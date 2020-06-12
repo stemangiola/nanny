@@ -126,12 +126,15 @@ get_clusters_SNN_bulk <-
 		.value = enquo(.value)
 		
 		# Check if package is installed, otherwise install
-		if (find.package("Seurat", quiet = T) %>% length %>% equals(0)) {
-	 stop("nanny says: Seurat is necessary for this operation. Please install it with 	install.packages(\"Seurat\", repos = \"https://cloud.r-project.org\")")
+		if (find.package("dbscan", quiet = T) %>% length %>% equals(0)) {
+	 stop("nanny says: dbscan is necessary for this operation. Please install it with 	install.packages(\"dbscan\", repos = \"https://cloud.r-project.org\")")
 		}
-		if (find.package("KernSmooth", quiet = T) %>% length %>% equals(0)) {
-	 stop("nanny says: KernSmooth is necessary for this operation. Please install it with 	install.packages(\"KernSmooth\")")
-		}
+		
+		# Check if centers is in dots
+		dots_args = rlang::dots_list(...)
+		#if ("k" %in% names(dots_args) %>% `!`) dots_args = dots_args %>% c(list(k = 20))
+		if ("eps" %in% names(dots_args) %>% `!`) dots_args = dots_args %>% c(list(eps = 0.15))
+		if ("minPts" %in% names(dots_args) %>% `!`) dots_args = dots_args %>% c(list(minPts = 5))
 		
 		my_df =
 			.data %>%
@@ -140,7 +143,7 @@ get_clusters_SNN_bulk <-
 			select(!!.element,!!.feature,!!.value) %>%
 			distinct() %>%
 			
-			# Check if tranfrom is needed
+			# Check if transform is needed
 			ifelse_pipe(
 				is_function(transform),
 				~ .x %>% 
@@ -154,30 +157,31 @@ get_clusters_SNN_bulk <-
 			) %>%
 			
 			# Prepare data frame for return
-			pivot_wider(names_from = !!.element, values_from = !!.value, names_sep = "___") 
-	
-		
-		max_PC = .data %>% select(!!.feature) %>% distinct() %>% nrow %>% sum(-1)
-		
-		my_df %>%
-			as_matrix(rownames = !!.feature) %>%
-			#data.frame(row.names = quo_names(.feature)) %>%
-			Seurat::CreateSeuratObject() %>%
-			Seurat::ScaleData(display.progress = TRUE,
-												num.cores = 4,
-												do.par = TRUE) %>%
-			Seurat::FindVariableFeatures(selection.method = "vst") %>%
-			Seurat::RunPCA(npcs = min(30, max_PC)) %>%
-			Seurat::FindNeighbors( dims = 1:(min(10, max_PC))) %>%
-			Seurat::FindClusters(method = "igraph", ...) %>%
-			`[[` ("seurat_clusters") %>%
-			as_tibble(rownames = "rn") %>%
-			separate(col = rn, into = quo_names(.element), sep = "___") %>%
-			rename(cluster_SNN = seurat_clusters) %>%
-			dplyr::mutate(!!.element := gsub("\\.", "-",!!.element)) %>%
-			
-			# Attach attributes
-			reattach_internals(.data)
+			pivot_wider(names_from = !!.feature, values_from = !!.value, names_sep = "___") 
+
+
+		.data %>%
+			select(!!.element) %>%
+			distinct() %>% 
+			#arrange(!!.element) %>%
+			bind_cols(
+					my_df %>%
+						as_matrix(rownames = !!.element) %>%
+						
+						# Scale
+						scale() %>%
+					
+						# Wrap the do.call because of the centers check
+						{
+							do.call(dbscan::dbscan, list(x = (.)) %>% c(dots_args))
+						}	 %$%
+							
+						cluster %>%
+						as_tibble() %>%
+						rename(cluster_SNN = value) %>%
+						mutate(cluster_SNN = as.factor(cluster_SNN))
+			)
+
 	}
 
 #' Get dimensionality information to a tibble using MDS

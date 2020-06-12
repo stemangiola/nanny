@@ -132,65 +132,67 @@ setGeneric("cluster_elements", function(.data,
 				"nanny says: action must be either \"add\" for adding this information to your data frame or \"get\" to just get the information"
 			)
 	}
-	# else if (method == "SNN") {
-	# 	if (action == "add"){
-	# 		
-	# 		.data %>%
-	# 			dplyr::left_join(
-	# 				(.) %>%
-	# 					get_clusters_SNN_bulk(
-	# 						.value = !!.value,
-	# 						.element = !!.element,
-	# 						.feature = !!.feature,
-	# 						of_elements = of_elements,
-	# 						transform = transform,
-	# 						...
-	# 					)
-	# 			) 
-	# 		
-	# 	}
-	# 	else if (action == "get"){
-	# 		
-	# 		.data %>%
-	# 			
-	# 			# Selecting the right columns
-	# 			select(
-	# 				!!.element,
-	# 				get_x_y_annotation_columns(.data, !!.element,!!.feature, !!.value)$horizontal_cols
-	# 			) %>%
-	# 			distinct() %>%
-	# 			
-	# 			dplyr::left_join(
-	# 				.data %>%
-	# 					get_clusters_SNN_bulk(
-	# 						.value = !!.value,
-	# 						.element = !!.element,
-	# 						.feature = !!.feature,
-	# 						of_elements = of_elements,
-	# 						transform = transform,
-	# 						...
-	# 					)
-	# 			)
-	# 		
-	# 	}
-	# 	
-	# 	else if (action == "only")
-	# 		get_clusters_SNN_bulk(
-	# 			.data,
-	# 			.value = !!.value,
-	# 			.element = !!.element,
-	# 			.feature = !!.feature,
-	# 			of_elements = of_elements,
-	# 			transform = transform,
-	# 			...
-	# 		)
-	# 	else
-	# 		stop(
-	# 			"nanny says: action must be either \"add\" for adding this information to your data frame or \"get\" to just get the information"
-	# 		)
-	# }
+	else if (method == "SNN") {
+		if (action == "add"){
+
+			.data %>%
+				dplyr::left_join(
+					(.) %>%
+						get_clusters_SNN_bulk(
+							.value = !!.value,
+							.element = !!.element,
+							.feature = !!.feature,
+							of_elements = of_elements,
+							transform = transform,
+							...
+						),
+					by = quo_names(.element)
+				)
+
+		}
+		else if (action == "get"){
+
+			.data %>%
+
+				# Selecting the right columns
+				select(
+					!!.element,
+					get_x_y_annotation_columns(.data, !!.element,!!.feature, !!.value)$horizontal_cols
+				) %>%
+				distinct() %>%
+
+				dplyr::left_join(
+					.data %>%
+						get_clusters_SNN_bulk(
+							.value = !!.value,
+							.element = !!.element,
+							.feature = !!.feature,
+							of_elements = of_elements,
+							transform = transform,
+							...
+						),
+					by = quo_names(.element)
+				)
+
+		}
+
+		else if (action == "only")
+			get_clusters_SNN_bulk(
+				.data,
+				.value = !!.value,
+				.element = !!.element,
+				.feature = !!.feature,
+				of_elements = of_elements,
+				transform = transform,
+				...
+			)
+		else
+			stop(
+				"nanny says: action must be either \"add\" for adding this information to your data frame or \"get\" to just get the information"
+			)
+	}
 	else
-		stop("nanny says: the only supported methods are \"kmeans\"  ")
+		stop("nanny says: the only supported methods are \"kmeans\" and \"SNN\" ")
 	
 }
 
