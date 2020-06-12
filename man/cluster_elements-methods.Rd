@@ -56,7 +56,7 @@ cluster_elements(
 
 \item{of_elements}{A boolean. In case the input is a nanny object, it indicates Whether the element column will be element or feature column}
 
-\item{transform}{A function to use to tranforma the data internalli (e.g., log1p)}
+\item{transform}{A function to use to transform the data internally (e.g., log1p)}
 
 \item{action}{A character string. Whether to join the new information to the input tbl (add), or just get the non-redundant tbl with the new information (get).}
 
@@ -70,7 +70,7 @@ A tbl object with additional columns with cluster labels
 A tbl object with additional columns with cluster labels
 }
 \description{
-cluster_elements() takes as imput a `tbl` formatted as | <element> | <feature> | <value> | <...> | and identify clusters in the data.
+cluster_elements() takes as input a `tbl` formatted as | <element> | <feature> | <value> | <...> | and identify clusters in the data.
 }
 \details{
 \lifecycle{maturing}

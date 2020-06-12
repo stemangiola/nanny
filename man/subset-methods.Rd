@@ -31,7 +31,7 @@ A `tbl` object
 A `tbl` object
 }
 \description{
-subset() takes as imput a `tbl` and returns a `tbl` with only selected-column-related columns
+subset() takes as input a `tbl` and returns a `tbl` with only selected-column-related columns
 }
 \details{
 \lifecycle{maturing}
