@@ -184,6 +184,9 @@ get_clusters_SNN_bulk <-
 
 	}
 
+
+
+
 #' Get dimensionality information to a tibble using MDS
 #' 
 #' @keywords internal
@@ -652,6 +655,94 @@ get_rotated_dimensions =
 			
 			# Attach attributes
 			reattach_internals(.data)
+		
+	}
+
+#' Get points within a user drawn gate
+#' 
+#' @keywords internal
+#'
+#' @import dplyr
+#' @import tidyr
+#' @import tibble
+#' @importFrom graphics plot
+#'
+#' @param .data A tibble
+#' @param .element A column symbol. The column that is used to calculate distance (i.e., normally genes)
+#' @param .dim1 A column symbol. The x dimension
+#' @param .dim2 A column symbol. The y dimension
+#' @param ... Further parameters passed to the function kmeans
+#'
+#' @return A tibble with additional columns
+#'
+gate_dimensions_ <-
+	function(.data,
+					 .element,
+					 .dim1,
+					 .dim2, name = "inside_gate", ...) {
+		
+		# Comply with CRAN NOTES
+		. = NULL
+		value = NULL
+		
+		# Get column names
+		.element = enquo(.element)
+		.dim1 = enquo(.dim1)
+		.dim2 = enquo(.dim2)
+		
+		# Check if package is installed, otherwise install
+		if (find.package("gatepoints", quiet = T) %>% length %>% equals(0)) {
+			stop("nanny says: gatepoints is necessary for this operation. Please install it with 	install.packages(\"gatepoints\", repos = \"https://cloud.r-project.org\")")
+		}
+		
+		if (.data %>%
+				select(!!.element, !!.dim1, !!.dim2) %>%
+				distinct %>%
+				
+				# Count
+				group_by_at(vars(!!.element, !!.dim1, !!.dim2)) %>%
+				tally() %>%
+				ungroup() %>%
+				
+				# Check
+				pull(n) %>%
+				max %>%
+				`>` (1))
+		stop(sprintf(
+			"nanny says: %s must be unique for each row for the calculation",
+			quo_names(.element)
+		))
+		
+		# Return
+		my_df = 
+			.data %>%
+			select(!!.element, !!.dim1, !!.dim2) %>%
+			distinct 
+		
+		my_matrix	=
+			my_df %>%
+			as_matrix(rownames = !!.element) 
+		
+		my_matrix %>% plot()
+		
+		my_df %>%
+			select(-c(!!.dim1, !!.dim2)) %>%
+			left_join(
+				
+				# Return clustering
+				my_matrix %>% 
+					gatepoints::fhs(mark = TRUE, ...) %>%
+					as.character %>%
+					as_tibble() %>%
+					
+					# Reconstitute columns
+					separate(value, quo_names(.element), sep="___") %>%
+					
+					mutate(!!as.symbol(name) := T),
+				by = quo_names(.element)
+			) %>%
+			
+			mutate(!!as.symbol(name) := if_else(!!as.symbol(name) %>% is.na, F, !!as.symbol(name)))
 		
 	}
 

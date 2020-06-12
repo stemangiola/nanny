@@ -34,7 +34,7 @@ A `tbl` with filled abundance
 A `tbl` with filled abundance
 }
 \description{
-keep_variable() takes as imput a `tbl` formatted as | <element> | <feature> | <value> | <...> | and returns a `tbl` with the filtered most variable features. The formula used is from limma::plotMDS (Robinson et al., 2010, <doi:10.1093/bioinformatics/btp616>)
+keep_variable() takes as input a `tbl` formatted as | <element> | <feature> | <value> | <...> | and returns a `tbl` with the filtered most variable features. The formula used is from limma::plotMDS (Robinson et al., 2010, <doi:10.1093/bioinformatics/btp616>)
 }
 \details{
 \lifecycle{maturing}

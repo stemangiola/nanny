@@ -85,7 +85,7 @@ A tbl object with additional columns for the reduced dimensions
 A tbl object with additional columns for the reduced dimensions
 }
 \description{
-reduce_dimensions() takes as imput a `tbl` formatted as | <element> | <feature> | <value> | <...> | and calculates the reduced dimensional space of the feature value. The functions available are PCA, MDS (Robinson et al., 2010, <doi:10.1093/bioinformatics/btp616>), tSNE (Laurens van der Maaten, 2009)
+reduce_dimensions() takes as input a `tbl` formatted as | <element> | <feature> | <value> | <...> | and calculates the reduced dimensional space of the feature value. The functions available are PCA, MDS (Robinson et al., 2010, <doi:10.1093/bioinformatics/btp616>), tSNE (Laurens van der Maaten, 2009)
 }
 \details{
 \lifecycle{maturing}

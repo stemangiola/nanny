@@ -32,7 +32,7 @@ A `tbl` with imputed abundnce
 A `tbl` with imputed abundnce
 }
 \description{
-impute_missing() takes as imput a `tbl` formatted as | <element> | <feature> | <value> | <...> | and returns a `tbl` with an edditional adjusted value column. This method uses scaled counts if present.
+impute_missing() takes as input a `tbl` formatted as | <element> | <feature> | <value> | <...> | and returns a `tbl` with an edditional adjusted value column. This method uses scaled counts if present.
 }
 \details{
 \lifecycle{maturing}

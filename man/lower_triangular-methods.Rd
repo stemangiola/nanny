@@ -30,7 +30,7 @@ A `tbl` with filled abundance
 A `tbl` with filled abundance
 }
 \description{
-lower_triangular() takes as imput a `tbl` formatted as | <element> | <feature> | <value> | <...> | and returns a filtered `tbl`
+lower_triangular() takes as input a `tbl` formatted as | <element> | <feature> | <value> | <...> | and returns a filtered `tbl`
 }
 \details{
 \lifecycle{maturing}

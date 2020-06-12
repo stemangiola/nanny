@@ -28,7 +28,7 @@ A `tbl` object
 A `tbl` object
 }
 \description{
-nest_subset() takes as imput a `tbl` and returns a nested `tbl` according to only selected-column-related columns
+nest_subset() takes as input a `tbl` and returns a nested `tbl` according to only selected-column-related columns
 }
 \details{
 \lifecycle{maturing}

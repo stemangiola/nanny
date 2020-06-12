@@ -34,14 +34,16 @@ Imports:
     knitr,
     widyr,
     Rtsne,
-    gtools
+    gtools,
+    graphics
 RdMacros: lifecycle
 Suggests: 
     testthat,
     Seurat,
     limma,
     GGally,
-    ggplot2
+    ggplot2,
+    gatepoints
 VignetteBuilder: 
     knitr
 Biarch: true
