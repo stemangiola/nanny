@@ -723,7 +723,7 @@ gate_dimensions_ <-
 			my_df %>%
 			as_matrix(rownames = !!.element) 
 		
-		my_matrix %>% plot()
+		my_matrix %>% plot(cex=0.01)
 		
 		my_df %>%
 			select(-c(!!.dim1, !!.dim2)) %>%
