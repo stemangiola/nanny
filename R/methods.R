@@ -605,7 +605,7 @@ setMethod("rotate_dimensions", "tbl_df", .rotate_dimensions)
 #'
 #' @examples
 #'
-#' \donttest{
+#' \dontrun{
 #' 
 #'  mtcars_tidy_MDS = reduce_dimensions(mtcars_tidy, car_model, feature, value, method="MDS")
 #'  
