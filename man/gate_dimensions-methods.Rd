@@ -69,7 +69,7 @@ This function allow the user to label data points in inside a 2D gate.
 }
 \examples{
 
-\donttest{
+\dontrun{
 
  mtcars_tidy_MDS = reduce_dimensions(mtcars_tidy, car_model, feature, value, method="MDS")
  
