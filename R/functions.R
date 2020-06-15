@@ -717,7 +717,30 @@ gate_dimensions_ <-
 		my_df = 
 			.data %>%
 			select(!!.element, !!.dim1, !!.dim2) %>%
-			distinct 
+			distinct %>%
+			
+			# Check if dimensions are NA
+			when(
+				
+				# If NAs in dimensions
+				(.) %>%
+					filter(!!.dim1 %>% is.na | !!.dim2 %>% is.na) %>%
+					nrow() %>%
+					`>` (0) ~ {
+						warning("nanny says: you have some elements with non-valid dimensions. Those elements points will be filtered out")
+						(.) %>%
+							filter(!!.dim1 %>% is.na | !!.dim2 %>% is.na) %>% 
+							capture.output() %>% 
+							paste0(collapse = "\n") %>% 
+							message()
+						
+						# Return
+						(.) %>%	filter(!(!!.dim1 %>% is.na | !!.dim2 %>% is.na)) 
+					},
+				
+				# Otherwise
+				~ (.) 
+			) 
 		
 		my_matrix	=
 			my_df %>%

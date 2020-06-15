@@ -639,14 +639,17 @@ setGeneric("gate_dimensions", function(.data,
 	.dim1 = enquo(.dim1)
 	.dim2 = enquo(.dim2)
 
-	
 	.data_processed =
+		
+		.data %>% 
+
+		# Run calculation
 		gate_dimensions_(
-			.data,
 			.element = !!.element,
 			.dim1 = !!.dim1,
 			.dim2 = !!.dim2,
-			name = name
+			name = name,
+			...
 		)
 	
 	if (action == "add"){
