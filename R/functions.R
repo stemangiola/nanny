@@ -761,7 +761,20 @@ gate_dimensions_ <-
 					# Reconstitute columns
 					separate(value, quo_names(.element), sep="___") %>%
 					
-					mutate(!!as.symbol(name) := T),
+					mutate(!!as.symbol(name) := T) %>%
+					
+					# Keep classes for compatibility
+					imap(
+						~.x %>%
+							when(
+								.y %in% colnames(my_df) && class(my_df %>% select(.y) %>% pull(1)) == "numeric" ~ as.numeric(.),
+								.y %in% colnames(my_df) && class(my_df %>% select(.y) %>% pull(1)) == "integer" ~ as.integer(.),
+								.y %in% colnames(my_df) && class(my_df %>% select(.y) %>% pull(1)) == "logical" ~ as.logical(.),
+								.y %in% colnames(my_df) && class(my_df %>% select(.y) %>% pull(1)) == "factor" ~ as.factor(.),
+								~ (.)
+							)
+					) %>%
+					do.call(bind_cols, .),
 				by = quo_names(.element)
 			) %>%
 			
