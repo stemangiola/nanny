@@ -900,6 +900,11 @@ setGeneric("nest_subset", function(.data, ..., .names_sep = NULL)
 	
 	# Make col names - from tidyr
 	cols = enquos(...)
+	
+	# Name of the new data column
+	col_name_data  = names(cols)
+	
+	# Column names
 	cols <- map(cols, ~ names(eval_select(.x, .data)))
 	cols <- map(cols, set_names)
 	if (!is.null(.names_sep)) cols <- imap(cols, strip_names, .names_sep)
@@ -913,7 +918,7 @@ setGeneric("nest_subset", function(.data, ..., .names_sep = NULL)
 	asis_subset = asis %>% c(get_specific_annotation_columns(.data, asis))
 	
 	# Apply nest on those
-	tidyr::nest(.data, data = -c(asis_subset))
+	tidyr::nest(.data, !!col_name_data := -c(asis_subset))
 	
 }
 
