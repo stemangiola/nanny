@@ -658,6 +658,131 @@ get_rotated_dimensions =
 		
 	}
 
+min_max_scale <- function(x, .min = 0, .max = 5)
+{
+	return((x- .min) /(.max-.min))
+}
+
+pretty_plot = function(.data,
+											 .dim1,
+											 .dim2,
+											 .color=NULL,
+											 .shape=NULL,
+											 .size=NULL){
+	  
+	# Get column names
+	.dim1 = enquo(.dim1)
+	.dim2 = enquo(.dim2)
+	.color = enquo(.color)
+	.shape = enquo(.shape)
+	.size = enquo(.size)
+
+	# Add extra space to right of plot area; change clipping to figure
+	if(rlang::quo_is_symbol(.color) | rlang::quo_is_symbol(.shape) | rlang::quo_is_symbol(.size))
+		par(
+			mar=c(5.1, 4.1, 4.1, 8.1),
+			xpd=TRUE,
+			tck = -.01 # Reduce tick length
+		)
+	
+
+		
+		.data %>%
+			
+			# Define COLOR
+			when(
+				
+				# If color is continuous
+				rlang::quo_is_symbol(.color) & 
+					(.) %>% 
+					select(!!.color) %>% 
+					sapply(class) %in% c("numeric", "integer", "double") ~ {
+						how_many_colors = .data %>% distinct(!!.color) %>% nrow
+						(.) %>%
+							mutate(.color = 
+										 	grDevices::colorRampPalette(RColorBrewer::brewer.pal(min(9, how_many_colors), "Set1"))(how_many_colors)[factor(!!.color)]
+										)
+						},
+				
+				# If color is discrete
+					rlang::quo_is_symbol(.color) ~ {
+						order_ = findInterval(df$Temp, sort(df$Temp))
+						(.) %>% mutate(.color = grDevices::colorRampPalette(	viridis(n = 5) )(n())[order_] )
+					},
+				
+				# If color is not defined
+				~ (.) %>% mutate(.color = "grey25")
+			) %>%
+		
+			# Define SIZE
+			when(
+				
+				# If color is continuous
+				rlang::quo_is_symbol(.size) & 
+					(.) %>% 
+					select(!!.size) %>% 
+					sapply(class) %in% c("numeric", "integer", "double") ~ 	(.) %>%	mutate(.size := !!.size %>% scales::rescale( to = c(1, 5)) ),
+				
+				# If color is discrete
+				rlang::quo_is_symbol(.size) ~ {
+					warning("tidygate says: .size has to be a continuous variable. .size has been ignored")
+					(.) %>% mutate(.size = 2 )
+				},
+				
+				# If color is not defined
+				~ (.)  %>% mutate(.size = 2 )
+			) %>%
+			 
+			# Define SHAPE
+			when(
+				
+				# If color is continuous
+				rlang::quo_is_symbol(.shape) & 
+					(.) %>% 
+					select(!!.shape) %>% 
+					sapply(class) %in% c("numeric", "integer", "double") ~ {
+						warning("tidygate says: .shape has to be a discrete variable. .shape has been ignored")
+						(.) %>% mutate(.shape = 19 )
+					}	,
+				
+				# If color is discrete
+				rlang::quo_is_symbol(.shape) ~ (.) %>%	mutate(.shape := c(19, 17, 15, 18, 3, 4, 8, 10, 5)[factor(!!.shape)] 	),
+				
+				# If color is not defined
+				~ (.)  %>% mutate(.shape = 19 )
+			) %>%
+			
+		{
+			plot(
+				(.) %>% pull(!!.dim1),
+				(.) %>% pull(!!.dim2),
+				xlim=range((.) %>% pull(!!.dim1)), 
+				ylim=range((.) %>% pull(!!.dim2)),
+				bty='l',
+				pch=(.) %>% pull(.shape),
+				cex = (.) %>% pull(.size),
+				col=(.) %>% pull(.color),
+				xlab = quo_names(.dim1) %>% paste(collapse= " "),
+				ylab = quo_names(.dim2) %>% paste(collapse= " "),
+				xaxt='n',
+				yaxt='n'
+			)
+		}
+		
+	
+		axis(1, tck=1,  col.ticks="light gray")
+		axis(1, tck=-0.015, col.ticks="black", labels = F)
+		
+		axis(2, tck=1,  col.ticks="light gray", lwd.ticks="1", las=1)
+		axis(2, tck=-0.015, col.ticks="black", las=1, labels = F)
+		
+
+	# Add legend to top right, outside plot region
+	legend("topright", inset=c(-0.2,0), legend=c("AAAAA","B"), pch=c(19,3), col = c("red", "black"), title="Group",  box.col="white")
+	######
+	
+}
+
 #' Get points within a user drawn gate
 #' 
 #' @keywords internal
@@ -679,8 +804,14 @@ gate_dimensions_ <-
 	function(.data,
 					 .element,
 					 .dim1,
-					 .dim2, name = "inside_gate", ...) {
+					 .dim2, 
+					 .color = NULL,
+					 .shape = NULL,
+					 .size = NULL,
+					 name = "inside_gate", ...) {
 		
+		
+	
 		# Comply with CRAN NOTES
 		. = NULL
 		value = NULL
@@ -689,6 +820,9 @@ gate_dimensions_ <-
 		.element = enquo(.element)
 		.dim1 = enquo(.dim1)
 		.dim2 = enquo(.dim2)
+		.color = enquo(.color)
+		.shape = enquo(.shape)
+		.size = enquo(.size)
 		
 		# Check if package is installed, otherwise install
 		if (find.package("gatepoints", quiet = T) %>% length %>% equals(0)) {
@@ -716,9 +850,8 @@ gate_dimensions_ <-
 		# Return
 		my_df = 
 			.data %>%
-			select(!!.element, !!.dim1, !!.dim2) %>%
-			distinct %>%
-			
+			subset(!!.element) %>%
+
 			# Check if dimensions are NA
 			when(
 				
@@ -744,9 +877,15 @@ gate_dimensions_ <-
 		
 		my_matrix	=
 			my_df %>%
+			select(!!.element, !!.dim1, !!.dim2) %>%
 			as_matrix(rownames = !!.element) 
 		
-		my_matrix %>% plot(cex=0.01)
+		my_df %>% pretty_plot(
+			!!.dim1, 
+			!!.dim2,
+			.color = !!.color,
+			.shape = !!.shape,
+			.size = !!.size)
 		
 		my_df %>%
 			select(-c(!!.dim1, !!.dim2)) %>%

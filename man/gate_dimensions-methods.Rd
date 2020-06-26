@@ -12,6 +12,9 @@ gate_dimensions(
   .element,
   .dim1,
   .dim2,
+  .color = NULL,
+  .shape = NULL,
+  .size = NULL,
   name = "inside_gate",
   action = "add",
   ...
@@ -22,6 +25,9 @@ gate_dimensions(
   .element,
   .dim1,
   .dim2,
+  .color = NULL,
+  .shape = NULL,
+  .size = NULL,
   name = "inside_gate",
   action = "add",
   ...
@@ -32,6 +38,9 @@ gate_dimensions(
   .element,
   .dim1,
   .dim2,
+  .color = NULL,
+  .shape = NULL,
+  .size = NULL,
   name = "inside_gate",
   action = "add",
   ...

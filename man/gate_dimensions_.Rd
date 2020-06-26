@@ -4,7 +4,17 @@
 \alias{gate_dimensions_}
 \title{Get points within a user drawn gate}
 \usage{
-gate_dimensions_(.data, .element, .dim1, .dim2, name = "inside_gate", ...)
+gate_dimensions_(
+  .data,
+  .element,
+  .dim1,
+  .dim2,
+  .color = NULL,
+  .shape = NULL,
+  .size = NULL,
+  name = "inside_gate",
+  ...
+)
 }
 \arguments{
 \item{.data}{A tibble}

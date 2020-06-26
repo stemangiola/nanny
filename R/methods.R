@@ -621,6 +621,9 @@ setGeneric("gate_dimensions", function(.data,
 																			 .element,
 																			 .dim1,
 																			 .dim2, 
+																			 .color = NULL,
+																			 .shape = NULL,
+																			 .size = NULL,
 																			 name = "inside_gate",
 																			 action =	"add", ...)
 	standardGeneric("gate_dimensions"))
@@ -638,7 +641,10 @@ setGeneric("gate_dimensions", function(.data,
 	.element = enquo(.element)
 	.dim1 = enquo(.dim1)
 	.dim2 = enquo(.dim2)
-
+	.color = enquo(.color)
+	.shape = enquo(.shape)
+	.size = enquo(.size)
+	
 	.data_processed =
 		
 		.data %>% 
@@ -648,6 +654,9 @@ setGeneric("gate_dimensions", function(.data,
 			.element = !!.element,
 			.dim1 = !!.dim1,
 			.dim2 = !!.dim2,
+			.color = !!.color,
+			.shape = !!.shape,
+			.size = !!.size,
 			name = name,
 			...
 		)
