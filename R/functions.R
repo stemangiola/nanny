@@ -677,6 +677,8 @@ pretty_plot = function(.data,
 	.shape = enquo(.shape)
 	.size = enquo(.size)
 
+	my_size_range = c(1,3)
+	
 	# Add extra space to right of plot area; change clipping to figure
 	if(rlang::quo_is_symbol(.color) | rlang::quo_is_symbol(.shape) | rlang::quo_is_symbol(.size))
 		par(
@@ -684,9 +686,8 @@ pretty_plot = function(.data,
 			xpd=TRUE,
 			tck = -.01 # Reduce tick length
 		)
-	
 
-		
+	.data_formatted = 
 		.data %>%
 			
 			# Define COLOR
@@ -721,7 +722,7 @@ pretty_plot = function(.data,
 				rlang::quo_is_symbol(.size) & 
 					(.) %>% 
 					select(!!.size) %>% 
-					sapply(class) %in% c("numeric", "integer", "double") ~ 	(.) %>%	mutate(.size := !!.size %>% scales::rescale( to = c(1, 5)) ),
+					sapply(class) %in% c("numeric", "integer", "double") ~ 	(.) %>%	mutate(.size := !!.size %>% scales::rescale( to = my_size_range) ),
 				
 				# If color is discrete
 				rlang::quo_is_symbol(.size) ~ {
@@ -750,8 +751,10 @@ pretty_plot = function(.data,
 				
 				# If color is not defined
 				~ (.)  %>% mutate(.shape = 19 )
-			) %>%
-			
+			) 
+	
+	# Plot
+	.data_formatted %>%
 		{
 			plot(
 				(.) %>% pull(!!.dim1),
@@ -778,9 +781,48 @@ pretty_plot = function(.data,
 		
 
 	# Add legend to top right, outside plot region
-	legend("topright", inset=c(-0.2,0), legend=c("AAAAA","B"), pch=c(19,3), col = c("red", "black"), title="Group",  box.col="white")
-	######
-	
+	inset_y = 0
+	if(	rlang::quo_is_symbol(.color)){
+		legend(
+			"topleft", 
+			inset=c(1.05,inset_y),
+			legend=distinct(.data_formatted, !!.color) %>% pull(!!.color),
+			pch=19, 
+			col = distinct(.data_formatted, !!.color, .color) %>% pull(.color),
+			title=quo_name(.color), 
+			box.col="white",
+			xjust = 0
+		)
+		inset_y = inset_y + distinct(.data_formatted, !!.color, .color) %>% nrow %>% magrittr::multiply_by(.1)
+	}
+	if(	rlang::quo_is_symbol(.size)){
+		legend(
+			"topleft",
+			inset=c(1.05,inset_y),
+			legend=distinct(.data_formatted, !!.size) %>% pull(!!.size) %>% range,
+			pch=19,
+			col = "black",
+			pt.cex = my_size_range,
+			title=quo_name(.size),
+			box.col="white",
+			xjust = 0
+		)
+		inset_y = inset_y + 0.3
+	}
+	if(	rlang::quo_is_symbol(.shape)){
+		legend(
+			"topleft", 
+			inset=c(1.05,inset_y),
+			legend=distinct(.data_formatted, !!.shape) %>% pull(!!.shape),
+			pch=distinct(.data_formatted, !!.shape, .shape) %>% pull(.shape), 
+			col = "black",
+			title=quo_name(.shape), 
+			box.col="white",
+			yjust = 0
+		)
+		inset_y = inset_y + distinct(.data_formatted, !!.shape, .shape) %>% nrow %>% magrittr::multiply_by(.1)
+	}
+
 }
 
 #' Get points within a user drawn gate
