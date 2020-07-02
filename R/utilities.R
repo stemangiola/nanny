@@ -1,3 +1,6 @@
+add_get_only_error_message = 	"nanny says: action must be either \"add\" for adding this information to your data frame, \"get\" to get the new information along with the information element-wise of feature-wide (depending on what operation you are doing) or only to just get the new information"
+add_get_error_message = 	"nanny says: action must be either \"add\" for adding this information to your data frame, \"get\" to get the new information along with the information element-wise of feature-wide (depending on what operation you are doing)"
+
 my_stop = function() {
 	stop("
         You should call nanny library *after* tidyverse libraries.

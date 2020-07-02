@@ -7,19 +7,20 @@
 #' @importFrom rlang enquo
 #' @importFrom magrittr "%>%"
 #' @importFrom tidygate gate
+#' @importFrom rlang dots_list
 #'
 #' @name cluster_elements
 #'
 #' @param .data A `tbl` formatted as | <element> | <feature> | <value> | <...> |
 #' @param .element The name of the element column (normally elements).
-#' @param .feature The name of the feature column (normally features)
-#' @param .value The name of the column including the numerical value the clustering is based on (normally feature value)
+#' @param .feature The name of the feature column (normally features). Only if method==\"gate\" this should be of length two. E.g., c\(dim1, dim2\)
+#' @param .value The name of the column including the numerical value the clustering is based on (normally feature value). Only if method==\"gate\" this should be undefined.
 #'
 #' @param method A character string. The cluster algorithm to use, ay the moment k-means is the only algorithm included.
 #' @param of_elements A boolean. In case the input is a nanny object, it indicates Whether the element column will be element or feature column
 #' @param transform A function to use to transform the data internally (e.g., log1p)
 #' @param action A character string. Whether to join the new information to the input tbl (add), or just get the non-redundant tbl with the new information (get).
-#' @param ... Further parameters passed to the function kmeans
+#' @param ... Further parameters passed either to the function stats::kmeans if method == \"kmeans\", dbscan::dbscan if the method == \"SNN\" or tidygate::gate if the method == \"gate\". For gate you can pass: aesthetics for the scatter plot \(including .color, .size, .shape\) and the number of gates (how_many_gates). You can also pass a gate list (see tidygate manual) for programmatic gate selection.
 #' 
 #' @details identifies clusters in the data, normally of elements.
 #' This function returns a tibble with additional columns for the cluster annotation.
@@ -207,15 +208,31 @@ setGeneric("cluster_elements", function(.data,
 		.feature_names = quo_names(.feature)
 		if(length(.feature_names) != 2) stop("nanny says: for gate clustering .feature must include exactly two columns. For example the first two PCAs.")
 		
+		
 		.data %>%
 			gate(
-			.element = !!.element,
-			.dim1 = !!as.symbol(.feature_names[1]),
-			.dim2 = !!as.symbol(.feature_names[2]),
-			action = action,
-			...
-		)
-			
+				.element = !!.element,
+				.dim1 = !!as.symbol(.feature_names[1]),
+				.dim2 = !!as.symbol(.feature_names[2]),
+				action = action,
+				...
+			)
+
+		# NOT USED AT THE MOMENT
+		# # Use dots explicitly to call function
+		# list(
+		# 	.data = .data,
+		# 	.element = .element,
+		# 	.dim1 = as.symbol(.feature_names[1]),
+		# 	.dim2 = as.symbol(.feature_names[2]),
+		# 	action = action
+		# ) %>%
+		# 	
+		# 	# Add dots
+		# 	c(rlang::dots_list(...)) %>%
+		# 	
+		# 	# Call gate
+		# 	do.call(gate, .)
 
 }
 	else
