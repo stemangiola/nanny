@@ -103,8 +103,7 @@ mtcars_tidy_MDS =
 ```
 
 On the x and y axes axis we have the reduced dimensions 1 to 3, data is
-coloured by cell
-type.
+coloured by cell type.
 
 ``` r
 mtcars_tidy_MDS %>% subset(car_model)  %>% select(contains("Dim"), everything())
@@ -142,8 +141,7 @@ mtcars_tidy_PCA =
 ```
 
 On the x and y axes axis we have the reduced dimensions 1 to 3, data is
-coloured by cell
-type.
+coloured by cell type.
 
 ``` r
 mtcars_tidy_PCA %>% subset(car_model) %>% select(contains("PC"), everything())
@@ -279,6 +277,30 @@ plot.
 
 ![](README_files/figure-gfm/plot_cluster-1.png)<!-- -->
 
+**gating**
+
+``` r
+mtcars_tidy_MDS %>%
+    cluster_elements(car_model, c(Dim1, Dim2), method="gate", .color=group)
+```
+
+![](inst/tidygate.gif)
+
+    ## # A tibble: 288 x 9
+    ##    car_model    hp    vs feature  value    Dim1   Dim2  Dim3 gate 
+    ##    <chr>     <dbl> <dbl> <chr>    <dbl>   <dbl>  <dbl> <dbl> <chr>
+    ##  1 Merc 280    123     1 mpg     -0.148 -0.0277 0.0696 0.387 1    
+    ##  2 Merc 280C   123     1 mpg     -0.380 -0.0137 0.0166 0.464 1    
+    ##  3 Merc 280    123     1 cyl     -0.105 -0.0277 0.0696 0.387 1    
+    ##  4 Merc 280C   123     1 cyl     -0.105 -0.0137 0.0166 0.464 1    
+    ##  5 Merc 280    123     1 disp    -0.509 -0.0277 0.0696 0.387 1    
+    ##  6 Merc 280C   123     1 disp    -0.509 -0.0137 0.0166 0.464 1    
+    ##  7 Merc 280    123     1 drat     0.605 -0.0277 0.0696 0.387 1    
+    ##  8 Merc 280C   123     1 drat     0.605 -0.0137 0.0166 0.464 1    
+    ##  9 Merc 280    123     1 wt       0.228 -0.0277 0.0696 0.387 1    
+    ## 10 Merc 280C   123     1 wt       0.228 -0.0137 0.0166 0.464 1    
+    ## # … with 278 more rows
+
 ## `drop_redundant`
 
 We may want to remove redundant elements from the original data set
@@ -322,8 +344,7 @@ We create a non-rectangular data frame
 mtcars_tidy_non_rectangular = mtcars_tidy %>% slice(-1)
 ```
 
-We fill the missing value with the value of
-0
+We fill the missing value with the value of 0
 
 ``` r
 mtcars_tidy_non_rectangular %>% fill_missing(car_model, feature, value, fill_with = 0)
@@ -444,7 +465,7 @@ mtcars_tidy_permuted %>%
 
     ## # A tibble: 496 x 3
     ##    car_model_1    car_model_2       `mean(value)`
-    ##    <chr>          <chr>                     <dbl>
+    ##    <fct>          <fct>                     <dbl>
     ##  1 Mazda RX4      Mazda RX4 Wag           0.151  
     ##  2 Mazda RX4      Datsun 710              0.300  
     ##  3 Mazda RX4 Wag  Datsun 710              0.300  
