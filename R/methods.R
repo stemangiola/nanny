@@ -6,6 +6,7 @@
 #'
 #' @importFrom rlang enquo
 #' @importFrom magrittr "%>%"
+#' @importFrom tidygate gate
 #'
 #' @name cluster_elements
 #'
@@ -66,9 +67,6 @@ setGeneric("cluster_elements", function(.data,
 	.feature = enquo(.feature)
 	.value = enquo(.value)
 	
-	# Validate data frame
-	validation(.data, !!.element, !!.feature, !!.value)
-	
 	# # Check if data rectangular
 	# ifelse_pipe(
 	# 	(.) %>% check_if_data_rectangular(!!.element,!!.feature,!!.value, type = "soft"),
@@ -76,6 +74,10 @@ setGeneric("cluster_elements", function(.data,
 	# ) %>%
 	
 	if (method == "kmeans") {
+		
+		# Validate data frame
+		validation(.data, !!.element, !!.feature, !!.value)
+		
 		if (action == "add"){
 			
 			.data %>%
@@ -133,6 +135,10 @@ setGeneric("cluster_elements", function(.data,
 			)
 	}
 	else if (method == "SNN") {
+		
+		# Validate data frame
+		validation(.data, !!.element, !!.feature, !!.value)
+		
 		if (action == "add"){
 
 			.data %>%
@@ -191,8 +197,29 @@ setGeneric("cluster_elements", function(.data,
 				"nanny says: action must be either \"add\" for adding this information to your data frame or \"get\" to just get the information"
 			)
 	}
+	else if (method == "gate") {
+		
+		
+		if (!action %in% c("add", "get", "only")) 	stop(
+			"nanny says: action must be either \"add\" for adding this information to your data frame or \"get\" to just get the information"
+		)
+		
+		.feature_names = quo_names(.feature)
+		if(length(.feature_names) != 2) stop("nanny says: for gate clustering .feature must include exactly two columns. For example the first two PCAs.")
+		
+		.data %>%
+			gate(
+			.element = !!.element,
+			.dim1 = !!as.symbol(.feature_names[1]),
+			.dim2 = !!as.symbol(.feature_names[2]),
+			action = action,
+			...
+		)
+			
+
+}
 	else
-		stop("nanny says: the only supported methods are \"kmeans\" and \"SNN\" ")
+		stop("nanny says: the only supported methods are \"kmeans\", \"SNN\" and \"gate\" ")
 	
 }
 
