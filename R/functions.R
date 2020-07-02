@@ -87,7 +87,7 @@ get_clusters_kmeans_bulk <-
 			reattach_internals(.data)
 	}
 
-#' Get SNN shared nearest neighbour clusters to a tibble
+#' Get SNN shared nearest neighbor clusters to a tibble
 #' 
 #' @keywords internal
 #'
