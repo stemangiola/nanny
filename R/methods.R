@@ -6,7 +6,6 @@
 #'
 #' @importFrom rlang enquo
 #' @importFrom magrittr "%>%"
-#' @importFrom tidygate gate
 #' @importFrom rlang dots_list
 #'
 #' @name cluster_elements
@@ -200,6 +199,10 @@ setGeneric("cluster_elements", function(.data,
 	}
 	else if (method == "gate") {
 		
+		# Check if package is installed, otherwise install
+		if (find.package("tidygate", quiet = T) %>% length %>% equals(0)) {
+			stop("nanny says: tidygate is necessary for this operation. Please install it with 	install.packages(\"tidygate\", repos = \"https://cloud.r-project.org\")")
+		}
 		
 		if (!action %in% c("add", "get", "only")) 	stop(
 			"nanny says: action must be either \"add\" for adding this information to your data frame or \"get\" to just get the information"
@@ -210,7 +213,7 @@ setGeneric("cluster_elements", function(.data,
 		
 		
 		.data %>%
-			gate(
+			tidygate::gate(
 				.element = !!.element,
 				.dim1 = !!as.symbol(.feature_names[1]),
 				.dim2 = !!as.symbol(.feature_names[2]),
@@ -621,129 +624,6 @@ setMethod("rotate_dimensions", "spec_tbl_df", .rotate_dimensions)
 #' @rdname rotate_dimensions-methods
 #' @return A tbl object with additional columns for the reduced dimensions. additional columns for the rotated dimensions. The rotated dimensions will be added to the original data set as `<NAME OF DIMENSION> rotated <ANGLE>` by default, or as specified in the input arguments.
 setMethod("rotate_dimensions", "tbl_df", .rotate_dimensions)
-
-#' Label points within a scatter plot drawing a gate
-#'
-#' \lifecycle{maturing}
-#'
-#' @description gate_dimensions() takes as input a `tbl` formatted as | <DIMENSION 1> | <DIMENSION 2> | <...> | and calculates the rotated dimensional space of the feature value.
-#'
-#' @importFrom rlang enquo
-#' @importFrom magrittr "%>%"
-#'
-#' @name gate_dimensions
-#'
-#'
-#' @param .data A tibble
-#' @param .element A column symbol. The column that is used to calculate distance (i.e., normally genes)
-#' @param .dim1 A column symbol. The x dimension
-#' @param .dim2 A column symbol. The y dimension
-#' @param name A character string. The name of the new column
-#' @param action A character string. Whether to join the new information to the input tbl (add), or just get the non-redundant tbl with the new information (get).
-#' @param ... Further parameters passed to the function kmeans
-#'
-#' @details This function allow the user to label data points in inside a 2D gate.
-#'
-#' @return A tbl object with additional columns for the inside gate information. additional columns for the rotated dimensions. The rotated dimensions will be added to the original data set as `<NAME OF DIMENSION> rotated <ANGLE>` by default, or as specified in the input arguments.
-#'
-#'
-#' @examples
-#'
-#' \dontrun{
-#' 
-#'  mtcars_tidy_MDS = reduce_dimensions(mtcars_tidy, car_model, feature, value, method="MDS")
-#'  
-#'  gate_dimensions(mtcars_tidy_MDS, car_model, `Dim1`, `Dim2`)
-#'  
-#' }
-#'
-#' @docType methods
-#' @rdname gate_dimensions-methods
-#' @export
-#'
-setGeneric("gate_dimensions", function(.data,
-																			 .element,
-																			 .dim1,
-																			 .dim2, 
-																			 .color = NULL,
-																			 .shape = NULL,
-																			 .size = NULL,
-																			 name = "inside_gate",
-																			 action =	"add", ...)
-	standardGeneric("gate_dimensions"))
-
-# Set internal
-.gate_dimensions = 		function(.data,
-															.element,
-															.dim1,
-															.dim2, 
-															name = "inside_gate",
-																action =	"add", ...)
-{
-	
-	# Get column names
-	.element = enquo(.element)
-	.dim1 = enquo(.dim1)
-	.dim2 = enquo(.dim2)
-	.color = enquo(.color)
-	.shape = enquo(.shape)
-	.size = enquo(.size)
-	
-	.data_processed =
-		
-		.data %>% 
-
-		# Run calculation
-		gate_dimensions_(
-			.element = !!.element,
-			.dim1 = !!.dim1,
-			.dim2 = !!.dim2,
-			.color = !!.color,
-			.shape = !!.shape,
-			.size = !!.size,
-			name = name,
-			...
-		)
-	
-	if (action == "add"){
-		
-		.data %>%
-			dplyr::left_join(	.data_processed,	by = quo_names(.element)	) 
-		
-	}
-	else if (action == "get"){
-		
-		.data %>%
-			
-			# Selecting the right columns
-			select(
-				!!.element,
-				get_specific_annotation_columns(.data, !!.element)
-			) %>%
-			distinct() %>%
-			
-			dplyr::left_join(	.data_processed,	by = quo_names(.element)	) 
-		
-	}
-	else if (action == "only") .data_processed
-	else
-		stop(
-			"nanny says: action must be either \"add\" for adding this information to your data frame or \"get\" to just get the information"
-		)
-}
-
-#' gate_dimensions
-#' @docType methods
-#' @rdname gate_dimensions-methods
-#' @return A tbl object with additional columns for the reduced dimensions. additional columns for the rotated dimensions. The rotated dimensions will be added to the original data set as `<NAME OF DIMENSION> rotated <ANGLE>` by default, or as specified in the input arguments.
-setMethod("gate_dimensions", "spec_tbl_df", .gate_dimensions)
-
-#' gate_dimensions
-#' @docType methods
-#' @rdname gate_dimensions-methods
-#' @return A tbl object with additional columns for the reduced dimensions. additional columns for the rotated dimensions. The rotated dimensions will be added to the original data set as `<NAME OF DIMENSION> rotated <ANGLE>` by default, or as specified in the input arguments.
-setMethod("gate_dimensions", "tbl_df", .gate_dimensions)
-
 
 #' Drop redundant elements (e.g., elements) for which feature (e.g., feature/gene) aboundances are correlated
 #'

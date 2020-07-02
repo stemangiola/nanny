@@ -48,9 +48,9 @@ cluster_elements(
 
 \item{.element}{The name of the element column (normally elements).}
 
-\item{.feature}{The name of the feature column (normally features)}
+\item{.feature}{The name of the feature column (normally features). Only if method==\"gate\" this should be of length two. E.g., c\(dim1, dim2\)}
 
-\item{.value}{The name of the column including the numerical value the clustering is based on (normally feature value)}
+\item{.value}{The name of the column including the numerical value the clustering is based on (normally feature value). Only if method==\"gate\" this should be undefined.}
 
 \item{method}{A character string. The cluster algorithm to use, ay the moment k-means is the only algorithm included.}
 
