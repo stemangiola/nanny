@@ -218,6 +218,7 @@ setGeneric("cluster_elements", function(.data,
 				.dim1 = !!as.symbol(.feature_names[1]),
 				.dim2 = !!as.symbol(.feature_names[2]),
 				action = action,
+				name = "cluster_gate",
 				...
 			) %>%
 			
