@@ -219,7 +219,17 @@ setGeneric("cluster_elements", function(.data,
 				.dim2 = !!as.symbol(.feature_names[2]),
 				action = action,
 				...
-			)
+			) %>%
+			
+			# Setup attributes
+			attach_to_internals(attr(., "gate"), "gate") %>%
+			drop_attr("gate") %>%
+				
+			# Communicate the attribute added
+			{
+				message("nanny says: to access the raw results do `attr(..., \"internals\")$gate`")
+				(.)
+			}
 
 		# NOT USED AT THE MOMENT
 		# # Use dots explicitly to call function
