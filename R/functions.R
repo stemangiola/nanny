@@ -117,8 +117,12 @@ get_clusters_SNN_bulk <-
 					 ...) {
 		
 		# Comply with CRAN NOTES
+		. = NULL
 		rn = NULL
 		seurat_clusters = NULL
+		cluster = NULL
+		value = NULL
+		cluster_SNN = NULL
 		
 		# Get column names
 		.element = enquo(.element)
