@@ -816,6 +816,7 @@ setMethod("subset",		"tbl",			.subset)
 #'
 #' @param .data A `tbl` 
 #' @param ... The name of the columns of interest
+#' @param .exclude Column name. It is the column\(s\) that you might want to exclude from the subset. 
 #' @param .names_sep Deprecated by tidyr
 #'
 #'
@@ -836,14 +837,15 @@ setMethod("subset",		"tbl",			.subset)
 #' @export
 #'
 #'
-setGeneric("nest_subset", function(.data, ..., .names_sep = NULL)
+setGeneric("nest_subset", function(.data, ..., .exclude = NULL, .names_sep = NULL)
 	standardGeneric("nest_subset"))
 
 # Set internal
-.nest_subset = 		function(.data, ..., .names_sep = NULL)	{
+.nest_subset = 		function(.data, ..., .exclude = NULL, .names_sep = NULL)	{
 	
 	# Make col names - from tidyr
 	cols = enquos(...)
+	.exclude = enquo(.exclude)
 	
 	# Name of the new data column
 	col_name_data  = names(cols)
@@ -859,7 +861,11 @@ setGeneric("nest_subset", function(.data, ..., .names_sep = NULL)
 		stop("nanny says: some of the .column specified do not exist in the input data frame.")
 	
 	# Get my subset columns
-	asis_subset = asis %>% c(get_specific_annotation_columns(.data, asis))
+	asis_subset = asis %>%
+		c(get_specific_annotation_columns(.data, asis)) %>% 
+		
+		# Exclude custom columns
+		setdiff(quo_names(.exclude))
 	
 	# Apply nest on those
 	tidyr::nest(.data, !!col_name_data := -c(asis_subset))
