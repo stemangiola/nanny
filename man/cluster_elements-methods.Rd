@@ -48,19 +48,19 @@ cluster_elements(
 
 \item{.element}{The name of the element column (normally elements).}
 
-\item{.feature}{The name of the feature column (normally features)}
+\item{.feature}{The name of the feature column (normally features). Only if method==\"gate\" this should be of length two. E.g., c\(dim1, dim2\)}
 
-\item{.value}{The name of the column including the numerical value the clustering is based on (normally feature value)}
+\item{.value}{The name of the column including the numerical value the clustering is based on (normally feature value). Only if method==\"gate\" this should be undefined.}
 
 \item{method}{A character string. The cluster algorithm to use, ay the moment k-means is the only algorithm included.}
 
 \item{of_elements}{A boolean. In case the input is a nanny object, it indicates Whether the element column will be element or feature column}
 
-\item{transform}{A function to use to tranforma the data internalli (e.g., log1p)}
+\item{transform}{A function to use to transform the data internally (e.g., log1p)}
 
 \item{action}{A character string. Whether to join the new information to the input tbl (add), or just get the non-redundant tbl with the new information (get).}
 
-\item{...}{Further parameters passed to the function kmeans}
+\item{...}{Further parameters passed either to the function stats::kmeans if method == \"kmeans\", dbscan::dbscan if the method == \"SNN\" or tidygate::gate if the method == \"gate\". For gate you can pass: aesthetics for the scatter plot \(including .color, .size, .shape\) and the number of gates (how_many_gates). You can also pass a gate list (see tidygate manual) for programmatic gate selection.}
 }
 \value{
 A tbl object with additional columns with cluster labels
@@ -70,7 +70,7 @@ A tbl object with additional columns with cluster labels
 A tbl object with additional columns with cluster labels
 }
 \description{
-cluster_elements() takes as imput a `tbl` formatted as | <element> | <feature> | <value> | <...> | and identify clusters in the data.
+cluster_elements() takes as input a `tbl` formatted as | <element> | <feature> | <value> | <...> | and identify clusters in the data.
 }
 \details{
 \lifecycle{maturing}

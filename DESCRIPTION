@@ -1,7 +1,7 @@
 Package: nanny
 Type: Package
 Title: High-Level Data Analysis and Manipulation in 'tidyverse' Style
-Version: 0.1.8
+Version: 0.2.0
 Authors@R: 
     person(given = "Stefano",
            family = "Mangiola",
@@ -34,7 +34,8 @@ Imports:
     knitr,
     widyr,
     Rtsne,
-    gtools
+    gtools,
+    graphics
 RdMacros: lifecycle
 Suggests: 
     testthat,
@@ -42,7 +43,9 @@ Suggests:
     limma,
     vctrs,
     GGally,
-    ggplot2
+    ggplot2,
+    tidygate,
+    dbscan
 VignetteBuilder: 
     knitr
 Biarch: true

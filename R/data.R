@@ -19,3 +19,9 @@
 #'
 "mtcars_tidy"
 
+#' Gate list for clustering
+#' 
+#' @keywords internal
+#'
+#'
+"gate_list"

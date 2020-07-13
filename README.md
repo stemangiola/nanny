@@ -103,8 +103,7 @@ mtcars_tidy_MDS =
 ```
 
 On the x and y axes axis we have the reduced dimensions 1 to 3, data is
-coloured by cell
-type.
+coloured by cell type.
 
 ``` r
 mtcars_tidy_MDS %>% subset(car_model)  %>% select(contains("Dim"), everything())
@@ -142,8 +141,7 @@ mtcars_tidy_PCA =
 ```
 
 On the x and y axes axis we have the reduced dimensions 1 to 3, data is
-coloured by cell
-type.
+coloured by cell type.
 
 ``` r
 mtcars_tidy_PCA %>% subset(car_model) %>% select(contains("PC"), everything())
@@ -267,7 +265,7 @@ mtcars_tidy_cluster = mtcars_tidy_MDS %>%
   cluster_elements(car_model, feature, value, method="kmeans",  centers = 2, action="get" )
 ```
 
-We can add cluster annotation to the MDS dimesion reduced data set and
+We can add cluster annotation to the MDS dimension reduced data set and
 plot.
 
 ``` r
@@ -278,6 +276,70 @@ plot.
 ```
 
 ![](README_files/figure-gfm/plot_cluster-1.png)<!-- -->
+
+**SNN**
+
+``` r
+mtcars_tidy_SNN =
+    mtcars_tidy_tSNE %>%
+    cluster_elements(car_model, feature, value, method = "SNN")
+```
+
+We can add cluster annotation to the tSNE dimension reduced data set and
+plot.
+
+``` r
+mtcars_tidy_SNN %>%
+    subset(car_model) %>%
+    select(contains("tSNE"), everything()) 
+```
+
+    ## # A tibble: 32 x 6
+    ##     tSNE1   tSNE2 car_model            hp    vs cluster_SNN
+    ##     <dbl>   <dbl> <chr>             <dbl> <dbl> <fct>      
+    ##  1 -63.2    0.149 Mazda RX4           110     0 0          
+    ##  2 -65.6   -7.21  Mazda RX4 Wag       110     0 0          
+    ##  3 -60.8  -50.2   Datsun 710           93     1 0          
+    ##  4  28.4    0.525 Hornet 4 Drive      110     1 0          
+    ##  5  98.9   23.6   Hornet Sportabout   175     0 0          
+    ##  6  36.0    2.21  Valiant             105     1 0          
+    ##  7  74.7   48.5   Duster 360          245     0 0          
+    ##  8  -5.49  -6.48  Merc 240D            62     1 0          
+    ##  9  -7.30 -15.1   Merc 230             95     1 0          
+    ## 10 -33.1    1.88  Merc 280            123     1 0          
+    ## # … with 22 more rows
+
+``` r
+mtcars_tidy_SNN %>%
+    subset(car_model) %>%
+    ggplot(aes(x = `tSNE1`, y = `tSNE2`, color=cluster_SNN)) + geom_point() + my_theme
+```
+
+![](README_files/figure-gfm/SNN_plot-1.png)<!-- -->
+
+**gating**
+
+``` r
+mtcars_tidy_MDS %>%
+    cluster_elements(car_model, c(Dim1, Dim2), method="gate", .color=group)
+```
+
+![](inst/tidygate.gif)
+
+    ## # A tibble: 288 x 9
+    ##    car_model    hp    vs feature  value    Dim1   Dim2  Dim3 gate 
+    ##    <chr>     <dbl> <dbl> <chr>    <dbl>   <dbl>  <dbl> <dbl> <chr>
+    ##  1 Merc 280    123     1 mpg     -0.148 -0.0277 0.0696 0.387 1    
+    ##  2 Merc 280C   123     1 mpg     -0.380 -0.0137 0.0166 0.464 1    
+    ##  3 Merc 280    123     1 cyl     -0.105 -0.0277 0.0696 0.387 1    
+    ##  4 Merc 280C   123     1 cyl     -0.105 -0.0137 0.0166 0.464 1    
+    ##  5 Merc 280    123     1 disp    -0.509 -0.0277 0.0696 0.387 1    
+    ##  6 Merc 280C   123     1 disp    -0.509 -0.0137 0.0166 0.464 1    
+    ##  7 Merc 280    123     1 drat     0.605 -0.0277 0.0696 0.387 1    
+    ##  8 Merc 280C   123     1 drat     0.605 -0.0137 0.0166 0.464 1    
+    ##  9 Merc 280    123     1 wt       0.228 -0.0277 0.0696 0.387 1    
+    ## 10 Merc 280C   123     1 wt       0.228 -0.0137 0.0166 0.464 1    
+    ## # … with 278 more rows
 
 ## `drop_redundant`
 
@@ -322,8 +384,7 @@ We create a non-rectangular data frame
 mtcars_tidy_non_rectangular = mtcars_tidy %>% slice(-1)
 ```
 
-We fill the missing value with the value of
-0
+We fill the missing value with the value of 0
 
 ``` r
 mtcars_tidy_non_rectangular %>% fill_missing(car_model, feature, value, fill_with = 0)
@@ -444,7 +505,7 @@ mtcars_tidy_permuted %>%
 
     ## # A tibble: 496 x 3
     ##    car_model_1    car_model_2       `mean(value)`
-    ##    <chr>          <chr>                     <dbl>
+    ##    <fct>          <fct>                     <dbl>
     ##  1 Mazda RX4      Mazda RX4 Wag           0.151  
     ##  2 Mazda RX4      Datsun 710              0.300  
     ##  3 Mazda RX4 Wag  Datsun 710              0.300  

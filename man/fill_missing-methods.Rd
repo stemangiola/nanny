@@ -32,7 +32,7 @@ A `tbl` with filled abundance
 A `tbl` with filled abundance
 }
 \description{
-fill_missing() takes as imput a `tbl` formatted as | <element> | <feature> | <value> | <...> | and returns a `tbl` with an edditional adjusted value column. This method uses scaled counts if present.
+fill_missing() takes as input a `tbl` formatted as | <element> | <feature> | <value> | <...> | and returns a `tbl` with an edditional adjusted value column. This method uses scaled counts if present.
 }
 \details{
 \lifecycle{maturing}

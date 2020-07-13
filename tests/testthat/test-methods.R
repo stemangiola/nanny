@@ -36,6 +36,16 @@ test_that("rotate dimensions", {
   
 })
 
+test_that("gate dimensions", {
+
+  res =
+    reduce_dimensions(nanny::test_data2 , cancer_ID, c(`ct 1`, `ct 2`), relation, method="MDS") %>%
+    cluster_elements(cancer_ID, c(Dim1, Dim2), method="gate", gate_list = nanny::gate_list)
+  
+  expect_equal(ncol(res) , 9)
+
+})
+
 test_that("remove redundancy", {
   res = remove_redundancy(nanny::test_data2 , cancer_ID, c(`ct 1`, `ct 2`), relation) 
   expect_equal(ncol(res) , 6)
@@ -148,6 +158,9 @@ test_that("as matrix", {
 test_that("subset", {
   res = nest_subset(mtcars_tidy,data = -car_model)
   expect_equal(ncol(res) , 4)
+  
+  res = nest_subset(mtcars_tidy,data = -car_model, .exclude = vs)
+  expect_equal(ncol(res) , 3)
   
   res = nest_subset(nanny::test_data2 ,  data = -c(`ct 1`, `ct 2`)) 
   expect_equal(ncol(res) , 4)

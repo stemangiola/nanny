@@ -6,19 +6,20 @@
 #'
 #' @importFrom rlang enquo
 #' @importFrom magrittr "%>%"
+#' @importFrom rlang dots_list
 #'
 #' @name cluster_elements
 #'
 #' @param .data A `tbl` formatted as | <element> | <feature> | <value> | <...> |
 #' @param .element The name of the element column (normally elements).
-#' @param .feature The name of the feature column (normally features)
-#' @param .value The name of the column including the numerical value the clustering is based on (normally feature value)
+#' @param .feature The name of the feature column (normally features). Only if method==\"gate\" this should be of length two. E.g., c\(dim1, dim2\)
+#' @param .value The name of the column including the numerical value the clustering is based on (normally feature value). Only if method==\"gate\" this should be undefined.
 #'
 #' @param method A character string. The cluster algorithm to use, ay the moment k-means is the only algorithm included.
 #' @param of_elements A boolean. In case the input is a nanny object, it indicates Whether the element column will be element or feature column
 #' @param transform A function to use to transform the data internally (e.g., log1p)
 #' @param action A character string. Whether to join the new information to the input tbl (add), or just get the non-redundant tbl with the new information (get).
-#' @param ... Further parameters passed to the function kmeans
+#' @param ... Further parameters passed either to the function stats::kmeans if method == \"kmeans\", dbscan::dbscan if the method == \"SNN\" or tidygate::gate if the method == \"gate\". For gate you can pass: aesthetics for the scatter plot \(including .color, .size, .shape\) and the number of gates (how_many_gates). You can also pass a gate list (see tidygate manual) for programmatic gate selection.
 #' 
 #' @details identifies clusters in the data, normally of elements.
 #' This function returns a tibble with additional columns for the cluster annotation.
@@ -66,9 +67,6 @@ setGeneric("cluster_elements", function(.data,
 	.feature = enquo(.feature)
 	.value = enquo(.value)
 	
-	# Validate data frame
-	validation(.data, !!.element, !!.feature, !!.value)
-	
 	# # Check if data rectangular
 	# ifelse_pipe(
 	# 	(.) %>% check_if_data_rectangular(!!.element,!!.feature,!!.value, type = "soft"),
@@ -76,6 +74,10 @@ setGeneric("cluster_elements", function(.data,
 	# ) %>%
 	
 	if (method == "kmeans") {
+		
+		# Validate data frame
+		validation(.data, !!.element, !!.feature, !!.value)
+		
 		if (action == "add"){
 			
 			.data %>%
@@ -132,65 +134,123 @@ setGeneric("cluster_elements", function(.data,
 				"nanny says: action must be either \"add\" for adding this information to your data frame or \"get\" to just get the information"
 			)
 	}
-	# else if (method == "SNN") {
-	# 	if (action == "add"){
-	# 		
-	# 		.data %>%
-	# 			dplyr::left_join(
-	# 				(.) %>%
-	# 					get_clusters_SNN_bulk(
-	# 						.value = !!.value,
-	# 						.element = !!.element,
-	# 						.feature = !!.feature,
-	# 						of_elements = of_elements,
-	# 						transform = transform,
-	# 						...
-	# 					)
-	# 			) 
-	# 		
-	# 	}
-	# 	else if (action == "get"){
-	# 		
-	# 		.data %>%
-	# 			
-	# 			# Selecting the right columns
-	# 			select(
-	# 				!!.element,
-	# 				get_x_y_annotation_columns(.data, !!.element,!!.feature, !!.value)$horizontal_cols
-	# 			) %>%
-	# 			distinct() %>%
-	# 			
-	# 			dplyr::left_join(
-	# 				.data %>%
-	# 					get_clusters_SNN_bulk(
-	# 						.value = !!.value,
-	# 						.element = !!.element,
-	# 						.feature = !!.feature,
-	# 						of_elements = of_elements,
-	# 						transform = transform,
-	# 						...
-	# 					)
-	# 			)
-	# 		
-	# 	}
-	# 	
-	# 	else if (action == "only")
-	# 		get_clusters_SNN_bulk(
-	# 			.data,
-	# 			.value = !!.value,
-	# 			.element = !!.element,
-	# 			.feature = !!.feature,
-	# 			of_elements = of_elements,
-	# 			transform = transform,
-	# 			...
-	# 		)
-	# 	else
-	# 		stop(
-	# 			"nanny says: action must be either \"add\" for adding this information to your data frame or \"get\" to just get the information"
-	# 		)
-	# }
+	else if (method == "SNN") {
+		
+		# Validate data frame
+		validation(.data, !!.element, !!.feature, !!.value)
+		
+		if (action == "add"){
+
+			.data %>%
+				dplyr::left_join(
+					(.) %>%
+						get_clusters_SNN_bulk(
+							.value = !!.value,
+							.element = !!.element,
+							.feature = !!.feature,
+							of_elements = of_elements,
+							transform = transform,
+							...
+						),
+					by = quo_names(.element)
+				)
+
+		}
+		else if (action == "get"){
+
+			.data %>%
+
+				# Selecting the right columns
+				select(
+					!!.element,
+					get_x_y_annotation_columns(.data, !!.element,!!.feature, !!.value)$horizontal_cols
+				) %>%
+				distinct() %>%
+
+				dplyr::left_join(
+					.data %>%
+						get_clusters_SNN_bulk(
+							.value = !!.value,
+							.element = !!.element,
+							.feature = !!.feature,
+							of_elements = of_elements,
+							transform = transform,
+							...
+						),
+					by = quo_names(.element)
+				)
+
+		}
+
+		else if (action == "only")
+			get_clusters_SNN_bulk(
+				.data,
+				.value = !!.value,
+				.element = !!.element,
+				.feature = !!.feature,
+				of_elements = of_elements,
+				transform = transform,
+				...
+			)
+		else
+			stop(
+				"nanny says: action must be either \"add\" for adding this information to your data frame or \"get\" to just get the information"
+			)
+	}
+	else if (method == "gate") {
+		
+		# Check if package is installed, otherwise install
+		if (find.package("tidygate", quiet = T) %>% length %>% equals(0)) {
+			stop("nanny says: tidygate is necessary for this operation. Please install it with 	install.packages(\"tidygate\", repos = \"https://cloud.r-project.org\")")
+		}
+		
+		if (!action %in% c("add", "get", "only")) 	stop(
+			"nanny says: action must be either \"add\" for adding this information to your data frame or \"get\" to just get the information"
+		)
+		
+		.feature_names = quo_names(.feature)
+		if(length(.feature_names) != 2) stop("nanny says: for gate clustering .feature must include exactly two columns. For example the first two PCAs.")
+		
+		
+		.data %>%
+			tidygate::gate(
+				.element = !!.element,
+				.dim1 = !!as.symbol(.feature_names[1]),
+				.dim2 = !!as.symbol(.feature_names[2]),
+				action = action,
+				name = "cluster_gate",
+				...
+			) %>%
+			
+			# Setup attributes
+			attach_to_internals(attr(., "gate"), "gate") %>%
+			drop_attr("gate") %>%
+				
+			# Communicate the attribute added
+			{
+				message("nanny says: to access the raw results do `attr(..., \"internals\")$gate`")
+				(.)
+			}
+
+		# NOT USED AT THE MOMENT
+		# # Use dots explicitly to call function
+		# list(
+		# 	.data = .data,
+		# 	.element = .element,
+		# 	.dim1 = as.symbol(.feature_names[1]),
+		# 	.dim2 = as.symbol(.feature_names[2]),
+		# 	action = action
+		# ) %>%
+		# 	
+		# 	# Add dots
+		# 	c(rlang::dots_list(...)) %>%
+		# 	
+		# 	# Call gate
+		# 	do.call(gate, .)
+
+}
 	else
-		stop("nanny says: the only supported methods are \"kmeans\"  ")
+		stop("nanny says: the only supported methods are \"kmeans\", \"SNN\" and \"gate\" ")
 	
 }
 
@@ -756,6 +816,7 @@ setMethod("subset",		"tbl",			.subset)
 #'
 #' @param .data A `tbl` 
 #' @param ... The name of the columns of interest
+#' @param .exclude Column name. It is the column\(s\) that you might want to exclude from the subset. 
 #' @param .names_sep Deprecated by tidyr
 #'
 #'
@@ -776,14 +837,20 @@ setMethod("subset",		"tbl",			.subset)
 #' @export
 #'
 #'
-setGeneric("nest_subset", function(.data, ..., .names_sep = NULL)
+setGeneric("nest_subset", function(.data, ..., .exclude = NULL, .names_sep = NULL)
 	standardGeneric("nest_subset"))
 
 # Set internal
-.nest_subset = 		function(.data, ..., .names_sep = NULL)	{
+.nest_subset = 		function(.data, ..., .exclude = NULL, .names_sep = NULL)	{
 	
 	# Make col names - from tidyr
 	cols = enquos(...)
+	.exclude = enquo(.exclude)
+	
+	# Name of the new data column
+	col_name_data  = names(cols)
+	
+	# Column names
 	cols <- map(cols, ~ names(eval_select(.x, .data)))
 	cols <- map(cols, set_names)
 	if (!is.null(.names_sep)) cols <- imap(cols, strip_names, .names_sep)
@@ -794,10 +861,14 @@ setGeneric("nest_subset", function(.data, ..., .names_sep = NULL)
 		stop("nanny says: some of the .column specified do not exist in the input data frame.")
 	
 	# Get my subset columns
-	asis_subset = asis %>% c(get_specific_annotation_columns(.data, asis))
+	asis_subset = asis %>%
+		c(get_specific_annotation_columns(.data, asis)) %>% 
+		
+		# Exclude custom columns
+		setdiff(quo_names(.exclude))
 	
 	# Apply nest on those
-	tidyr::nest(.data, data = -c(asis_subset))
+	tidyr::nest(.data, !!col_name_data := -c(asis_subset))
 	
 }
 

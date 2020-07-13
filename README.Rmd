@@ -210,8 +210,7 @@ mtcars_tidy_cluster = mtcars_tidy_MDS %>%
   cluster_elements(car_model, feature, value, method="kmeans",	centers = 2, action="get" )
 ```
 
-
-We can add cluster annotation to the MDS dimesion reduced data set and plot.
+We can add cluster annotation to the MDS dimension reduced data set and plot.
 
 ```{r plot_cluster, cache=TRUE}
  mtcars_tidy_cluster %>%
@@ -220,15 +219,17 @@ We can add cluster annotation to the MDS dimesion reduced data set and plot.
   my_theme
 ```
 
+**SNN**
 
-
-```{r SNN, cache=TRUE, message=FALSE, warning=FALSE, results='hide', include=FALSE, eval=FALSE, echo=FALSE}
+```{r SNN, cache=TRUE}
 mtcars_tidy_SNN =
 	mtcars_tidy_tSNE %>%
 	cluster_elements(car_model, feature, value, method = "SNN")
 ```
 
-```{r SNN_plot, cache=TRUE, include=FALSE, eval=FALSE, echo=FALSE}
+We can add cluster annotation to the tSNE dimension reduced data set and plot.
+
+```{r SNN_plot, cache=TRUE}
 mtcars_tidy_SNN %>%
 	subset(car_model) %>%
 	select(contains("tSNE"), everything()) 
@@ -237,6 +238,21 @@ mtcars_tidy_SNN %>%
 	subset(car_model) %>%
 	ggplot(aes(x = `tSNE1`, y = `tSNE2`, color=cluster_SNN)) + geom_point() + my_theme
 
+```
+
+**gating**
+
+```{r eval=FALSE}
+mtcars_tidy_MDS %>%
+	cluster_elements(car_model, c(Dim1, Dim2), method="gate", .color=group)
+```
+
+![](inst/tidygate.gif)
+
+```{r echo=FALSE}
+mtcars_tidy_MDS %>%
+	cluster_elements(car_model, c(Dim1, Dim2), method="gate", gate_list = gate_list) %>%
+	arrange(gate %>% desc)
 ```
 
 ## `drop_redundant` 
