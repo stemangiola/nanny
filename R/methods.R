@@ -20,7 +20,7 @@
 #' @param transform A function to use to transform the data internally (e.g., log1p)
 #' @param action A character string. Whether to join the new information to the input tbl (add), or just get the non-redundant tbl with the new information (get).
 #' @param ... Further parameters passed either to the function stats::kmeans if method == \"kmeans\", dbscan::dbscan if the method == \"SNN\" or tidygate::gate if the method == \"gate\". For gate you can pass: aesthetics for the scatter plot \(including .color, .size, .shape\) and the number of gates (how_many_gates). You can also pass a gate list (see tidygate manual) for programmatic gate selection.
-#' 
+#'
 #' @details identifies clusters in the data, normally of elements.
 #' This function returns a tibble with additional columns for the cluster annotation.
 #' At the moment only k-means clustering is supported, the plan is to introduce more clustering methods.
@@ -58,28 +58,28 @@ setGeneric("cluster_elements", function(.data,
 															 action = "add",
 															 ...)
 {
-	
+
 	# Comply with CRAN NOTES
 	. = NULL
-	
+
 	# Get column names
 	.element = enquo(.element)
 	.feature = enquo(.feature)
 	.value = enquo(.value)
-	
+
 	# # Check if data rectangular
 	# ifelse_pipe(
 	# 	(.) %>% check_if_data_rectangular(!!.element,!!.feature,!!.value, type = "soft"),
 	# 	~ .x %>% eliminate_sparse_features(!!.feature)
 	# ) %>%
-	
+
 	if (method == "kmeans") {
-		
+
 		# Validate data frame
 		validation(.data, !!.element, !!.feature, !!.value)
-		
+
 		if (action == "add"){
-			
+
 			.data %>%
 				dplyr::left_join(
 					(.) %>%
@@ -92,19 +92,19 @@ setGeneric("cluster_elements", function(.data,
 							...
 						),
 					by = quo_names(.element)
-				) 
+				)
 		}
 		else if (action == "get"){
-			
+
 			.data %>%
-				
+
 				# Selecting the right columns
 				select(
 					!!.element,
 					get_x_y_annotation_columns(.data, !!.element,!!.feature, !!.value)$horizontal_cols
 				) %>%
 				distinct() %>%
-				
+
 				dplyr::left_join(
 					.data %>%
 						get_clusters_kmeans_bulk(
@@ -116,8 +116,8 @@ setGeneric("cluster_elements", function(.data,
 							...
 						),
 					by = quo_names(.element)
-				) 
-			
+				)
+
 		}
 		else if (action == "only")
 			get_clusters_kmeans_bulk(
@@ -135,10 +135,10 @@ setGeneric("cluster_elements", function(.data,
 			)
 	}
 	else if (method == "SNN") {
-		
+
 		# Validate data frame
 		validation(.data, !!.element, !!.feature, !!.value)
-		
+
 		if (action == "add"){
 
 			.data %>%
@@ -198,20 +198,20 @@ setGeneric("cluster_elements", function(.data,
 			)
 	}
 	else if (method == "gate") {
-		
+
 		# Check if package is installed, otherwise install
 		if (find.package("tidygate", quiet = T) %>% length %>% equals(0)) {
 			stop("nanny says: tidygate is necessary for this operation. Please install it with 	install.packages(\"tidygate\", repos = \"https://cloud.r-project.org\")")
 		}
-		
+
 		if (!action %in% c("add", "get", "only")) 	stop(
 			"nanny says: action must be either \"add\" for adding this information to your data frame or \"get\" to just get the information"
 		)
-		
+
 		.feature_names = quo_names(.feature)
 		if(length(.feature_names) != 2) stop("nanny says: for gate clustering .feature must include exactly two columns. For example the first two PCAs.")
-		
-		
+
+
 		.data %>%
 			tidygate::gate(
 				.element = !!.element,
@@ -221,11 +221,11 @@ setGeneric("cluster_elements", function(.data,
 				name = "cluster_gate",
 				...
 			) %>%
-			
+
 			# Setup attributes
 			attach_to_internals(attr(., "gate"), "gate") %>%
 			drop_attr("gate") %>%
-				
+
 			# Communicate the attribute added
 			{
 				message("nanny says: to access the raw results do `attr(..., \"internals\")$gate`")
@@ -241,17 +241,17 @@ setGeneric("cluster_elements", function(.data,
 		# 	.dim2 = as.symbol(.feature_names[2]),
 		# 	action = action
 		# ) %>%
-		# 	
+		#
 		# 	# Add dots
 		# 	c(rlang::dots_list(...)) %>%
-		# 	
+		#
 		# 	# Call gate
 		# 	do.call(gate, .)
 
 }
 	else
 		stop("nanny says: the only supported methods are \"kmeans\", \"SNN\" and \"gate\" ")
-	
+
 }
 
 #' cluster_elements
@@ -303,9 +303,9 @@ setMethod("cluster_elements", "tbl_df", .cluster_elements)
 #'
 #'
 #'   reduce_dimensions(mtcars_tidy, car_model, feature, value, method="PCA")
-#'   
+#'
 #'   reduce_dimensions(mtcars_tidy, car_model, feature, value, method="MDS")
-#'   
+#'
 #'   reduce_dimensions(mtcars_tidy, car_model, feature, value, method="tSNE")
 #'
 #'
@@ -350,9 +350,9 @@ setGeneric("reduce_dimensions", function(.data,
 
 	# Validate data frame
 	validation(.data, !!.element, !!.feature, !!.value)
-	
+
 	if (method == "MDS") {
-		
+
 		.data_processed =
 			.data %>%
 			get_reduced_dimensions_MDS_bulk(
@@ -365,29 +365,29 @@ setGeneric("reduce_dimensions", function(.data,
 				transform = transform,
 				...
 			)
-		
+
 		if (action == "add"){
-			
+
 			.data %>%	dplyr::left_join(.data_processed,	by = quo_names(.element)) %>%
 				reattach_internals(.data_processed)
-			
+
 		}
 		else if (action == "get"){
-			
+
 			.data %>%
-				
+
 				# Selecting the right columns
 				select(
 					!!.element,
 					get_x_y_annotation_columns(.data, !!.element,!!.feature, !!.value)$horizontal_cols
 				) %>%
 				distinct() %>%
-				
+
 				dplyr::left_join(.data_processed,	by = quo_names(.element)) %>%
 				reattach_internals(.data_processed)
-			
+
 		}
-		
+
 		else if (action == "only") .data_processed
 		else
 			stop(
@@ -395,7 +395,7 @@ setGeneric("reduce_dimensions", function(.data,
 			)
 	}
 	else if (method == "PCA") {
-		
+
 		.data_processed =
 			.data %>%
 			get_reduced_dimensions_PCA_bulk(
@@ -409,40 +409,40 @@ setGeneric("reduce_dimensions", function(.data,
 				scale = scale,
 				...
 			)
-		
+
 		if (action == "add"){
-			
+
 			.data %>%
 				dplyr::left_join(.data_processed,	by = quo_names(.element)) %>%
 				reattach_internals(.data_processed)
-			
+
 		}
-		
+
 		else if (action == "get"){
-			
+
 			.data %>%
-				
+
 				# Selecting the right columns
 				select(
 					!!.element,
 					get_x_y_annotation_columns(.data, !!.element,!!.feature, !!.value)$horizontal_cols
 				) %>%
 				distinct() %>%
-				
+
 				dplyr::left_join(.data_processed,	by = quo_names(.element)) %>%
 				reattach_internals(.data_processed)
-			
+
 		}
-		
+
 		else if (action == "only")	.data_processed
 		else
 			stop(
 				"nanny says: action must be either \"add\" for adding this information to your data frame or \"get\" to just get the information"
 			)
-		
+
 	}
 	else if (method == "tSNE") {
-		
+
 		.data_processed =
 			.data %>%
 			get_reduced_dimensions_TSNE_bulk(
@@ -455,39 +455,39 @@ setGeneric("reduce_dimensions", function(.data,
 				transform = transform,
 				...
 			)
-		
+
 		if (action == "add"){
-			
+
 			.data %>%
 				dplyr::left_join(.data_processed,	by = quo_names(.element)	) %>%
 				reattach_internals(.data_processed)
-			
+
 		}
 		else if (action == "get"){
-			
+
 			.data %>%
-				
+
 				# Selecting the right columns
 				select(
 					!!.element,
 					get_x_y_annotation_columns(.data, !!.element,!!.feature, !!.value)$horizontal_cols
 				) %>%
 				distinct() %>%
-				
+
 				dplyr::left_join(.data_processed,	by = quo_names(.element)	) %>%
 				reattach_internals(.data_processed)
-			
+
 		}
 		else if (action == "only") .data_processed
 		else
 			stop(
 				"nanny says: action must be either \"add\" for adding this information to your data frame or \"get\" to just get the information"
 			)
-		
+
 	}
 	else
 		stop("nanny says: method must be either \"MDS\" or \"PCA\"")
-	
+
 }
 
 #' reduce_dimensions
@@ -532,7 +532,7 @@ setMethod("reduce_dimensions", "tbl_df", .reduce_dimensions)
 #' @examples
 #'
 #'  mtcars_tidy_MDS = reduce_dimensions(mtcars_tidy, car_model, feature, value, method="MDS")
-#'  
+#'
 #'  rotate_dimensions(mtcars_tidy_MDS, `Dim1`, `Dim2`, .element = car_model, rotation_degrees = 45)
 #'
 #'
@@ -570,7 +570,7 @@ setGeneric("rotate_dimensions", function(.data,
 	dimension_2_column = enquo(dimension_2_column)
 	dimension_1_column_rotated = enquo(dimension_1_column_rotated)
 	dimension_2_column_rotated = enquo(dimension_2_column_rotated)
-	
+
 	# Set default col names for rotated dimensions if not set
 	if (quo_is_null(dimension_1_column_rotated))
 		dimension_1_column_rotated = as.symbol(sprintf(
@@ -584,7 +584,7 @@ setGeneric("rotate_dimensions", function(.data,
 			quo_names(dimension_2_column),
 			rotation_degrees
 		))
-	
+
 	.data_processed =
 		get_rotated_dimensions(
 			.data,
@@ -596,26 +596,26 @@ setGeneric("rotate_dimensions", function(.data,
 			dimension_1_column_rotated = !!dimension_1_column_rotated,
 			dimension_2_column_rotated = !!dimension_2_column_rotated
 		)
-	
+
 	if (action == "add"){
-		
+
 		.data %>%
-			dplyr::left_join(	.data_processed,	by = quo_names(.element)	) 
-		
+			dplyr::left_join(	.data_processed,	by = quo_names(.element)	)
+
 	}
 	else if (action == "get"){
-		
+
 		.data %>%
-			
+
 			# Selecting the right columns
 			select(
 				!!.element,
 				get_specific_annotation_columns(.data, !!.element)
 			) %>%
 			distinct() %>%
-			
-			dplyr::left_join(	.data_processed,	by = quo_names(.element)	) 
-		
+
+			dplyr::left_join(	.data_processed,	by = quo_names(.element)	)
+
 	}
 	else if (action == "only") .data_processed
 	else
@@ -698,10 +698,10 @@ setGeneric("remove_redundancy", function(.data,
 	.value = enquo(.value)
 	.element = enquo(.element)
 	.feature = enquo(.feature)
-	
+
 		# Validate data frame
 		validation(.data, !!.element, !!.feature, !!.value)
-		
+
 		remove_redundancy_elements_through_correlation(
 			.data,
 			.value = !!.value,
@@ -713,7 +713,7 @@ setGeneric("remove_redundancy", function(.data,
 			transform = transform
 		)
 
-	
+
 }
 
 #' remove_redundancy
@@ -738,7 +738,7 @@ setMethod("remove_redundancy", "tbl_df", .remove_redundancy)
 #'
 #' @name subset
 #'
-#' @param .data A `tbl` 
+#' @param .data A `tbl`
 #' @param .column The name of the column of interest
 #'
 #'
@@ -768,17 +768,17 @@ setGeneric("subset", function(.data,
 										 .column)	{
 	# Make col names
 	.column = enquo(.column)
-	
+
 	# Check if column present
 	if(quo_names(.column) %in% colnames(.data) %>% all %>% `!`)
 		stop("nanny says: some of the .column specified do not exist in the input data frame.")
-		
+
 	.data %>%
-		
+
 		# Selecting the right columns
 		select(	!!.column,	get_specific_annotation_columns(.data, !!.column)	) %>%
 		distinct()
-	
+
 }
 
 #' subset
@@ -814,9 +814,9 @@ setMethod("subset",		"tbl",			.subset)
 #'
 #' @name nest_subset
 #'
-#' @param .data A `tbl` 
+#' @param .data A `tbl`
 #' @param ... The name of the columns of interest
-#' @param .exclude Column name. It is the column\(s\) that you might want to exclude from the subset. 
+#' @param .exclude Column name. It is the column\(s\) that you might want to exclude from the subset.
 #' @param .names_sep Deprecated by tidyr
 #'
 #'
@@ -842,34 +842,34 @@ setGeneric("nest_subset", function(.data, ..., .exclude = NULL, .names_sep = NUL
 
 # Set internal
 .nest_subset = 		function(.data, ..., .exclude = NULL, .names_sep = NULL)	{
-	
+
 	# Make col names - from tidyr
 	cols = enquos(...)
 	.exclude = enquo(.exclude)
-	
+
 	# Name of the new data column
 	col_name_data  = names(cols)
-	
+
 	# Column names
 	cols <- map(cols, ~ names(eval_select(.x, .data)))
 	cols <- map(cols, set_names)
 	if (!is.null(.names_sep)) cols <- imap(cols, strip_names, .names_sep)
 	asis <- setdiff(names(.data), unlist(cols))
-	
+
 	# Check if column present
 	if(asis %in% colnames(.data) %>% all %>% `!`)
 		stop("nanny says: some of the .column specified do not exist in the input data frame.")
-	
+
 	# Get my subset columns
 	asis_subset = asis %>%
-		c(get_specific_annotation_columns(.data, asis)) %>% 
-		
+		c(get_specific_annotation_columns(.data, asis)) %>%
+
 		# Exclude custom columns
 		setdiff(quo_names(.exclude))
-	
+
 	# Apply nest on those
 	tidyr::nest(.data, !!col_name_data := -c(asis_subset))
-	
+
 }
 
 #' nest_subset
@@ -907,7 +907,7 @@ setMethod("nest_subset",		"tbl",			.nest_subset)
 #' @param .feature The name of the feature/gene column
 #' @param .value The name of the feature/gene value column
 #' @param .formula A formula with no response variable, representing the desired linear model where the first covariate is the factor of interest and the second covariate is the unwanted variation (of the kind ~ factor_of_intrest + batch)
-#' 
+#'
 #'
 #' @details This function imputes the value of missing element-feature pair using the median of the element group defined by the formula
 #'
@@ -944,16 +944,16 @@ setGeneric("impute_missing", function(.data,
 	.element = enquo(.element)
 	.feature = enquo(.feature)
 	.value = enquo(.value)
-	
+
 	# Sanity check formula
 	formula_error_message = "nanny says: your formula does not look like one. Check it with rlang::is_formula"
 	if(
 		tryCatch(!is_formula(.formula), error=function(x) stop(formula_error_message))
 	) stop(formula_error_message)
-	
+
 	# Validate data frame
 	validation(.data, !!.element, !!.feature, !!.value)
-	
+
 	fill_NA_using_formula(
 		.data,
 		.formula,
@@ -1028,13 +1028,13 @@ setGeneric("fill_missing", function(.data,
 	.element = enquo(.element)
 	.feature = enquo(.feature)
 	.value = enquo(.value)
-	
+
 	# Check the value is set
 	if(length(fill_with)==0) stop("nanny says: the argument fill_with must not be empty.")
-	
+
 	# Validate data frame
 	validation(.data, !!.element, !!.feature, !!.value)
-	
+
 	fill_NA_using_value(
 		.data,
 		.element = !!.element,
@@ -1076,7 +1076,7 @@ setMethod("fill_missing", "tbl_df", .fill_missing)
 #'
 #' @details ...
 #'
-#' @return A nested `tbl` 
+#' @return A nested `tbl`
 #'
 #'
 #'
@@ -1096,24 +1096,24 @@ setGeneric("permute_nest", function(.data, .names_from, .values_from)
 
 # Set internal
 .permute_nest = 	function(.data, .names_from, .values_from){
-	
+
 	# Comply with CRAN NOTES
 	. = NULL
 	run = NULL
 	# V1 = NULL
 	# V2 - NULL
-	
+
 	# Column names
 	.names_from = enquo(.names_from)
 	.values_from = enquo(.values_from)
-	
+
 	# Check if multiple column inputted
-	if(length(quo_names(.names_from))>1) 
+	if(length(quo_names(.names_from))>1)
 		stop("nanny says: At the moment only one names column can be used to permute")
-	
+
 	factor_levels = .data %>% pull(!!.names_from) %>% unique
-	
-	.data %>% 
+
+	.data %>%
 		pull(!!.names_from) %>%
 		unique() %>%
 		as.character() %>%
@@ -1125,10 +1125,10 @@ setGeneric("permute_nest", function(.data, .names_from, .values_from)
 		left_join(.data %>% select(!!.names_from, !!.values_from), by = quo_names(.names_from)) %>%
 		nest(data = -run) %>%
 		separate(run, sprintf("%s_%s", quo_names(.names_from), 1:2 ), sep="___") %>%
-		
+
 		# Introduce levels
 		mutate_at(vars(1:2),function(x) factor(x, levels = factor_levels))
-	
+
 }
 
 #' permute_nest
@@ -1164,7 +1164,7 @@ setMethod("permute_nest", "tbl_df", .permute_nest)
 #'
 #' @details ...
 #'
-#' @return A nested `tbl` 
+#' @return A nested `tbl`
 #'
 #'
 #'
@@ -1185,26 +1185,26 @@ setGeneric("combine_nest", function(.data, .names_from, .values_from)
 
 # Set internal
 .combine_nest = function(.data, .names_from, .values_from){
-	
+
 	# Comply with CRAN NOTES
 	. = NULL
 	run = NULL
 	# V1 = NULL
 	# V2 - NULL
-	
+
 	# Column names
 	.names_from = enquo(.names_from)
 	.values_from = enquo(.values_from)
-	
+
 	factor_levels = .data %>% pull(!!.names_from) %>% unique
-	
+
 	# Check if multiple column inputted
-	if(length(quo_names(.names_from))>1) 
+	if(length(quo_names(.names_from))>1)
 		stop("nanny says: At the moment only one names column can be used to permute")
-	
+
 	factor_levels = .data %>% pull(!!.names_from) %>% unique
-	
-	.data %>% 
+
+	.data %>%
 		pull(!!.names_from) %>%
 		unique() %>%
 		as.character() %>%
@@ -1216,10 +1216,10 @@ setGeneric("combine_nest", function(.data, .names_from, .values_from)
 		left_join(.data %>% select(!!.names_from, !!.values_from), by = quo_names(.names_from)) %>%
 		nest(data = -run) %>%
 		separate(run, sprintf("%s_%s", quo_names(.names_from), 1:2), sep="___") %>%
-		
+
 		# Introduce levels
 		mutate_at(vars(1:2),function(x) factor(x, levels = factor_levels))
-	
+
 }
 
 #' combine_nest
@@ -1287,56 +1287,56 @@ setGeneric("keep_variable", function(.data,
 													.value,
 													top = Inf,
 													transform = NULL) {
-	
+
 	# Comply with CRAN NOTES
 	. = NULL
 	value = NULL
 	variable = NULL
-	
-	
+
+
 	# Get column names
 	.element = enquo(.element)
 	.feature = enquo(.feature)
 	.value = enquo(.value)
-	
+
 	# Check that column names do not have the reserved pattern "___"
 	if(.data %>% colnames %>% grep("___", .) %>% length %>% `>` (0))
 		stop("nanny says: your column names cannot include the pattern \"___\" that is reserved for internal manipulation")
-	
-	
+
+
 	# Manage Inf
 	top = min(top, .data %>% select(!!.feature) %>% distinct %>% nrow)
-	
+
 	x =
 		.data %>%
 		select(!!.element, !!.feature, !!.value) %>%
 		distinct %>%
-		
+
 		# Check if tranfrom is needed
 		ifelse_pipe(
 			is_function(transform),
 			~ .x %>%
 				mutate(!!.value := !!.value %>%  transform()) %>%
-				
+
 				# Check is log introduced -Inf
 				ifelse_pipe(pull(.,!!.value) %>% min %>% equals(-Inf),
 										~ stop(
 											"nanny says: you applied a transformation that introduced negative infinite .value, was it log? If so please use log1p."
 										))
 		) %>%
-		
+
 		pivot_wider(names_from = !!.element, values_from = !!.value, names_sep = "___") %>%
 		as_matrix(rownames = !!.feature)
-	
+
 	s <- rowMeans((x - rowMeans(x)) ^ 2)
 	o <- order(s, decreasing = TRUE)
 	x <- x[o[1L:top], , drop = FALSE]
-	
+
 
 	.data %>% inner_join(
 		rownames(x) %>% as_tibble() %>% separate(col = value, into = quo_names(.feature), sep = "___")
-	) 
-	
+	)
+
 }
 
 #' keep_variable
@@ -1357,7 +1357,7 @@ setMethod("keep_variable", "tbl_df", .keep_variable)
 #'
 #' \lifecycle{maturing}
 #'
-#' @description lower_triangular() takes as input a `tbl` formatted as | <element> | <feature> | <value> | <...> | and returns a filtered `tbl` 
+#' @description lower_triangular() takes as input a `tbl` formatted as | <element> | <feature> | <value> | <...> | and returns a filtered `tbl`
 #'
 #' @importFrom rlang enquo
 #' @importFrom magrittr "%>%"
@@ -1381,18 +1381,18 @@ setMethod("keep_variable", "tbl_df", .keep_variable)
 #' library(dplyr)
 #' library(purrr)
 #' library(tidyr)
-#' 
-#' mtcars_tidy_permuted = 
-#'   mtcars_tidy %>% 
-#'   filter(feature == "mpg") %>% 
-#'   head(5) %>% 
+#'
+#' mtcars_tidy_permuted =
+#'   mtcars_tidy %>%
+#'   filter(feature == "mpg") %>%
+#'   head(5) %>%
 #'   permute_nest(car_model, c(feature,value))
-#' 
+#'
 #' mtcars_tidy_permuted %>%
 #'  # Summarise mpg
 #'  mutate(data = map(data, ~ .x %>% summarise(mean(value)))) %>%
 #'	unnest(data) %>%
-#'	
+#'
 #'	# Lower triangular
 #'	lower_triangular(car_model_1, car_model_2,  `mean(value)`)
 #'
@@ -1407,23 +1407,23 @@ setGeneric("lower_triangular", function(.data, .col1, .col2, .value)
 
 # Set internal
 .lower_triangular = function(.data, .col1, .col2, .value){
-	
+
 	# Comply with CRAN NOTES
 	. = NULL
-	
+
 	# Column names
 	.col1 = enquo(.col1)
 	.col2 = enquo(.col2)
 	.value = enquo(.value)
 
-	
+
 	#levs = .data %>% pull(!!.col1) %>% levels
 
 	.data %>%
-		
+
 		# Check if duplicated elements
 		error_if_duplicated_genes(!!.col1,!!.col2,!!.value) %>%
-	
+
 		select(!!.col1, !!.col2,    !!.value) %>%
 		spread(!!.col2 ,   !!.value) %>%
 		as_matrix(rownames = quo_names(.col1)) %>%
@@ -1436,15 +1436,15 @@ setGeneric("lower_triangular", function(.data, .col1, .col2, .value)
 		mutate(
 			# !!.col1 := factor(!!.col1, levels = levs),
 			# !!.col2 := factor(!!.col2, levels = levs),
-			
+
 			!!.col1 := factor(!!.col1),
 			!!.col2 := factor(!!.col2),
 		) %>%
 		drop_na %>%
-		
+
 	# Reattach col1 col2 wise annotation
 	left_join(.data %>% select(-!!.value) %>% subset(c(!!.col1, !!.col2)), by=c(quo_name(.col1), quo_name(.col2)))
-	
+
 }
 
 #' lower_triangular
@@ -1468,7 +1468,7 @@ setMethod("lower_triangular", "tbl_df", .lower_triangular)
 #' @importFrom rlang quo_is_null
 #' @importFrom rlang quo_is_symbolic
 #' @importFrom purrr when
-#' 
+#'
 #'
 #' @param .data A tibble
 #' @param rownames A character string of the rownames
@@ -1483,8 +1483,8 @@ setMethod("lower_triangular", "tbl_df", .lower_triangular)
 #'  library(tidyr)
 #'  select(mtcars_tidy, car_model, feature, value) %>%
 #' 	spread(feature, value) %>%
-#' 	as_matrix(rownames = car_model) 
-#' 	
+#' 	as_matrix(rownames = car_model)
+#'
 #' @docType methods
 #' @rdname as_matrix-methods
 #'
@@ -1500,15 +1500,15 @@ setGeneric("as_matrix", function(.data,
 											rownames = NULL,
 											do_check = TRUE,
 											sep_rownames = "___") {
-	
+
 	# Comply with CRAN NOTES
 	variable = NULL
-	
+
 	rownames = enquo(rownames)
 
-	
+
 	.data %>%
-		
+
 		# Through warning if data frame is not numerical beside the rownames column (if present)
 		ifelse_pipe(
 			do_check &&
@@ -1525,12 +1525,12 @@ setGeneric("as_matrix", function(.data,
 				.x
 			}
 		) %>%
-		
+
 		# If rownames multiple enquo (e.g., c(col1, col2)) merge them
 		when(!quo_is_null(rownames) ~ (.) %>% unite(col = "rn", !!rownames, sep = sep_rownames), ~ (.)) %>%
 
 		as.data.frame() %>%
-		
+
 		# Deal with rownames column if present
 		ifelse_pipe(
 			!quo_is_null(rownames),
@@ -1538,7 +1538,7 @@ setGeneric("as_matrix", function(.data,
 				set_rownames(.x %>% pull(rn)) %>%
 				select(-rn)
 		) %>%
-		
+
 		# Convert to matrix
 		as.matrix()
 }
@@ -1553,4 +1553,4 @@ setMethod("as_matrix", "spec_tbl_df", .as_matrix)
 #' @docType methods
 #' @rdname as_matrix-methods
 #' @return A `tbl` with filled abundance
-setMethod("as_matrix", "tbl_df", .as_matrix)
+setMethod("as_matrix", "data.frame", .as_matrix)
