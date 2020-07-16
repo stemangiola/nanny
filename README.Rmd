@@ -16,6 +16,11 @@ output: github_document
   [![Lifecycle:maturing](https://img.shields.io/badge/lifecycle-maturing-blue.svg)](https://www.tidyverse.org/lifecycle/#maturing)
  <!-- badges: end -->
 
+Please have a look also to 
+
+- [tidygate](https://github.com/stemangiola/tidygate) for adding custom gate information to your tibble 
+- [tidyHeatmap](https://github.com/stemangiola/tidyHeatmap) for heatmaps produced with tidy principles
+- [tidybulk](https://github.com/stemangiola/tidybulk) brings transcriptomics to the tidyverse
 
 
 
