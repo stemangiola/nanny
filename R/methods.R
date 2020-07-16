@@ -218,6 +218,7 @@ setGeneric("cluster_elements", function(.data,
 				.dim1 = !!as.symbol(.feature_names[1]),
 				.dim2 = !!as.symbol(.feature_names[2]),
 				action = action,
+				name = "cluster_gate",
 				...
 			) %>%
 			
@@ -815,6 +816,7 @@ setMethod("subset",		"tbl",			.subset)
 #'
 #' @param .data A `tbl` 
 #' @param ... The name of the columns of interest
+#' @param .exclude Column name. It is the column\(s\) that you might want to exclude from the subset. 
 #' @param .names_sep Deprecated by tidyr
 #'
 #'
@@ -835,14 +837,20 @@ setMethod("subset",		"tbl",			.subset)
 #' @export
 #'
 #'
-setGeneric("nest_subset", function(.data, ..., .names_sep = NULL)
+setGeneric("nest_subset", function(.data, ..., .exclude = NULL, .names_sep = NULL)
 	standardGeneric("nest_subset"))
 
 # Set internal
-.nest_subset = 		function(.data, ..., .names_sep = NULL)	{
+.nest_subset = 		function(.data, ..., .exclude = NULL, .names_sep = NULL)	{
 	
 	# Make col names - from tidyr
 	cols = enquos(...)
+	.exclude = enquo(.exclude)
+	
+	# Name of the new data column
+	col_name_data  = names(cols)
+	
+	# Column names
 	cols <- map(cols, ~ names(eval_select(.x, .data)))
 	cols <- map(cols, set_names)
 	if (!is.null(.names_sep)) cols <- imap(cols, strip_names, .names_sep)
@@ -853,10 +861,14 @@ setGeneric("nest_subset", function(.data, ..., .names_sep = NULL)
 		stop("nanny says: some of the .column specified do not exist in the input data frame.")
 	
 	# Get my subset columns
-	asis_subset = asis %>% c(get_specific_annotation_columns(.data, asis))
+	asis_subset = asis %>%
+		c(get_specific_annotation_columns(.data, asis)) %>% 
+		
+		# Exclude custom columns
+		setdiff(quo_names(.exclude))
 	
 	# Apply nest on those
-	tidyr::nest(.data, data = -c(asis_subset))
+	tidyr::nest(.data, !!col_name_data := -c(asis_subset))
 	
 }
 
