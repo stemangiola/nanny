@@ -1055,7 +1055,7 @@ fill_NA_using_value = function(.data,
 	
 	# Impute using median
 	df_to_impute %>%
-		inner_join(combo_to_impute) %>%
+		inner_join(combo_to_impute, by = c(quo_names(.element), quo_names(.feature))) %>%
 		
 		# Fill
 		mutate(!!.value := ifelse(!!.value %>% is.na, fill_with, !!.value)) %>%
