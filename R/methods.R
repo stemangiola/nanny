@@ -636,7 +636,7 @@ setMethod("rotate_dimensions", "spec_tbl_df", .rotate_dimensions)
 #' @return A tbl object with additional columns for the reduced dimensions. additional columns for the rotated dimensions. The rotated dimensions will be added to the original data set as `<NAME OF DIMENSION> rotated <ANGLE>` by default, or as specified in the input arguments.
 setMethod("rotate_dimensions", "tbl_df", .rotate_dimensions)
 
-#' Drop redundant elements (e.g., elements) for which feature (e.g., feature/gene) aboundances are correlated
+#' Drop redundant elements (e.g., elements) for which feature (e.g., feature) abundances are correlated
 #'
 #' \lifecycle{maturing}
 #'
@@ -904,8 +904,8 @@ setMethod("nest_subset",		"tbl",			.nest_subset)
 #'
 #' @param .data A `tbl` formatted as | <element> | <feature> | <value> | <...> |
 #' @param .element The name of the element column
-#' @param .feature The name of the feature/gene column
-#' @param .value The name of the feature/gene value column
+#' @param .feature The name of the feature column
+#' @param .value The name of the value column
 #' @param .formula A formula with no response variable, representing the desired linear model where the first covariate is the factor of interest and the second covariate is the unwanted variation (of the kind ~ factor_of_intrest + batch)
 #' 
 #'
@@ -988,9 +988,9 @@ setMethod("impute_missing", "tbl_df", .impute_missing)
 #'
 #' @param .data A `tbl` formatted as | <element> | <feature> | <value> | <...> |
 #' @param .element The name of the element column
-#' @param .feature The name of the feature/gene column
-#' @param .value The name of the feature/gene value column
-#' @param fill_with A numerical value with which fill the mssing data points
+#' @param .feature The name of the feature column
+#' @param .value The name of the value column
+#' @param fill_with A numerical value with which fill the missing data points
 #'
 #' @details This function fills the value of missing element-feature pair using the median of the element group defined by the formula
 #'
@@ -1249,7 +1249,7 @@ setMethod("combine_nest", "tbl_df", .combine_nest)
 #'
 #' @param .data A `tbl`
 #' @param .element A character name of the element column
-#' @param .feature A character name of the transcript/gene column
+#' @param .feature A character name of the feature column
 #' @param .value A character name of the read count column
 #' @param top An integer. How many top genes to select
 #' @param transform A function to use to tranforma the data internalli (e.g., log1p)
