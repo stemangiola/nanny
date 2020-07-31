@@ -3,15 +3,15 @@
 \docType{methods}
 \name{nest_subset}
 \alias{nest_subset}
-\alias{nest_subset,spec_tbl_df-method}
-\alias{nest_subset,tbl_df-method}
+\alias{nest_subset.spec_tbl_df}
+\alias{nest_subset.tbl_df}
 \title{Nest according to selected-column-wise information}
 \usage{
 nest_subset(.data, ..., .exclude = NULL, .names_sep = NULL)
 
-\S4method{nest_subset}{spec_tbl_df}(.data, ..., .exclude = NULL, .names_sep = NULL)
+\method{nest_subset}{spec_tbl_df}(.data, ..., .exclude = NULL, .names_sep = NULL)
 
-\S4method{nest_subset}{tbl_df}(.data, ..., .exclude = NULL, .names_sep = NULL)
+\method{nest_subset}{tbl_df}(.data, ..., .exclude = NULL, .names_sep = NULL)
 }
 \arguments{
 \item{.data}{A `tbl`}

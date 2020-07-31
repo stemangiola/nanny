@@ -540,16 +540,17 @@ setMethod("reduce_dimensions", "tbl_df", .reduce_dimensions)
 #' @rdname rotate_dimensions-methods
 #' @export
 #'
-setGeneric("rotate_dimensions", function(.data,
-																				 dimension_1_column,
-																				 dimension_2_column,
-																				 rotation_degrees,
-																				 .element,
-																				 of_elements = TRUE,
-																				 dimension_1_column_rotated = NULL,
-																				 dimension_2_column_rotated = NULL,
-																				 action = "add")
-	standardGeneric("rotate_dimensions"))
+rotate_dimensions <- function(.data,
+															dimension_1_column,
+															dimension_2_column,
+															rotation_degrees,
+															.element,
+															of_elements = TRUE,
+															dimension_1_column_rotated = NULL,
+															dimension_2_column_rotated = NULL,
+															action = "add")  {
+	UseMethod("rotate_dimensions")
+}
 
 # Set internal
 .rotate_dimensions = 		function(.data,
@@ -628,13 +629,13 @@ setGeneric("rotate_dimensions", function(.data,
 #' @docType methods
 #' @rdname rotate_dimensions-methods
 #' @return A tbl object with additional columns for the reduced dimensions. additional columns for the rotated dimensions. The rotated dimensions will be added to the original data set as `<NAME OF DIMENSION> rotated <ANGLE>` by default, or as specified in the input arguments.
-setMethod("rotate_dimensions", "spec_tbl_df", .rotate_dimensions)
+rotate_dimensions.spec_tbl_df = .rotate_dimensions
 
 #' rotate_dimensions
 #' @docType methods
 #' @rdname rotate_dimensions-methods
 #' @return A tbl object with additional columns for the reduced dimensions. additional columns for the rotated dimensions. The rotated dimensions will be added to the original data set as `<NAME OF DIMENSION> rotated <ANGLE>` by default, or as specified in the input arguments.
-setMethod("rotate_dimensions", "tbl_df", .rotate_dimensions)
+rotate_dimensions.tbl_df = .rotate_dimensions
 
 #' Drop redundant elements (e.g., elements) for which feature (e.g., feature/gene) aboundances are correlated
 #'
@@ -837,8 +838,9 @@ setMethod("subset",		"tbl",			.subset)
 #' @export
 #'
 #'
-setGeneric("nest_subset", function(.data, ..., .exclude = NULL, .names_sep = NULL)
-	standardGeneric("nest_subset"))
+nest_subset <- function(.data, ..., .exclude = NULL, .names_sep = NULL)  {
+	UseMethod("nest_subset")
+}
 
 # Set internal
 .nest_subset = 		function(.data, ..., .exclude = NULL, .names_sep = NULL)	{
@@ -876,19 +878,21 @@ setGeneric("nest_subset", function(.data, ..., .exclude = NULL, .names_sep = NUL
 #' @docType methods
 #' @rdname nest_subset-methods
 #' @return A `tbl` object
-setMethod("nest_subset",		"spec_tbl_df",		.nest_subset)
+#' @export
+nest_subset.spec_tbl_df = .nest_subset 
 
 #' nest_subset
 #' @docType methods
 #' @rdname nest_subset-methods
 #' @return A `tbl` object
-setMethod("nest_subset",		"tbl_df",				.nest_subset)
+#' @export
+nest_subset.tbl_df = .nest_subset 
 
 #' nest_subset
 #' @inheritParams nest_subset
 #' @return A `tbl` object
-setMethod("nest_subset",		"tbl",			.nest_subset)
-
+#' @export
+nest_subset.tbl = .nest_subset 
 
 #' Impute feature value if missing from element-feature pairs
 #'

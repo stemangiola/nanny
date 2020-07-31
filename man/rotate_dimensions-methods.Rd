@@ -3,8 +3,8 @@
 \docType{methods}
 \name{rotate_dimensions}
 \alias{rotate_dimensions}
-\alias{rotate_dimensions,spec_tbl_df-method}
-\alias{rotate_dimensions,tbl_df-method}
+\alias{rotate_dimensions.spec_tbl_df}
+\alias{rotate_dimensions.tbl_df}
 \title{Rotate two dimensions (e.g., principal components) of an arbitrary angle}
 \usage{
 rotate_dimensions(
@@ -19,7 +19,7 @@ rotate_dimensions(
   action = "add"
 )
 
-\S4method{rotate_dimensions}{spec_tbl_df}(
+\method{rotate_dimensions}{spec_tbl_df}(
   .data,
   dimension_1_column,
   dimension_2_column,
@@ -31,7 +31,7 @@ rotate_dimensions(
   action = "add"
 )
 
-\S4method{rotate_dimensions}{tbl_df}(
+\method{rotate_dimensions}{tbl_df}(
   .data,
   dimension_1_column,
   dimension_2_column,
