@@ -159,6 +159,9 @@ test_that("subset", {
   res = nest_subset(mtcars_tidy,data = -car_model)
   expect_equal(ncol(res) , 4)
   
+  res = nest_subset(mtcars_tidy,data = -car_model, .exclude = vs)
+  expect_equal(ncol(res) , 3)
+  
   res = nest_subset(nanny::test_data2 ,  data = -c(`ct 1`, `ct 2`)) 
   expect_equal(ncol(res) , 4)
   

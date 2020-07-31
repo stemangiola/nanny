@@ -4,12 +4,14 @@
 \alias{nest_subset,tbl-method}
 \title{nest_subset}
 \usage{
-\S4method{nest_subset}{tbl}(.data, ..., .names_sep = NULL)
+\S4method{nest_subset}{tbl}(.data, ..., .exclude = NULL, .names_sep = NULL)
 }
 \arguments{
 \item{.data}{A `tbl`}
 
 \item{...}{The name of the columns of interest}
+
+\item{.exclude}{Column name. It is the column\(s\) that you might want to exclude from the subset.}
 
 \item{.names_sep}{Deprecated by tidyr}
 }
