@@ -3,6 +3,8 @@
 S3method(nest_subset,spec_tbl_df)
 S3method(nest_subset,tbl)
 S3method(nest_subset,tbl_df)
+S3method(rotate_dimensions,spec_tbl_df)
+S3method(rotate_dimensions,tbl_df)
 export(as_matrix)
 export(cluster_elements)
 export(combine_nest)

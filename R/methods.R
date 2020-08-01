@@ -629,12 +629,14 @@ rotate_dimensions <- function(.data,
 #' @docType methods
 #' @rdname rotate_dimensions-methods
 #' @return A tbl object with additional columns for the reduced dimensions. additional columns for the rotated dimensions. The rotated dimensions will be added to the original data set as `<NAME OF DIMENSION> rotated <ANGLE>` by default, or as specified in the input arguments.
+#' @export
 rotate_dimensions.spec_tbl_df = .rotate_dimensions
 
 #' rotate_dimensions
 #' @docType methods
 #' @rdname rotate_dimensions-methods
 #' @return A tbl object with additional columns for the reduced dimensions. additional columns for the rotated dimensions. The rotated dimensions will be added to the original data set as `<NAME OF DIMENSION> rotated <ANGLE>` by default, or as specified in the input arguments.
+#' @export
 rotate_dimensions.tbl_df = .rotate_dimensions
 
 #' Drop redundant elements (e.g., elements) for which feature (e.g., feature/gene) aboundances are correlated
