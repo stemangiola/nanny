@@ -3,18 +3,18 @@
 \docType{methods}
 \name{subset}
 \alias{subset}
-\alias{subset,spec_tbl_df-method}
-\alias{subset,tbl_df-method}
-\alias{subset,tbl-method}
+\alias{subset.spec_tbl_df}
+\alias{subset.tbl_df}
+\alias{subset.tbl}
 \title{Extract selected-column-wise information}
 \usage{
 subset(.data, .column)
 
-\S4method{subset}{spec_tbl_df}(.data, .column)
+\method{subset}{spec_tbl_df}(.data, .column)
 
-\S4method{subset}{tbl_df}(.data, .column)
+\method{subset}{tbl_df}(.data, .column)
 
-\S4method{subset}{tbl}(.data, .column)
+\method{subset}{tbl}(.data, .column)
 }
 \arguments{
 \item{.data}{A `tbl`}

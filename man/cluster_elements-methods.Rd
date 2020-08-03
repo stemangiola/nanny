@@ -3,8 +3,8 @@
 \docType{methods}
 \name{cluster_elements}
 \alias{cluster_elements}
-\alias{cluster_elements,spec_tbl_df-method}
-\alias{cluster_elements,tbl_df-method}
+\alias{cluster_elements.spec_tbl_df}
+\alias{cluster_elements.tbl_df}
 \title{Get clusters of elements (e.g., elements or features)}
 \usage{
 cluster_elements(
@@ -19,7 +19,7 @@ cluster_elements(
   ...
 )
 
-\S4method{cluster_elements}{spec_tbl_df}(
+\method{cluster_elements}{spec_tbl_df}(
   .data,
   .element,
   .feature,
@@ -31,7 +31,7 @@ cluster_elements(
   ...
 )
 
-\S4method{cluster_elements}{tbl_df}(
+\method{cluster_elements}{tbl_df}(
   .data,
   .element,
   .feature,

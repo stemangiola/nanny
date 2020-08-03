@@ -3,15 +3,15 @@
 \docType{methods}
 \name{fill_missing}
 \alias{fill_missing}
-\alias{fill_missing,spec_tbl_df-method}
-\alias{fill_missing,tbl_df-method}
+\alias{fill_missing.spec_tbl_df}
+\alias{fill_missing.tbl_df}
 \title{Fill feature value if missing from element-feature pairs}
 \usage{
 fill_missing(.data, .element, .feature, .value, fill_with)
 
-\S4method{fill_missing}{spec_tbl_df}(.data, .element, .feature, .value, fill_with)
+\method{fill_missing}{spec_tbl_df}(.data, .element, .feature, .value, fill_with)
 
-\S4method{fill_missing}{tbl_df}(.data, .element, .feature, .value, fill_with)
+\method{fill_missing}{tbl_df}(.data, .element, .feature, .value, fill_with)
 }
 \arguments{
 \item{.data}{A `tbl` formatted as | <element> | <feature> | <value> | <...> |}

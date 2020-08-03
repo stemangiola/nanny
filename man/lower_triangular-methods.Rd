@@ -3,15 +3,15 @@
 \docType{methods}
 \name{lower_triangular}
 \alias{lower_triangular}
-\alias{lower_triangular,spec_tbl_df-method}
-\alias{lower_triangular,tbl_df-method}
+\alias{lower_triangular.spec_tbl_df}
+\alias{lower_triangular.tbl_df}
 \title{Keep rows corresponding of a lower triangular matrix built from two columns}
 \usage{
 lower_triangular(.data, .col1, .col2, .value)
 
-\S4method{lower_triangular}{spec_tbl_df}(.data, .col1, .col2, .value)
+\method{lower_triangular}{spec_tbl_df}(.data, .col1, .col2, .value)
 
-\S4method{lower_triangular}{tbl_df}(.data, .col1, .col2, .value)
+\method{lower_triangular}{tbl_df}(.data, .col1, .col2, .value)
 }
 \arguments{
 \item{.data}{A `tbl`}
