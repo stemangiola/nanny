@@ -1,4 +1,4 @@
-nanny: high-level data analysis and manipulation in tidyverse style.
+nanny: A tidyverse machine-learning suite
 ================
 
 **It tidies up your playground\!**
@@ -26,6 +26,10 @@ Please have a look also to
     transcriptomics to the tidyverse
 
 ## Functions/utilities available
+
+It does a lot\! cluster, PCA, permute, impute, rotate,
+redundancy-removal, triangular, smart-subset, identify abundant and
+variable features.
 
 | Function            | Description                                                             |
 | ------------------- | ----------------------------------------------------------------------- |

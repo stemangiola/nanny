@@ -3,8 +3,8 @@
 \docType{methods}
 \name{reduce_dimensions}
 \alias{reduce_dimensions}
-\alias{reduce_dimensions,spec_tbl_df-method}
-\alias{reduce_dimensions,tbl_df-method}
+\alias{reduce_dimensions.spec_tbl_df}
+\alias{reduce_dimensions.tbl_df}
 \title{Dimension reduction of the feature value data}
 \usage{
 reduce_dimensions(
@@ -22,7 +22,7 @@ reduce_dimensions(
   ...
 )
 
-\S4method{reduce_dimensions}{spec_tbl_df}(
+\method{reduce_dimensions}{spec_tbl_df}(
   .data,
   .element,
   .feature,
@@ -37,7 +37,7 @@ reduce_dimensions(
   ...
 )
 
-\S4method{reduce_dimensions}{tbl_df}(
+\method{reduce_dimensions}{tbl_df}(
   .data,
   .element,
   .feature,

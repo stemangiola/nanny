@@ -1,5 +1,5 @@
 ---
-title: "nanny: high-level data analysis and manipulation in tidyverse style."
+title: "nanny: A tidyverse machine-learning suite"
 output: github_document
 ---
 **It tidies up your playground!**
@@ -22,9 +22,9 @@ Please have a look also to
 - [tidyHeatmap](https://github.com/stemangiola/tidyHeatmap) for heatmaps produced with tidy principles
 - [tidybulk](https://github.com/stemangiola/tidybulk) brings transcriptomics to the tidyverse
 
-
-
 ## Functions/utilities available
+
+It does a lot! cluster, PCA, permute, impute, rotate, redundancy-removal, triangular, smart-subset, identify abundant and variable features.
 
 Function | Description
 ------------ | -------------
