@@ -3,8 +3,8 @@
 \docType{methods}
 \name{remove_redundancy}
 \alias{remove_redundancy}
-\alias{remove_redundancy,spec_tbl_df-method}
-\alias{remove_redundancy,tbl_df-method}
+\alias{remove_redundancy.spec_tbl_df}
+\alias{remove_redundancy.tbl_df}
 \title{Drop redundant elements (e.g., elements) for which feature (e.g., feature/gene) aboundances are correlated}
 \usage{
 remove_redundancy(
@@ -18,7 +18,7 @@ remove_redundancy(
   transform = NULL
 )
 
-\S4method{remove_redundancy}{spec_tbl_df}(
+\method{remove_redundancy}{spec_tbl_df}(
   .data,
   .element,
   .feature,
@@ -29,7 +29,7 @@ remove_redundancy(
   transform = NULL
 )
 
-\S4method{remove_redundancy}{tbl_df}(
+\method{remove_redundancy}{tbl_df}(
   .data,
   .element,
   .feature,

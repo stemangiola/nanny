@@ -3,15 +3,15 @@
 \docType{methods}
 \name{impute_missing}
 \alias{impute_missing}
-\alias{impute_missing,spec_tbl_df-method}
-\alias{impute_missing,tbl_df-method}
+\alias{impute_missing.spec_tbl_df}
+\alias{impute_missing.tbl_df}
 \title{Impute feature value if missing from element-feature pairs}
 \usage{
 impute_missing(.data, .element, .feature, .value, .formula)
 
-\S4method{impute_missing}{spec_tbl_df}(.data, .element, .feature, .value, .formula)
+\method{impute_missing}{spec_tbl_df}(.data, .element, .feature, .value, .formula)
 
-\S4method{impute_missing}{tbl_df}(.data, .element, .feature, .value, .formula)
+\method{impute_missing}{tbl_df}(.data, .element, .feature, .value, .formula)
 }
 \arguments{
 \item{.data}{A `tbl` formatted as | <element> | <feature> | <value> | <...> |}
@@ -27,9 +27,9 @@ impute_missing(.data, .element, .feature, .value, .formula)
 \value{
 A `tbl` non-sparse value
 
-A `tbl` with imputed abundnce
+A `tbl` with imputed abundance
 
-A `tbl` with imputed abundnce
+A `tbl` with imputed abundance
 }
 \description{
 impute_missing() takes as input a `tbl` formatted as | <element> | <feature> | <value> | <...> | and returns a `tbl` with an edditional adjusted value column. This method uses scaled counts if present.

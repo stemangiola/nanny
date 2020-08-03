@@ -3,15 +3,15 @@
 \docType{methods}
 \name{combine_nest}
 \alias{combine_nest}
-\alias{combine_nest,spec_tbl_df-method}
-\alias{combine_nest,tbl_df-method}
+\alias{combine_nest.spec_tbl_df}
+\alias{combine_nest.tbl_df}
 \title{Combine columns and nest data for each permutation}
 \usage{
 combine_nest(.data, .names_from, .values_from)
 
-\S4method{combine_nest}{spec_tbl_df}(.data, .names_from, .values_from)
+\method{combine_nest}{spec_tbl_df}(.data, .names_from, .values_from)
 
-\S4method{combine_nest}{tbl_df}(.data, .names_from, .values_from)
+\method{combine_nest}{tbl_df}(.data, .names_from, .values_from)
 }
 \arguments{
 \item{.data}{A `tbl` formatted as | <element> | <feature> | <value> | <...> |}

@@ -3,15 +3,15 @@
 \docType{methods}
 \name{permute_nest}
 \alias{permute_nest}
-\alias{permute_nest,spec_tbl_df-method}
-\alias{permute_nest,tbl_df-method}
+\alias{permute_nest.spec_tbl_df}
+\alias{permute_nest.tbl_df}
 \title{Permute columns and nest data for each permutation}
 \usage{
 permute_nest(.data, .names_from, .values_from)
 
-\S4method{permute_nest}{spec_tbl_df}(.data, .names_from, .values_from)
+\method{permute_nest}{spec_tbl_df}(.data, .names_from, .values_from)
 
-\S4method{permute_nest}{tbl_df}(.data, .names_from, .values_from)
+\method{permute_nest}{tbl_df}(.data, .names_from, .values_from)
 }
 \arguments{
 \item{.data}{A `tbl` formatted as | <element> | <feature> | <value> | <...> |}

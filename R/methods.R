@@ -36,16 +36,18 @@
 #' @rdname cluster_elements-methods
 #' @export
 #'
-setGeneric("cluster_elements", function(.data,
-																				.element,
-																				.feature,
-																				.value,
-																				method,
-																				of_elements = TRUE,
-																				transform = NULL,
-																				action = "add",
-																				...)
-	standardGeneric("cluster_elements"))
+cluster_elements <- function(.data,
+														 .element,
+														 .feature,
+														 .value,
+														 method,
+														 of_elements = TRUE,
+														 transform = NULL,
+														 action = "add",
+														 ...) {
+	UseMethod("cluster_elements")
+}
+
 
 # Set internal
 .cluster_elements = 		function(.data,
@@ -258,15 +260,17 @@ setGeneric("cluster_elements", function(.data,
 #' @docType methods
 #' @rdname cluster_elements-methods
 #' @return A tbl object with additional columns with cluster labels
+#' @export
 #'
-setMethod("cluster_elements", "spec_tbl_df", .cluster_elements)
+cluster_elements.spec_tbl_df = .cluster_elements
 
 #' cluster_elements
 #' @docType methods
 #' @rdname cluster_elements-methods
 #' @return A tbl object with additional columns with cluster labels
+#' @export
 #'
-setMethod("cluster_elements", "tbl_df", .cluster_elements)
+cluster_elements.tbl_df = .cluster_elements
 
 #' Dimension reduction of the feature value data
 #'
@@ -315,7 +319,7 @@ setMethod("cluster_elements", "tbl_df", .cluster_elements)
 #' @export
 #'
 #'
-setGeneric("reduce_dimensions", function(.data,
+reduce_dimensions = function(.data,
 																				 .element,
 																				 .feature,
 																				 .value,
@@ -326,8 +330,10 @@ setGeneric("reduce_dimensions", function(.data,
 																				 transform = NULL,
 																				 scale = TRUE,
 																				 action = "add",
-																				 ...)
-					 standardGeneric("reduce_dimensions"))
+																				 ...){
+	UseMethod("reduce_dimensions")
+}
+			
 
 # Set internal
 .reduce_dimensions = 		function(.data,
@@ -494,13 +500,16 @@ setGeneric("reduce_dimensions", function(.data,
 #' @docType methods
 #' @rdname reduce_dimensions-methods
 #' @return A tbl object with additional columns for the reduced dimensions
-setMethod("reduce_dimensions", "spec_tbl_df", .reduce_dimensions)
+#' @export
+reduce_dimensions.spec_tbl_df =  .reduce_dimensions
 
 #' reduce_dimensions
 #' @docType methods
 #' @rdname reduce_dimensions-methods
 #' @return A tbl object with additional columns for the reduced dimensions
-setMethod("reduce_dimensions", "tbl_df", .reduce_dimensions)
+#' @export
+reduce_dimensions.tbl_df =  .reduce_dimensions
+
 
 #' Rotate two dimensions (e.g., principal components) of an arbitrary angle
 #'
@@ -540,16 +549,17 @@ setMethod("reduce_dimensions", "tbl_df", .reduce_dimensions)
 #' @rdname rotate_dimensions-methods
 #' @export
 #'
-setGeneric("rotate_dimensions", function(.data,
-																				 dimension_1_column,
-																				 dimension_2_column,
-																				 rotation_degrees,
-																				 .element,
-																				 of_elements = TRUE,
-																				 dimension_1_column_rotated = NULL,
-																				 dimension_2_column_rotated = NULL,
-																				 action = "add")
-	standardGeneric("rotate_dimensions"))
+rotate_dimensions <- function(.data,
+															dimension_1_column,
+															dimension_2_column,
+															rotation_degrees,
+															.element,
+															of_elements = TRUE,
+															dimension_1_column_rotated = NULL,
+															dimension_2_column_rotated = NULL,
+															action = "add")  {
+	UseMethod("rotate_dimensions")
+}
 
 # Set internal
 .rotate_dimensions = 		function(.data,
@@ -628,13 +638,15 @@ setGeneric("rotate_dimensions", function(.data,
 #' @docType methods
 #' @rdname rotate_dimensions-methods
 #' @return A tbl object with additional columns for the reduced dimensions. additional columns for the rotated dimensions. The rotated dimensions will be added to the original data set as `<NAME OF DIMENSION> rotated <ANGLE>` by default, or as specified in the input arguments.
-setMethod("rotate_dimensions", "spec_tbl_df", .rotate_dimensions)
+#' @export
+rotate_dimensions.spec_tbl_df = .rotate_dimensions
 
 #' rotate_dimensions
 #' @docType methods
 #' @rdname rotate_dimensions-methods
 #' @return A tbl object with additional columns for the reduced dimensions. additional columns for the rotated dimensions. The rotated dimensions will be added to the original data set as `<NAME OF DIMENSION> rotated <ANGLE>` by default, or as specified in the input arguments.
-setMethod("rotate_dimensions", "tbl_df", .rotate_dimensions)
+#' @export
+rotate_dimensions.tbl_df = .rotate_dimensions
 
 #' Drop redundant elements (e.g., elements) for which feature (e.g., feature/gene) aboundances are correlated
 #'
@@ -674,15 +686,17 @@ setMethod("rotate_dimensions", "tbl_df", .rotate_dimensions)
 #' @export
 #'
 #'
-setGeneric("remove_redundancy", function(.data,
+remove_redundancy =  function(.data,
 																				 .element,
 																				 .feature,
 																				 .value,
 																				 of_elements = TRUE,
 																				 correlation_threshold = 0.9,
 																				 top = Inf,
-																				 transform = NULL)
-					 standardGeneric("remove_redundancy"))
+																				 transform = NULL){
+	UseMethod("remove_redundancy")
+}
+				
 
 # Set internal
 .remove_redundancy = 	 function(.data,
@@ -720,13 +734,15 @@ setGeneric("remove_redundancy", function(.data,
 #' @docType methods
 #' @rdname remove_redundancy-methods
 #' @return A tbl object with with dropped recundant elements (e.g., elements).
-setMethod("remove_redundancy", "spec_tbl_df", .remove_redundancy)
+#' @export
+remove_redundancy.spec_tbl_df = .remove_redundancy
 
 #' remove_redundancy
 #' @docType methods
 #' @rdname remove_redundancy-methods
 #' @return A tbl object with with dropped recundant elements (e.g., elements).
-setMethod("remove_redundancy", "tbl_df", .remove_redundancy)
+#' @export
+remove_redundancy.tbl_df = .remove_redundancy
 
 #' Extract selected-column-wise information
 #'
@@ -759,13 +775,13 @@ setMethod("remove_redundancy", "tbl_df", .remove_redundancy)
 #' @export
 #'
 #'
-setGeneric("subset", function(.data,
-																		.column)
-	standardGeneric("subset"))
+subset =  function(.data,	.column){
+	UseMethod("subset")
+}
+
 
 # Set internal
-.subset = 		function(.data,
-										 .column)	{
+.subset = 		function(.data,	 .column)	{
 	# Make col names
 	.column = enquo(.column)
 	
@@ -785,19 +801,22 @@ setGeneric("subset", function(.data,
 #' @docType methods
 #' @rdname subset-methods
 #' @return A `tbl` object
-setMethod("subset",		"spec_tbl_df",		.subset)
+#' @export
+subset.spec_tbl_df = .subset
 
 #' subset
 #' @docType methods
 #' @rdname subset-methods
 #' @return A `tbl` object
-setMethod("subset",		"tbl_df",				.subset)
+#' @export
+subset.tbl_df = .subset 
 
 #' subset
 #' @docType methods
 #' @rdname subset-methods
 #' @return A `tbl` object
-setMethod("subset",		"tbl",			.subset)
+#' @export
+subset.tbl = .subset 
 
 #' Nest according to selected-column-wise information
 #'
@@ -837,8 +856,9 @@ setMethod("subset",		"tbl",			.subset)
 #' @export
 #'
 #'
-setGeneric("nest_subset", function(.data, ..., .exclude = NULL, .names_sep = NULL)
-	standardGeneric("nest_subset"))
+nest_subset <- function(.data, ..., .exclude = NULL, .names_sep = NULL)  {
+	UseMethod("nest_subset")
+}
 
 # Set internal
 .nest_subset = 		function(.data, ..., .exclude = NULL, .names_sep = NULL)	{
@@ -876,19 +896,21 @@ setGeneric("nest_subset", function(.data, ..., .exclude = NULL, .names_sep = NUL
 #' @docType methods
 #' @rdname nest_subset-methods
 #' @return A `tbl` object
-setMethod("nest_subset",		"spec_tbl_df",		.nest_subset)
+#' @export
+nest_subset.spec_tbl_df = .nest_subset 
 
 #' nest_subset
 #' @docType methods
 #' @rdname nest_subset-methods
 #' @return A `tbl` object
-setMethod("nest_subset",		"tbl_df",				.nest_subset)
+#' @export
+nest_subset.tbl_df = .nest_subset 
 
 #' nest_subset
 #' @inheritParams nest_subset
 #' @return A `tbl` object
-setMethod("nest_subset",		"tbl",			.nest_subset)
-
+#' @export
+nest_subset.tbl = .nest_subset 
 
 #' Impute feature value if missing from element-feature pairs
 #'
@@ -926,12 +948,14 @@ setMethod("nest_subset",		"tbl",			.nest_subset)
 #' @export
 #'
 #'
-setGeneric("impute_missing", function(.data,
+impute_missing =  function(.data,
 																				.element,
 																				.feature,
 																				.value,
-																				.formula)
-	standardGeneric("impute_missing"))
+																				.formula){
+	UseMethod("impute_missing")
+}
+
 
 # Set internal
 .impute_missing = 	function(.data,
@@ -965,14 +989,16 @@ setGeneric("impute_missing", function(.data,
 #' impute_missing
 #' @docType methods
 #' @rdname impute_missing-methods
-#' @return A `tbl` with imputed abundnce
-setMethod("impute_missing", "spec_tbl_df", .impute_missing)
+#' @return A `tbl` with imputed abundance
+#' @export
+impute_missing.spec_tbl_df = .impute_missing
 
 #' impute_missing
 #' @docType methods
 #' @rdname impute_missing-methods
-#' @return A `tbl` with imputed abundnce
-setMethod("impute_missing", "tbl_df", .impute_missing)
+#' @return A `tbl` with imputed abundance
+#' @export
+impute_missing.tbl_df = .impute_missing
 
 
 #' Fill feature value if missing from element-feature pairs
@@ -1010,12 +1036,15 @@ setMethod("impute_missing", "tbl_df", .impute_missing)
 #' @export
 #'
 #'
-setGeneric("fill_missing", function(.data,
+fill_missing = function(.data,
 																			.element,
 																			.feature,
 																			.value,
-																			fill_with)
-	standardGeneric("fill_missing"))
+																			fill_with){
+	UseMethod("fill_missing")
+	
+}
+
 
 # Set internal
 .fill_missing = 	function(.data,
@@ -1047,15 +1076,15 @@ setGeneric("fill_missing", function(.data,
 #' @docType methods
 #' @rdname fill_missing-methods
 #' @return A `tbl` with filled abundance
-setMethod("fill_missing", "spec_tbl_df", .fill_missing)
+#' @export
+fill_missing.spec_tbl_df = .fill_missing 
 
 #' fill_missing
 #' @docType methods
 #' @rdname fill_missing-methods
 #' @return A `tbl` with filled abundance
-setMethod("fill_missing", "tbl_df", .fill_missing)
-
-
+#' @export
+fill_missing.tbl_df = .fill_missing 
 
 
 #' Permute columns and nest data for each permutation
@@ -1091,8 +1120,11 @@ setMethod("fill_missing", "tbl_df", .fill_missing)
 #' @export
 #'
 #'
-setGeneric("permute_nest", function(.data, .names_from, .values_from)
-	standardGeneric("permute_nest"))
+permute_nest  = function(.data, .names_from, .values_from){
+	UseMethod("permute_nest")
+	
+}
+
 
 # Set internal
 .permute_nest = 	function(.data, .names_from, .values_from){
@@ -1135,15 +1167,15 @@ setGeneric("permute_nest", function(.data, .names_from, .values_from)
 #' @docType methods
 #' @rdname permute_nest-methods
 #' @return A `tbl` with filled abundance
-setMethod("permute_nest", "spec_tbl_df", .permute_nest)
+#' @export
+permute_nest.spec_tbl_df = .permute_nest
 
 #' permute_nest
 #' @docType methods
 #' @rdname permute_nest-methods
 #' @return A `tbl` with filled abundance
-setMethod("permute_nest", "tbl_df", .permute_nest)
-
-
+#' @export
+permute_nest.tbl_df = .permute_nest
 
 
 #' Combine columns and nest data for each permutation
@@ -1180,8 +1212,11 @@ setMethod("permute_nest", "tbl_df", .permute_nest)
 #' @export
 #'
 #'
-setGeneric("combine_nest", function(.data, .names_from, .values_from)
-	standardGeneric("combine_nest"))
+combine_nest = function(.data, .names_from, .values_from){
+	UseMethod("combine_nest")
+	
+}
+
 
 # Set internal
 .combine_nest = function(.data, .names_from, .values_from){
@@ -1226,14 +1261,15 @@ setGeneric("combine_nest", function(.data, .names_from, .values_from)
 #' @docType methods
 #' @rdname combine_nest-methods
 #' @return A `tbl` with filled abundance
-setMethod("combine_nest", "spec_tbl_df", .combine_nest)
+#' @export
+combine_nest.spec_tbl_df = .combine_nest
 
 #' combine_nest
 #' @docType methods
 #' @rdname combine_nest-methods
 #' @return A `tbl` with filled abundance
-setMethod("combine_nest", "tbl_df", .combine_nest)
-
+#' @export
+combine_nest.tbl_df= .combine_nest
 
 
 #' Keep top variable features across elements
@@ -1272,13 +1308,16 @@ setMethod("combine_nest", "tbl_df", .combine_nest)
 #' @export
 #'
 #'
-setGeneric("keep_variable", function(.data,
+keep_variable = function(.data,
 																		 .element,
 																		 .feature,
 																		 .value,
 																		 top = Inf,
-																		 transform = NULL)
-	standardGeneric("keep_variable"))
+																		 transform = NULL){
+	UseMethod("keep_variable")
+	
+}
+
 
 # Set internal
 .keep_variable = function(.data,
@@ -1343,14 +1382,15 @@ setGeneric("keep_variable", function(.data,
 #' @docType methods
 #' @rdname keep_variable-methods
 #' @return A `tbl` with filled abundance
-setMethod("keep_variable", "spec_tbl_df", .keep_variable)
+#' @export
+keep_variable.spec_tbl_df = .keep_variable
 
 #' keep_variable
 #' @docType methods
 #' @rdname keep_variable-methods
 #' @return A `tbl` with filled abundance
-setMethod("keep_variable", "tbl_df", .keep_variable)
-
+#' @export
+keep_variable.tbl_df = .keep_variable
 
 
 #' Keep rows corresponding of a lower triangular matrix built from two columns
@@ -1402,8 +1442,10 @@ setMethod("keep_variable", "tbl_df", .keep_variable)
 #' @export
 #'
 #'
-setGeneric("lower_triangular", function(.data, .col1, .col2, .value)
-	standardGeneric("lower_triangular"))
+lower_triangular =  function(.data, .col1, .col2, .value){
+	UseMethod("lower_triangular")
+	
+}
 
 # Set internal
 .lower_triangular = function(.data, .col1, .col2, .value){
@@ -1451,13 +1493,15 @@ setGeneric("lower_triangular", function(.data, .col1, .col2, .value)
 #' @docType methods
 #' @rdname lower_triangular-methods
 #' @return A `tbl` with filled abundance
-setMethod("lower_triangular", "spec_tbl_df", .lower_triangular)
+#' @export
+lower_triangular.spec_tbl_df = .lower_triangular
 
 #' lower_triangular
 #' @docType methods
 #' @rdname lower_triangular-methods
 #' @return A `tbl` with filled abundance
-setMethod("lower_triangular", "tbl_df", .lower_triangular)
+#' @export
+lower_triangular.tbl_df = .lower_triangular
 
 
 #' Get matrix from tibble
@@ -1489,11 +1533,14 @@ setMethod("lower_triangular", "tbl_df", .lower_triangular)
 #' @rdname as_matrix-methods
 #'
 #' @export
-setGeneric("as_matrix", function(.data,
+as_matrix =  function(.data,
 																 rownames = NULL,
 																 do_check = TRUE,
-																 sep_rownames = "___")
-	standardGeneric("as_matrix"))
+																 sep_rownames = "___"){
+	UseMethod("as_matrix")
+	
+}
+
 
 # Set internal
 .as_matrix = function(.data,
@@ -1547,10 +1594,12 @@ setGeneric("as_matrix", function(.data,
 #' @docType methods
 #' @rdname as_matrix-methods
 #' @return A `tbl` with filled abundance
-setMethod("as_matrix", "spec_tbl_df", .as_matrix)
+#' @export
+as_matrix.spec_tbl_df = .as_matrix
 
 #' as_matrix
 #' @docType methods
 #' @rdname as_matrix-methods
 #' @return A `tbl` with filled abundance
-setMethod("as_matrix", "tbl_df", .as_matrix)
+#' @export
+as_matrix.tbl_df = .as_matrix
