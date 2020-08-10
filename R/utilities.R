@@ -389,3 +389,6 @@ strip_names <- function(df, base, names_sep) {
 	
 	set_names(df, names)
 }
+
+# Raise to the power
+pow = function(a,b){	a^b }

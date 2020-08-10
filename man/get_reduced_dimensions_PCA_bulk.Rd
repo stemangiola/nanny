@@ -32,7 +32,7 @@ get_reduced_dimensions_PCA_bulk(
 
 \item{of_elements}{A boolean}
 
-\item{transform}{A function to use to tranforma the data internalli (e.g., log1p)}
+\item{transform}{A function to use to transform the data internally (e.g., log1p)}
 
 \item{scale}{A boolean}
 
