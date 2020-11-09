@@ -350,6 +350,9 @@ get_reduced_dimensions_PCA_bulk <-
 		prcomp_obj =
 			.data %>%
 			
+			# Filter most variable genes
+			nanny::keep_variable(!!.element,!!.feature,!!.value, top) %>%
+			
 			# Prepare data frame
 			select(!!.feature,!!.element,!!.value) %>%
 			distinct %>%
@@ -372,9 +375,6 @@ get_reduced_dimensions_PCA_bulk <-
 				(.) %>% select(!!.value) %>% summarise_all(class) %>% `%in%`(c("numeric", "integer")) %>% `!`() %>% any(),
 				~ stop("nanny says: .value must be numerical or integer")
 			) %>%
-			
-			# Filter most variable genes
-			keep_variable(!!.element,!!.feature,!!.value, top) %>%
 			
 			pivot_wider(names_from = !!.element, values_from = !!.value, names_sep = "___") %>%
 			
@@ -509,7 +509,7 @@ get_reduced_dimensions_TSNE_bulk <-
 		# 	 stop("nanny says: Rtsne is necessary for this operation. Please install it with 	install.packages(\"Rtsne\")")
 		# }
 		
-		# Set perprexity to not be too high
+		# Set perplexity to not be too high
 		if (!"perplexity" %in% names(arguments))
 			arguments = arguments %>% c(perplexity = ((
 				.data %>% select(!!.element) %>% distinct %>% nrow %>% sum(-1)
@@ -535,7 +535,7 @@ get_reduced_dimensions_TSNE_bulk <-
 			select(!!.feature,!!.element,!!.value) %>%
 			distinct %>%
 			
-			# Check if tranfrom is needed
+			# Check if transform is needed
 			ifelse_pipe(
 				is_function(transform),
 				~ .x %>% 
@@ -1029,7 +1029,15 @@ fill_NA_using_value = function(.data,
 	.feature = enquo(.feature)
 	.value = enquo(.value)
 	
-	# Create NAs for missing element/feature pair
+	# # Create NAs for missing element/feature pair
+	# df_to_impute = 
+	# 	.data %>%
+	# 	select(!!.element, !!.feature, !!.value) %>%
+	# 	distinct %>%
+	# 	mutate_if(is.character, as.factor) %>%
+	# 	tidyr::complete(nesting(.feature),  nesting(!!.element)) 
+	
+	
 	df_to_impute =
 		.data %>%
 		select(!!.element, !!.feature, !!.value) %>%
