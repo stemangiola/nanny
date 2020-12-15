@@ -303,6 +303,7 @@ get_reduced_dimensions_MDS_bulk <-
 #' @importFrom rlang is_function
 #' @importFrom magrittr `%$%`
 #' @importFrom utils capture.output
+#' @importFrom magrittr divide_by
 #'
 #' @param .data A tibble
 #' @param .value A column symbol with the value the clustering is based on (e.g., `count`)
@@ -311,7 +312,7 @@ get_reduced_dimensions_MDS_bulk <-
 #' @param .element A column symbol. The column that is used to calculate distance (i.e., normally elements)
 #' @param top An integer. How many top genes to select
 #' @param of_elements A boolean
-#' @param transform A function to use to tranforma the data internalli (e.g., log1p)
+#' @param transform A function to use to transform the data internally (e.g., log1p)
 #' @param scale A boolean
 #' @param ... Further parameters passed to the function prcomp
 #'
@@ -349,11 +350,14 @@ get_reduced_dimensions_PCA_bulk <-
 		prcomp_obj =
 			.data %>%
 			
+			# Filter most variable genes
+			nanny::keep_variable(!!.element,!!.feature,!!.value, top) %>%
+			
 			# Prepare data frame
 			select(!!.feature,!!.element,!!.value) %>%
 			distinct %>%
 			
-			# Check if tranfrom is needed
+			# Check if transform is needed
 			ifelse_pipe(
 				is_function(transform),
 				~ .x %>% 
@@ -372,9 +376,6 @@ get_reduced_dimensions_PCA_bulk <-
 				~ stop("nanny says: .value must be numerical or integer")
 			) %>%
 			
-			# Filter most variable genes
-			keep_variable(!!.element,!!.feature,!!.value, top) %>%
-			
 			pivot_wider(names_from = !!.element, values_from = !!.value, names_sep = "___") %>%
 			
 			drop_na %>% # Is this necessary?
@@ -384,7 +385,7 @@ get_reduced_dimensions_PCA_bulk <-
 				(.) %>% nrow == 0,
 				
 				# Second condition
-				(.) %>% nrow < 100,
+				(.) %>% nrow < 10,
 				
 				# First function
 				~ stop(
@@ -394,17 +395,16 @@ get_reduced_dimensions_PCA_bulk <-
 				# Second function
 				~ {
 					warning(
-						"
-						nanny says: In PCA correlation there is < 100 genes that have non NA values is all elements.
-						The correlation calculation would not be reliable,
-						we suggest to partition the dataset for element clusters.
-						"
+						"nanny says: In PCA correlation there is < 10 genes that have non NA values is all elements.
+The correlation calculation would not be reliable,
+we suggest to partition the dataset for element clusters."
 					)
 					.x
 				}) %>%
 			
 			# Transform to matrix
 			as_matrix(rownames = !!.feature, do_check = FALSE) %>%
+			t() %>%
 			
 			# Calculate principal components
 			prcomp(scale = scale, ...)
@@ -417,27 +417,25 @@ get_reduced_dimensions_PCA_bulk <-
 			{
 				message("Fraction of variance explained by the selected principal components")
 				
-				(.) %$% sdev %>% `^` (2) %>% # Eigen value
-					`/` (sum(.)) %>%
+				(.) %$% sdev %>% pow(2) %>% # Eigen value
+					divide_by(sum(.)) %>%
 					`[` (components) %>%
 					enframe() %>%
 					select(-name) %>%
 					rename(`Fraction of variance` = value) %>%
 					mutate(PC = components) %>%
-					as.data.frame() %>%
-					
-					# Print as message
 					capture.output() %>% paste0(collapse = "\n") %>% message()
-				
 				(.)
 				
 			} %$%
 			
 			# Parse the PCA results to a tibble
-			rotation %>%
+			x %>%
 			as_tibble(rownames = "rn") %>%
 			separate(col = rn, into = quo_names(.element), sep = "___") %>%
 			select(!!.element, sprintf("PC%s", components)) %>%
+		
+		
 			
 			# Attach attributes
 			reattach_internals(.data) %>%
@@ -511,7 +509,7 @@ get_reduced_dimensions_TSNE_bulk <-
 		# 	 stop("nanny says: Rtsne is necessary for this operation. Please install it with 	install.packages(\"Rtsne\")")
 		# }
 		
-		# Set perprexity to not be too high
+		# Set perplexity to not be too high
 		if (!"perplexity" %in% names(arguments))
 			arguments = arguments %>% c(perplexity = ((
 				.data %>% select(!!.element) %>% distinct %>% nrow %>% sum(-1)
@@ -537,7 +535,7 @@ get_reduced_dimensions_TSNE_bulk <-
 			select(!!.feature,!!.element,!!.value) %>%
 			distinct %>%
 			
-			# Check if tranfrom is needed
+			# Check if transform is needed
 			ifelse_pipe(
 				is_function(transform),
 				~ .x %>% 
@@ -1031,7 +1029,15 @@ fill_NA_using_value = function(.data,
 	.feature = enquo(.feature)
 	.value = enquo(.value)
 	
-	# Create NAs for missing element/feature pair
+	# # Create NAs for missing element/feature pair
+	# df_to_impute = 
+	# 	.data %>%
+	# 	select(!!.element, !!.feature, !!.value) %>%
+	# 	distinct %>%
+	# 	mutate_if(is.character, as.factor) %>%
+	# 	tidyr::complete(nesting(.feature),  nesting(!!.element)) 
+	
+	
 	df_to_impute =
 		.data %>%
 		select(!!.element, !!.feature, !!.value) %>%
