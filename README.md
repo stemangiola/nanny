@@ -1,4 +1,4 @@
-nanny: A tidyverse machine-learning suite
+This repository is no longer maintained and superseeded by [tidybulk](https://github.com/stemangiola/tidybulk)
 ================
 
 **It tidies up your playground\!**
